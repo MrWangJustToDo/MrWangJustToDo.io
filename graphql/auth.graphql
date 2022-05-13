@@ -1,0 +1,20 @@
+query getViewer($first: Int = 10) {
+  viewer {
+    id
+    name
+    login
+    email
+    avatarUrl
+    websiteUrl
+    projectsUrl
+    followers(first: $first) {
+      nodes {
+        id
+        avatarUrl
+        name
+        login
+        email
+      }
+    }
+  }
+}
