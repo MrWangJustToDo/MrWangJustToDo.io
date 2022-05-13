@@ -9,6 +9,7 @@ import {
 import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
 import { log } from "utils/log";
+import { isBrowser } from "utils/env";
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
@@ -35,7 +36,11 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization: `token ${process.env.NEXT_PUBLIC_TOKEN}`,
+      Authorization: `token ${
+        isBrowser
+          ? atob(process.env.NEXT_PUBLIC_TOKEN)
+          : process.env.NEXT_PUBLIC_TOKEN
+      }`,
     },
   };
 });
