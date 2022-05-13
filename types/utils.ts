@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from "http";
 import { AxiosRequestConfig, Method } from "axios";
 import { Cache } from "utils/cache";
-import { apiName } from "config/api";
+// import { apiName } from "config/api";
 
 /* delay */
 interface Cancel {
@@ -72,7 +72,7 @@ interface QueryProps {
 }
 interface TransformPathProps {
   path?: string;
-  apiPath?: apiName;
+  apiPath?: string;
   query?: QueryProps;
   needPre?: boolean;
 }
@@ -96,7 +96,7 @@ export type { HeaderProps, GetHeaderType };
 interface AutoRequestProps {
   method?: Method;
   path?: string;
-  apiPath?: apiName;
+  apiPath?: string;
   query?: QueryProps | string | false;
   header?: IncomingHttpHeaders | HeaderProps | string | false;
   data?: string | false | { [props: string]: any };
@@ -218,8 +218,8 @@ export type { TimeToString };
 
 /* image */
 interface LoadImgProps {
-  imgUrl: apiName;
-  strUrl: apiName;
+  imgUrl: string;
+  strUrl: string;
   imgElement: HTMLImageElement;
   state?: boolean;
 }
