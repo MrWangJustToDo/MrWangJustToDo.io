@@ -1,6 +1,8 @@
-import { Box, Text, Link } from "@chakra-ui/react";
+import { Box, Text, Link, Icon, Button } from "@chakra-ui/react";
+import { ColorMode } from "components/ColorMode";
 import { Source } from "config/source";
 import { memo } from "react";
+import { AiFillHeart } from "react-icons/ai";
 
 const _Header = () => {
   return (
@@ -17,22 +19,7 @@ const _Header = () => {
       >
         Blog.
       </Text>
-      <Text
-        fontSize={{ base: "medium", md: "xl" }}
-        fontWeight="semibold"
-        isTruncated
-        marginLeft="2"
-      >
-        source from
-        <Link
-          href={Source}
-          target="_blank"
-          color="blue.500"
-          paddingLeft="0.2em"
-        >
-          github
-        </Link>
-      </Text>
+      <ColorMode />
     </Box>
   );
 };

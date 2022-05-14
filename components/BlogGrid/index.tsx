@@ -1,4 +1,4 @@
-import { Avatar, Text, Flex, Box } from "@chakra-ui/react";
+import { Avatar, Text, Flex, Box, useColorModeValue } from "@chakra-ui/react";
 import { Card } from "components/Card";
 import { StyledReactGridLayout } from "components/GridLayout";
 import {
@@ -19,6 +19,7 @@ const _BlogGrid = ({
   data: GetBlogListQuery["repository"]["issues"]["nodes"];
 }) => {
   const layouts = useGetResponseList(data);
+  const color = useColorModeValue("gray.600", "whiteAlpha.600");
   return (
     <StyledReactGridLayout
       className="layout"
@@ -49,12 +50,12 @@ const _BlogGrid = ({
                   width="6"
                   height="6"
                 />
-                <Text fontSize="small" color="gray.600" marginLeft="2">
+                <Text fontSize="small" color={color} marginLeft="2">
                   {momentTo(publishedAt)}
                 </Text>
               </Flex>
               <Box
-                marginTop="2.5"
+                marginTop="3"
                 dangerouslySetInnerHTML={{ __html: bodyHTML }}
               />
             </Card>

@@ -1,6 +1,15 @@
-import { EmailIcon } from "@chakra-ui/icons";
-import { Tooltip, Box, Text, Divider, Flex, Avatar } from "@chakra-ui/react";
+import {
+  Tooltip,
+  Box,
+  Text,
+  Flex,
+  Avatar,
+  Icon,
+  VStack,
+  StackDivider,
+} from "@chakra-ui/react";
 import { Hover } from "components/Hover";
+import { AiOutlineMail, AiOutlineUser } from "react-icons/ai";
 
 type FollowerProps = {
   id: string;
@@ -22,36 +31,37 @@ export const Follower = ({
     <Hover>
       <Tooltip
         label={
-          <Box>
-            <Text as="h4" fontWeight="semibold">
-              {name}
-            </Text>
+          <VStack
+            divider={<StackDivider />}
+            alignItems="flex-start"
+            spacing="1"
+          >
+            <Flex alignItems="center">
+              <Icon as={AiOutlineUser} />
+              <Text fontWeight="semibold" marginLeft="1">
+                {name}
+              </Text>
+            </Flex>
             {email && (
-              <>
-                <Divider />
-                <Flex alignItems="center">
-                  <EmailIcon /> <Text marginLeft="1">{email}</Text>
-                </Flex>
-              </>
+              <Flex alignItems="center">
+                <Icon as={AiOutlineMail} />
+                <Text marginLeft="1">{email}</Text>
+              </Flex>
             )}
-            {bioHTML && (
-              <>
-                <Divider />
-                <Box dangerouslySetInnerHTML={{ __html: bioHTML }} />
-              </>
-            )}
-          </Box>
+            {bioHTML && <Box dangerouslySetInnerHTML={{ __html: bioHTML }} />}
+          </VStack>
         }
-        backgroundColor="gray.700"
         borderRadius="4"
         placement="right"
+        boxShadow="md"
         offset={[0, 8]}
         hasArrow
       >
         <Avatar
           src={avatarUrl}
-          border="2px solid white"
-          marginTop={!isFirst ? "-1.5" : "0"}
+          border="4px solid white"
+          boxShadow="md"
+          marginTop={!isFirst ? "-3" : "0"}
         />
       </Tooltip>
     </Hover>

@@ -1,13 +1,5 @@
 import { useQuery } from "@apollo/client";
-import {
-  Center,
-  Flex,
-  Spinner,
-  useToast,
-  Text,
-  Box,
-  Divider,
-} from "@chakra-ui/react";
+import { Center, Flex, Spinner, useToast, Box } from "@chakra-ui/react";
 import { BlogGrid } from "components/BlogGrid";
 import { GetBlogListDocument } from "graphql/generated";
 import { useGetListParams } from "hooks/useGetListParams";
@@ -50,12 +42,6 @@ const _BlogList = () => {
 
   return (
     <Flex flexDirection="column" height="100%">
-      <Box textAlign="center">
-        <Text fontSize="2xl" fontWeight="extrabold">
-          All
-        </Text>
-      </Box>
-      <Divider marginY="2" />
       <Box overflow="auto" paddingRight="2">
         <BlogGrid data={data.repository.issues.nodes} />
       </Box>

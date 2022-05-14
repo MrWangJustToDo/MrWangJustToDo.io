@@ -21,15 +21,4 @@ const momentTo: TimeToString = (time) => {
   }
 };
 
-const calendar: TimeToString = (time) => {
-  if (typeof time === "string") {
-    time = new Date(time);
-  }
-  if (time instanceof Date) {
-    return dayjs(time).calendar();
-  } else {
-    return dayjs(new Date()).calendar();
-  }
-};
-
-export { momentTo, calendar };
+export { momentTo };

@@ -1,3 +1,4 @@
+import { Footer } from "components/Footer";
 import { Head } from "components/Head";
 
 export const Layout = ({ children }: { children: JSX.Element }) => {
@@ -5,6 +6,7 @@ export const Layout = ({ children }: { children: JSX.Element }) => {
     <>
       <Head />
       {children}
+      <Footer />
     </>
   );
 };
