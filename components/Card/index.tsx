@@ -15,7 +15,15 @@ export const Card = forwardRef<BoxProps, "div">(
       zIndex="modal"
       {...boxProps}
     >
-      <Box overflow="auto" width="100%" height="100%">
+      <Box
+        overflow="auto"
+        width="100%"
+        height="100%"
+        sx={{
+          scrollbarWidth: "none",
+          scrollbarColor: "transparent",
+        }}
+      >
         {children}
       </Box>
     </Box>

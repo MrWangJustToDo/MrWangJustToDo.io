@@ -4,10 +4,12 @@ import {
   Avatar,
   AvatarBadge,
   Box,
+  Center,
   Divider,
   Flex,
   Spinner,
   Text,
+  Tooltip,
   useToast,
 } from "@chakra-ui/react";
 import { GetViewerDocument } from "graphql/generated";
@@ -22,7 +24,12 @@ export const User = () => {
 
   const open = useToast();
 
-  if (loading) return <Spinner />;
+  if (loading)
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
 
   if (error) {
     open({
@@ -55,15 +62,34 @@ export const User = () => {
             top flowers
           </Text>
           {data.viewer.followers.nodes.map(
-            ({ login, name, avatarUrl, id }, index) => {
+            ({ login, name, avatarUrl, id, email, bioHTML }, index) => {
               return (
-                <Avatar
+                <Tooltip
                   key={id}
-                  name={name || login}
-                  src={avatarUrl}
-                  border="2px solid white"
-                  marginTop={index !== 0 ? "-1.5" : "0"}
-                />
+                  label={
+                    <Box>
+                      <Text as="span">{name || login}</Text>
+                      {email && (
+                        <Flex alignItems="center">
+                          <EmailIcon /> <Text marginLeft="1">{email}</Text>
+                        </Flex>
+                      )}
+                      {bioHTML && (
+                        <Box dangerouslySetInnerHTML={{ __html: bioHTML }} />
+                      )}
+                    </Box>
+                  }
+                  backgroundColor="CaptionText"
+                  borderRadius="4"
+                  placement="right"
+                  hasArrow
+                >
+                  <Avatar
+                    src={avatarUrl}
+                    border="2px solid white"
+                    marginTop={index !== 0 ? "-1.5" : "0"}
+                  />
+                </Tooltip>
               );
             }
           )}
@@ -78,7 +104,6 @@ export const User = () => {
               return (
                 <Avatar
                   key={id}
-                  name={name || login}
                   src={avatarUrl}
                   border="2px solid white"
                   marginTop={index !== 0 ? "-1.5" : "0"}

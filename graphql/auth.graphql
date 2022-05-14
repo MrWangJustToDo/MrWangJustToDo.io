@@ -4,25 +4,28 @@ query getViewer($first: Int = 10) {
     name
     login
     email
+    createdAt
     avatarUrl
     websiteUrl
     projectsUrl
     followers(first: $first) {
       nodes {
         id
-        avatarUrl
         name
         login
         email
+        bioHTML
+        avatarUrl
       }
     }
     following(first: $first) {
       nodes {
         id
-        avatarUrl
         name
         login
         email
+        bioHTML
+        avatarUrl
       }
     }
   }
