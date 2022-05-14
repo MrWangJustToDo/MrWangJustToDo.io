@@ -11,9 +11,11 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { Follower } from "components/Follower";
+import { Chart } from "components/Chart";
+import { Followers } from "components/Follower";
 import { GetViewerDocument } from "graphql/generated";
 import React, { memo } from "react";
+import { calendar } from "utils/time";
 
 const ITEM_FOLLOWER = 10;
 
@@ -46,9 +48,10 @@ const _User = () => {
   return (
     <Flex flexDirection="column" padding="3">
       <Box padding="2">
-        <Avatar name={data.viewer.name} src={data.viewer.avatarUrl} size="2xl">
+        <Avatar name={data.viewer.name} src={data.viewer.avatarUrl} size="xl">
           <AvatarBadge bg="green.500" boxSize="0.8em" />
         </Avatar>
+        <Chart marginTop="2" marginLeft="-2.5" marginRight="-2.5" />
       </Box>
       <Divider marginY="2" />
       <Text fontWeight="semibold">{data.viewer.login}</Text>
@@ -58,51 +61,21 @@ const _User = () => {
           {data.viewer.email}
         </Text>
       </Flex>
-      <Text fontSize="x-small">
-        Join At: {new Date(data.viewer.createdAt).toLocaleString()}
-      </Text>
+      <Text fontSize="x-small">Join At: {calendar(data.viewer.createdAt)}</Text>
       <Divider marginY="2" />
       <Flex justifyContent="space-between">
         <Flex flexDirection="column" alignItems="center">
           <Text textTransform="capitalize" fontSize="sm" marginBottom="2">
             top flowers
           </Text>
-          {data.viewer.followers.nodes.map(
-            ({ login, name, avatarUrl, id, email, bioHTML }, index) => {
-              return (
-                <Follower
-                  key={id}
-                  id={id}
-                  isFirst={index === 0}
-                  name={name || login}
-                  email={email}
-                  bioHTML={bioHTML}
-                  avatarUrl={avatarUrl}
-                />
-              );
-            }
-          )}
+          <Followers data={data.viewer.followers.nodes} />
         </Flex>
         <Box borderLeft="1px" borderColor="gray.100" />
         <Flex flexDirection="column" alignItems="center">
           <Text textTransform="capitalize" fontSize="sm" marginBottom="2">
             top following
           </Text>
-          {data.viewer.following.nodes.map(
-            ({ login, name, avatarUrl, id, email, bioHTML }, index) => {
-              return (
-                <Follower
-                  key={id}
-                  id={id}
-                  isFirst={index === 0}
-                  name={name || login}
-                  email={email}
-                  bioHTML={bioHTML}
-                  avatarUrl={avatarUrl}
-                />
-              );
-            }
-          )}
+          <Followers data={data.viewer.following.nodes} />
         </Flex>
       </Flex>
     </Flex>

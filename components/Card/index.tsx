@@ -10,7 +10,7 @@ interface CardProps extends BoxProps {
 }
 
 export const Card = forwardRef<CardProps, "div">(
-  ({ children, disableOverflow, ...boxProps }, ref) => (
+  ({ children, disableOverflow, className ,...boxProps }, ref) => (
     <Box
       ref={ref}
       border="1px"
@@ -20,7 +20,7 @@ export const Card = forwardRef<CardProps, "div">(
       backgroundColor="white"
       zIndex="modal"
       {...boxProps}
-      className={DRAG_HANDLER_SELECTOR}
+      className={`${DRAG_HANDLER_SELECTOR} ${className ? className : ''}`}
     >
       <Flex justifyContent="center" cursor="move">
         <Box

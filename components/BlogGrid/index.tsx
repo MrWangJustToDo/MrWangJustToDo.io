@@ -7,31 +7,23 @@ import {
   GRID_ROW_HEIGHT,
 } from "config/gridLayout";
 import { GetBlogListQuery } from "graphql/generated";
+import { useGetResponseList } from "hooks/useGetResponseList";
 import { memo } from "react";
-import { Layout } from "react-grid-layout";
 import { momentTo } from "utils/time";
 
-const BLOG_GRID_COLS = 3;
-const BLOG_GRID_HEIGHT = 16;
-
-const generateDataGrid = (index: number): Partial<Layout> => {
-  return {
-    x: Math.floor(index % 3),
-    y: Math.floor(index / 3) * BLOG_GRID_HEIGHT,
-    w: 1,
-    h: BLOG_GRID_HEIGHT + index * 10,
-  };
-};
+const BLOG_GRID_COLS = { lg: 3, md: 2, sm: 1, xs: 1, xxs: 1 };
 
 const _BlogGrid = ({
   data,
 }: {
   data: GetBlogListQuery["repository"]["issues"]["nodes"];
 }) => {
+  const layouts = useGetResponseList(data);
   return (
     <StyledReactGridLayout
       className="layout"
       cols={BLOG_GRID_COLS}
+      layouts={layouts}
       rowHeight={GRID_ROW_HEIGHT}
       draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
       draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
@@ -42,7 +34,7 @@ const _BlogGrid = ({
           index
         ) => {
           return (
-            <Card key={id + index} data-grid={generateDataGrid(index)}>
+            <Card key={id + index}>
               <Text fontSize="22" fontWeight="medium" title={title}>
                 <Text as="span" fontWeight="medium">
                   {index + 1}

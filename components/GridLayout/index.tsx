@@ -1,6 +1,6 @@
-import RGL, { WidthProvider } from "react-grid-layout";
+import { WidthProvider, Responsive } from "react-grid-layout";
 import { styled } from "@chakra-ui/react";
 
-const ReactGridLayout = WidthProvider(RGL);
+const ReactGridLayout = WidthProvider(Responsive);
 
 export const StyledReactGridLayout = styled(ReactGridLayout);

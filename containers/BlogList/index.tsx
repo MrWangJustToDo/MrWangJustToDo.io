@@ -56,13 +56,8 @@ const _BlogList = () => {
         </Text>
       </Box>
       <Divider marginY="2" />
-      <Box overflow="auto">
-        <BlogGrid
-          data={data.repository.issues.nodes.reduce(
-            (p, c) => p.concat(c).concat(c).concat(c).concat(c).concat(c),
-            []
-          )}
-        />
+      <Box overflow="auto" paddingRight="2">
+        <BlogGrid data={data.repository.issues.nodes} />
       </Box>
     </Flex>
   );
