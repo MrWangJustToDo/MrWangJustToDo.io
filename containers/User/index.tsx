@@ -9,31 +9,34 @@ import {
   Flex,
   Spinner,
   Text,
-  Tooltip,
   useToast,
 } from "@chakra-ui/react";
+import { Follower } from "components/Follower";
 import { GetViewerDocument } from "graphql/generated";
-import React from "react";
+import React, { memo } from "react";
 
-export const User = () => {
+const ITEM_FOLLOWER = 10;
+
+const _User = () => {
+  const open = useToast();
+
   const { data, loading, error } = useQuery(GetViewerDocument, {
     variables: {
-      first: 10,
+      first: ITEM_FOLLOWER,
     },
   });
 
-  const open = useToast();
-
-  if (loading)
+  if (loading) {
     return (
       <Center>
         <Spinner />
       </Center>
     );
+  }
 
   if (error) {
     open({
-      title: "Get Error",
+      title: "Get Author Error",
       description: error.message,
       status: "error",
     });
@@ -55,6 +58,9 @@ export const User = () => {
           {data.viewer.email}
         </Text>
       </Flex>
+      <Text fontSize="x-small">
+        Join At: {new Date(data.viewer.createdAt).toLocaleString()}
+      </Text>
       <Divider marginY="2" />
       <Flex justifyContent="space-between">
         <Flex flexDirection="column" alignItems="center">
@@ -64,32 +70,15 @@ export const User = () => {
           {data.viewer.followers.nodes.map(
             ({ login, name, avatarUrl, id, email, bioHTML }, index) => {
               return (
-                <Tooltip
+                <Follower
                   key={id}
-                  label={
-                    <Box>
-                      <Text as="span">{name || login}</Text>
-                      {email && (
-                        <Flex alignItems="center">
-                          <EmailIcon /> <Text marginLeft="1">{email}</Text>
-                        </Flex>
-                      )}
-                      {bioHTML && (
-                        <Box dangerouslySetInnerHTML={{ __html: bioHTML }} />
-                      )}
-                    </Box>
-                  }
-                  backgroundColor="CaptionText"
-                  borderRadius="4"
-                  placement="right"
-                  hasArrow
-                >
-                  <Avatar
-                    src={avatarUrl}
-                    border="2px solid white"
-                    marginTop={index !== 0 ? "-1.5" : "0"}
-                  />
-                </Tooltip>
+                  id={id}
+                  isFirst={index === 0}
+                  name={name || login}
+                  email={email}
+                  bioHTML={bioHTML}
+                  avatarUrl={avatarUrl}
+                />
               );
             }
           )}
@@ -100,13 +89,16 @@ export const User = () => {
             top following
           </Text>
           {data.viewer.following.nodes.map(
-            ({ login, name, avatarUrl, id }, index) => {
+            ({ login, name, avatarUrl, id, email, bioHTML }, index) => {
               return (
-                <Avatar
+                <Follower
                   key={id}
-                  src={avatarUrl}
-                  border="2px solid white"
-                  marginTop={index !== 0 ? "-1.5" : "0"}
+                  id={id}
+                  isFirst={index === 0}
+                  name={name || login}
+                  email={email}
+                  bioHTML={bioHTML}
+                  avatarUrl={avatarUrl}
                 />
               );
             }
@@ -116,3 +108,5 @@ export const User = () => {
     </Flex>
   );
 };
+
+export const User = memo(_User);

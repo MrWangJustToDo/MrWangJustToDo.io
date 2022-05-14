@@ -61,20 +61,17 @@ function useHead<T>(
 
 function useBody<T>(
   bodyCellRender: ColumnBodyCellRender<T>[],
-  rowProps: RowProps<T> = {},
-  stickyRows?: number
+  rowProps: RowProps<T> = {}
 ) {
   const renderRef = useRef<{
     bodyCellRender: ColumnBodyCellRender<T>[];
     rowProps: RowProps<T>;
-    stickyRows?: number;
-  }>({ bodyCellRender, rowProps, stickyRows });
-  renderRef.current = { bodyCellRender, rowProps, stickyRows };
+  }>({ bodyCellRender, rowProps });
+  renderRef.current = { bodyCellRender, rowProps };
   return useCallback(({ dataSource }: { dataSource: T[] }) => {
     const {
       bodyCellRender,
       rowProps: { commonRow, tbodyRow, genTbodyRow },
-      stickyRows,
     } = renderRef.current;
     return (
       <Tbody>
@@ -88,14 +85,9 @@ function useBody<T>(
             : {};
 
           return (
-            <Tr
-              key={rowIndex}
-              layerStyle="tableRow"
-              {...trProps}
-              {...dynamicProps}
-            >
+            <Tr key={rowIndex} {...trProps} {...dynamicProps}>
               {bodyCellRender.map((CellRender, colIndex) =>
-                CellRender({ rowData, rowIndex, colIndex, stickyRows })
+                CellRender({ rowData, rowIndex, colIndex })
               )}
             </Tr>
           );
@@ -115,8 +107,7 @@ export function useChildren<T>(
   children?:
     | ReactElement<any, (p: any) => ReactElement | null>
     | ReactElement<any, (p: any) => ReactElement | null>[],
-  rowProps?: RowProps<T>,
-  stickyRows?: number
+  rowProps?: RowProps<T>
 ) {
   const headCellRenderTemp: ColumnHeadCellRender[][] = [];
   const bodyCellRenderTemp: ColumnBodyCellRender<T>[] = [];
@@ -220,7 +211,7 @@ export function useChildren<T>(
   });
 
   const Head = useHead(headCellRenderTemp, rowProps);
-  const Body = useBody(bodyCellRenderTemp, rowProps, stickyRows);
+  const Body = useBody(bodyCellRenderTemp, rowProps);
 
   // NOTE it is necessary to memo this render function, because we invoke this function as render Element
   const Content = useCallback(

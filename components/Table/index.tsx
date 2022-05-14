@@ -10,7 +10,6 @@ import { SorterContext, useSorter } from "./useSorter";
 
 export function Table<T>({
   dataSource,
-  stickyDataSource,
   sorter,
   pagination,
   noResultText: _noResultText,
@@ -26,15 +25,14 @@ export function Table<T>({
   const { innerSorter, onSort, sortedRows } = useSorter(
     sorter,
     dataSource,
-    stickyDataSource,
     afterSorting
   );
   const { skeletonRows, skeletonVisible } = useSkeleton(
-    dataSource || stickyDataSource,
+    dataSource,
     skeletonRowCount
   );
 
-  const ChildRender = useChildren(children, rowProps, stickyDataSource?.length);
+  const ChildRender = useChildren(children, rowProps);
 
   return (
     <SorterContext.Provider
@@ -54,8 +52,8 @@ export function Table<T>({
         {!skeletonVisible &&
           sortedRows.length === 0 &&
           (CustomNoResult ? <CustomNoResult /> : noResultText)}
-        {!!pagination && <Pagination {...pagination} />}
       </Box>
+      {!!pagination && <Pagination {...pagination} />}
     </SorterContext.Provider>
   );
 }

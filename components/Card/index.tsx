@@ -1,28 +1,47 @@
-import { forwardRef } from "@chakra-ui/react";
+import { forwardRef, Flex } from "@chakra-ui/react";
 import { Box, BoxProps } from "components/Box";
+import {
+  DISABLE_DRAG_HANDLER_SELECTOR,
+  DRAG_HANDLER_SELECTOR,
+} from "config/gridLayout";
 
-export const Card = forwardRef<BoxProps, "div">(
-  ({ children, ...boxProps }, ref) => (
+interface CardProps extends BoxProps {
+  disableOverflow?: boolean;
+}
+
+export const Card = forwardRef<CardProps, "div">(
+  ({ children, disableOverflow, ...boxProps }, ref) => (
     <Box
-      borderRadius="md"
-      border="1px"
-      borderColor="gray.200"
-      padding="2"
       ref={ref}
-      backgroundColor="white"
+      border="1px"
       boxShadow="md"
-      position="relative"
+      borderRadius="md"
+      borderColor="gray.200"
+      backgroundColor="white"
       zIndex="modal"
       {...boxProps}
+      className={DRAG_HANDLER_SELECTOR}
     >
+      <Flex justifyContent="center" cursor="move">
+        <Box
+          as="span"
+          width="8"
+          height="1"
+          backgroundColor="gray.300"
+          borderRadius="full"
+          marginY="2"
+        />
+      </Flex>
       <Box
-        overflow="auto"
+        overflow={disableOverflow ? "initial" : "auto"}
         width="100%"
-        height="100%"
+        height="calc(100% - var(--chakra-space-6))"
+        paddingX="2"
         sx={{
           scrollbarWidth: "none",
           scrollbarColor: "transparent",
         }}
+        className={DISABLE_DRAG_HANDLER_SELECTOR}
       >
         {children}
       </Box>

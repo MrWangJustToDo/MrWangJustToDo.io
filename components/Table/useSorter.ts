@@ -10,7 +10,6 @@ export const SorterContext = createContext<{
 export function useSorter<T>(
   sorter?: Sorter<T>,
   dataSource?: T[],
-  stickyDataSource: T[] = [],
   afterSorting?: () => void
 ) {
   const [innerSorter, setInnerSorter] = useState<Sorter<T>>({
@@ -38,8 +37,8 @@ export function useSorter<T>(
       tempRows.sort(innerSorter.genCompareFn?.(innerSorter));
       afterSorting && afterSorting();
     }
-    return [...stickyDataSource, ...tempRows];
-  }, [dataSource, innerSorter, stickyDataSource, afterSorting]);
+    return tempRows;
+  }, [dataSource, innerSorter, afterSorting]);
 
   return {
     innerSorter,

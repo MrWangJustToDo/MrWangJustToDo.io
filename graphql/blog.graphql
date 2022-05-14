@@ -1,0 +1,35 @@
+query getBlogList(
+  $name: String!
+  $owner: String!
+  $first: Int!
+  $after: String
+  $before: String
+) {
+  repository(name: $name, owner: $owner) {
+    id
+    issues(first: $first, after: $after, before: $before) {
+      nodes {
+        id
+        author {
+          login
+          avatarUrl
+        }
+        createdAt
+        publishedAt
+        updatedAt
+        state
+        title
+        body
+        bodyText
+        bodyHTML
+      }
+      pageInfo {
+        endCursor
+        startCursor
+        hasNextPage
+        hasPreviousPage
+      }
+      totalCount
+    }
+  }
+}

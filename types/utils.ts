@@ -16,3 +16,9 @@ interface KeyMap {
 }
 
 export type { Cancel, Delay, TimeoutMap, RejectMap, KeyMap };
+/* moment */
+interface TimeToString {
+  (props: Date | string): string;
+}
+
+export type { TimeToString };

@@ -36,13 +36,7 @@ const CellRender = <T extends {}>({
   }
 
   return (
-    <Td
-      paddingX="2"
-      fontSize={{ base: "12px", md: "14px" }}
-      fontWeight="medium"
-      {...restProps}
-      {...cellProps}
-    >
+    <Td fontWeight="medium" {...restProps} {...cellProps}>
       {typeof Render === "function"
         ? Render({
             dataIndex: dataIndex || ("" as keyof T),
@@ -76,24 +70,12 @@ export function Cell<T>({
   if (_showSkeleton) {
     if (Skeleton)
       return (
-        <Td
-          paddingX="2"
-          fontSize={{ base: "12px", md: "14px" }}
-          fontWeight="medium"
-          {...restProps}
-          {...cellProps}
-        >
+        <Td fontWeight="medium" {...restProps} {...cellProps}>
           <Skeleton rowIndex={rowIndex} colIndex={colIndex} />
         </Td>
       );
     return (
-      <Td
-        paddingX="2"
-        fontSize={{ base: "12px", md: "14px" }}
-        fontWeight="medium"
-        {...restProps}
-        {...cellProps}
-      >
+      <Td fontWeight="medium" {...restProps} {...cellProps}>
         <DefaultSkeleton width="80%" height="24px" />
       </Td>
     );

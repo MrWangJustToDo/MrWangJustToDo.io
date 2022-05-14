@@ -285,7 +285,6 @@ export type RowProps<T> = {
 export type TableProps<T> = {
   rowProps?: RowProps<T>;
   dataSource?: T[];
-  stickyDataSource?: T[];
   sorter?: Sorter<T>;
   pagination?: PaginationProps;
   noResultText?: string;
