@@ -21,13 +21,20 @@ export default function Home() {
       >
         <Card
           key={`a-${h}`}
-          data-grid={{ x: 0, y: 2, w: 3, minH: 10, h, isBounded: true }}
+          data-grid={{
+            x: 0,
+            y: 2,
+            w: 3,
+            h,
+            minW: 2,
+            minH: h / 2,
+          }}
         >
           <User />
         </Card>
         <Card
           key={`b-${h}`}
-          data-grid={{ x: 3, y: 2, w: 9, minH: 10, h, isBounded: true }}
+          data-grid={{ x: 3, y: 2, w: 9, h, minH: h, minW: 5 }}
         ></Card>
       </StyledReactGridLayout>
     </Container>

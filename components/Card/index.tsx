@@ -15,7 +15,9 @@ export const Card = forwardRef<BoxProps, "div">(
       zIndex="modal"
       {...boxProps}
     >
-      {children}
+      <Box overflow="auto" width="100%" height="100%">
+        {children}
+      </Box>
     </Box>
   )
 );

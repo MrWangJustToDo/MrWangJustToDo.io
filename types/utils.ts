@@ -1,6 +1,3 @@
-import { IncomingHttpHeaders } from "http";
-import { AxiosRequestConfig, Method } from "axios";
-
 /* delay */
 interface Cancel {
   (key: string): void;

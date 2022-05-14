@@ -16,5 +16,14 @@ query getViewer($first: Int = 10) {
         email
       }
     }
+    following(first: $first) {
+      nodes {
+        id
+        avatarUrl
+        name
+        login
+        email
+      }
+    }
   }
 }

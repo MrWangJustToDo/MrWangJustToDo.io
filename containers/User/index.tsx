@@ -48,7 +48,46 @@ export const User = () => {
           {data.viewer.email}
         </Text>
       </Flex>
-      <Flex></Flex>
+      <Divider marginY="2" />
+      <Flex justifyContent="space-between">
+        <Flex flexDirection="column" alignItems="center">
+          <Text textTransform="capitalize" fontSize="sm" marginBottom="2">
+            top flowers
+          </Text>
+          {data.viewer.followers.nodes.map(
+            ({ login, name, avatarUrl, id }, index) => {
+              return (
+                <Avatar
+                  key={id}
+                  name={name || login}
+                  src={avatarUrl}
+                  border="2px solid white"
+                  marginTop={index !== 0 ? "-1.5" : "0"}
+                />
+              );
+            }
+          )}
+        </Flex>
+        <Box borderLeft="1px" borderColor="gray.100" />
+        <Flex flexDirection="column" alignItems="center">
+          <Text textTransform="capitalize" fontSize="sm" marginBottom="2">
+            top following
+          </Text>
+          {data.viewer.following.nodes.map(
+            ({ login, name, avatarUrl, id }, index) => {
+              return (
+                <Avatar
+                  key={id}
+                  name={name || login}
+                  src={avatarUrl}
+                  border="2px solid white"
+                  marginTop={index !== 0 ? "-1.5" : "0"}
+                />
+              );
+            }
+          )}
+        </Flex>
+      </Flex>
     </Flex>
   );
 };
