@@ -1,4 +1,3 @@
-import { useBreakpointValue } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { Layout } from "react-grid-layout";
 
@@ -13,6 +12,7 @@ const _generateFunction =
       y: Math.floor(index / width) * BLOG_GRID_HEIGHT,
       w: 1,
       h: BLOG_GRID_HEIGHT + index * 10,
+      minH: 10,
     };
   };
 

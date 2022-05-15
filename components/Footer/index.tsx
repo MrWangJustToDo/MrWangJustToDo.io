@@ -4,7 +4,7 @@ import { AiFillHeart } from "react-icons/ai";
 
 export const Footer = () => {
   return (
-    <Flex marginY="6" justifyContent="center">
+    <Flex marginY="6" marginBottom="9" justifyContent="center">
       <Text
         fontSize={{ base: "medium", md: "xl" }}
         fontWeight="semibold"

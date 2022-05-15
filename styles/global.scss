@@ -10,7 +10,6 @@
 /* 块/段落引用 */
 .typo blockquote {
   position: relative;
-  color: #999;
   font-weight: 400;
   border-left: 1px solid #1abc9c;
   padding-left: 1em;
@@ -92,11 +91,6 @@
   bottom: -0.25em;
 }
 
-/* 让链接在 hover 状态下显示下划线 */
-.typo a {
-  color: #1abc9c;
-}
-
 .typo a:hover {
   text-decoration: underline;
 }
@@ -107,7 +101,6 @@
 
 .typo a:hover {
   border-bottom-color: #555;
-  color: #555;
   text-decoration: none;
 }
 
@@ -136,21 +129,6 @@
   margin: 0 5px;
 }
 
-/* 代码片断 */
-/* .typo pre,
-.typo code,
-.typo pre tt {
-  font-family: Courier, "Courier New", monospace;
-}
-
-.typo pre {
-  background: #f8f8f8;
-  border: 1px solid #ddd;
-  padding: 1em 1.5em;
-  display: block;
-  -webkit-overflow-scrolling: touch;
-} */
-
 /* 一致化 horizontal rule */
 .typo hr {
   border: none;
@@ -165,13 +143,11 @@
 /* 图片说明 */
 .typo figcaption {
   font-size: 0.9em;
-  color: #888;
 }
 
 .typo strong,
 .typo b {
   font-weight: bold;
-  color: #000;
 }
 
 /* 可拖动文件添加拖动手势 */
@@ -238,7 +214,6 @@ blockquote {
 .typo h5,
 .typo h6 {
   font-weight: 100;
-  color: #000;
   line-height: 1.35;
 }
 
@@ -330,7 +305,6 @@ blockquote {
 .typo table caption {
   border: 1px solid #ddd;
   padding: 0.5em 1em;
-  color: #666;
 }
 
 .typo table th,
@@ -358,7 +332,6 @@ blockquote {
 .typo em,
 .typo legend,
 .typo caption {
-  color: #000;
   font-weight: inherit;
 }
 
@@ -380,4 +353,65 @@ blockquote {
 /* Responsive images */
 .typo img {
   max-width: 100%;
+}
+
+.d-inline-block {
+  display: inline-block;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.border-right {
+  border-right: 1px solid #ccc;
+}
+
+.pr-2 {
+  padding-right: var(--chakra-sizes-2);
+}
+
+.mr-2 {
+  margin-right: var(--chakra-sizes-2);
+}
+
+.border-dark {
+  border-color: var(--chakra-colors-cardBorderColor);
+}
+
+.bg-dark {
+  background-color: var(--chakra-colors-cardBackgroundColor);
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.w-100 {
+  width: 100vw;
+}
+
+.mb-2 {
+  margin-bottom: var(--chakra-sizes-2);
+}
+
+.position-absolute {
+  position: absolute;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #ccc;
+}
+
+.rounded {
+  border-radius: 0.4em;
+  overflow: hidden;
+}
+
+.text-info {
+  color: var(--chakra-colors-green-300);
 }

@@ -1,3 +1,15 @@
+fragment pageInfoFragment on PageInfo {
+  endCursor
+  startCursor
+  hasNextPage
+  hasPreviousPage
+}
+
+fragment authorFragment on Actor {
+  login
+  avatarUrl
+}
+
 query getBlogList(
   $name: String!
   $owner: String!
@@ -14,22 +26,57 @@ query getBlogList(
           login
           avatarUrl
         }
+        number
         createdAt
         publishedAt
         updatedAt
         state
         title
-        body
-        bodyText
         bodyHTML
       }
       pageInfo {
-        endCursor
-        startCursor
-        hasNextPage
-        hasPreviousPage
+        ...pageInfoFragment
       }
       totalCount
+    }
+  }
+}
+
+query getSingleBlog(
+  $name: String!
+  $owner: String!
+  $number: Int!
+  $first: Int = 10
+) {
+  repository(name: $name, owner: $owner) {
+    id
+    issue(number: $number) {
+      author {
+        login
+        avatarUrl
+      }
+      id
+      body
+      title
+      number
+      createdAt
+      publishedAt
+      updatedAt
+      comments(first: $first) {
+        nodes {
+          author {
+            ...authorFragment
+          }
+          body
+          createdAt
+          updatedAt
+          viewerDidAuthor
+        }
+        pageInfo {
+          ...pageInfoFragment
+        }
+        totalCount
+      }
     }
   }
 }

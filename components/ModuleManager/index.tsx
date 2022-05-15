@@ -1,0 +1,38 @@
+import { useBreakpointValue } from "@chakra-ui/react";
+import {
+  OverlayArrayContext,
+  OverlayCloseContext,
+  OverlayOpenContext,
+  useOverlaysProps,
+} from "hooks/useOverlay";
+import { useMemo } from "react";
+import { DesktopOverlay } from "./DesktopOverlay";
+import { MobileOverlay } from "./MobileOverlay";
+
+export const ModuleManager = ({
+  children,
+}: {
+  children: JSX.Element | JSX.Element[];
+}) => {
+  const { overlays, open, close } = useOverlaysProps();
+  const overlaysObj = useBreakpointValue(
+    useMemo(
+      () => ({
+        base: { mobile: overlays, desktop: [] },
+        md: { mobile: [], desktop: overlays },
+      }),
+      [overlays]
+    )
+  );
+  return (
+    <OverlayArrayContext.Provider value={overlaysObj}>
+      <OverlayCloseContext.Provider value={close}>
+        <OverlayOpenContext.Provider value={open}>
+          {children}
+          <MobileOverlay />
+          <DesktopOverlay />
+        </OverlayOpenContext.Provider>
+      </OverlayCloseContext.Provider>
+    </OverlayArrayContext.Provider>
+  );
+};

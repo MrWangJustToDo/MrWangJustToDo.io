@@ -22,3 +22,20 @@ interface TimeToString {
 }
 
 export type { TimeToString };
+
+/* dom */
+type Arguments =
+  | string
+  | string[]
+  | (() => string)[]
+  | (() => string)
+  | (() => string[]);
+
+interface TransformArray {
+  (args: Arguments[]): string[];
+}
+interface GetClass {
+  (...args: Arguments[]): string;
+}
+
+export type { TransformArray, GetClass };

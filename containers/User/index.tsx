@@ -57,13 +57,13 @@ const _User = () => {
       <Divider marginY="2" />
       <Icon as={AiOutlineGithub} fontSize="xl" />
       <Text fontWeight="semibold">{data.viewer.login}</Text>
-      <Flex alignItems="center" marginTop="1">
-        <Icon as={AiOutlineMail} color="gray.600" />
-        <Text fontSize="small" color="gray.600" marginLeft="2">
+      <Flex alignItems="center" marginTop="1" color="lightTextColor">
+        <Icon as={AiOutlineMail} />
+        <Text fontSize="small" marginLeft="2">
           {data.viewer.email}
         </Text>
       </Flex>
-      <Text fontSize="x-small" color="gray.800" marginY="1">
+      <Text fontSize="x-small" marginY="1">
         {momentTo(data.viewer.createdAt)}
       </Text>
       <Divider marginY="2" />

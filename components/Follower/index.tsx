@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/react";
 import { GetViewerQuery } from "graphql/generated";
 import { memo } from "react";
 import { Follower } from "./Item";

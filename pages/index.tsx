@@ -1,7 +1,6 @@
 import { Container, useTheme } from "@chakra-ui/react";
 import { Card } from "components/Card";
 import { StyledReactGridLayout } from "components/GridLayout";
-import { Header } from "components/Header";
 import { User } from "containers/User";
 import { BlogList } from "containers/BlogList";
 import {
@@ -9,8 +8,8 @@ import {
   DRAG_HANDLER_SELECTOR,
   GRID_ROW_HEIGHT,
 } from "config/gridLayout";
+import { CONTAINER_WIDTH } from "config/container";
 
-const CONTAINER_WIDTH = 1580;
 const GRID_COLS = { lg: 12, md: 12, sm: 12, xs: 2, xxs: 2 };
 const GRID_LAYOUTS = {
   lg: [
@@ -50,19 +49,18 @@ const GRID_LAYOUTS = {
     },
   ],
   xs: [
-    { i: "a", x: 0, y: 0, w: 2, h: 20, minW: 1 },
-    { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2 },
+    { i: "a", x: 0, y: 0, w: 2, h: 20, minW: 1, minH: 10 },
+    { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2, minH: 30 },
   ],
   xxs: [
-    { i: "a", x: 0, y: 0, w: 2, h: 10, minW: 1 },
-    { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2 },
+    { i: "a", x: 0, y: 0, w: 2, h: 10, minW: 1, minH: 10 },
+    { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2, minH: 30 },
   ],
 };
 
 export default function Home() {
   return (
     <Container maxWidth={CONTAINER_WIDTH}>
-      <Header />
       <StyledReactGridLayout
         className="layout"
         cols={GRID_COLS}

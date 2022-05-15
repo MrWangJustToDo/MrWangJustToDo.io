@@ -7,6 +7,7 @@ import {
   Icon,
   VStack,
   StackDivider,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { Hover } from "components/Hover";
 import { AiOutlineMail, AiOutlineUser } from "react-icons/ai";
@@ -27,12 +28,13 @@ export const Follower = ({
   avatarUrl,
   bioHTML,
 }: FollowerProps) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Hover>
       <Tooltip
         label={
           <VStack
-            divider={<StackDivider />}
+            divider={<StackDivider borderColor="cardBorderColor" />}
             alignItems="flex-start"
             spacing="1"
           >
@@ -51,6 +53,7 @@ export const Follower = ({
             {bioHTML && <Box dangerouslySetInnerHTML={{ __html: bioHTML }} />}
           </VStack>
         }
+        isOpen={isOpen}
         borderRadius="4"
         placement="right"
         boxShadow="md"
@@ -59,6 +62,10 @@ export const Follower = ({
       >
         <Avatar
           src={avatarUrl}
+          onTouchStart={onOpen}
+          onTouchEnd={onClose}
+          onMouseEnter={onOpen}
+          onMouseLeave={onClose}
           border="4px solid white"
           boxShadow="md"
           marginTop={!isFirst ? "-3" : "0"}
