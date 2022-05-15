@@ -28,7 +28,6 @@ const _BlogGrid = ({
       draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
     >
       {data.map((p, index) => {
-        console.log(p)
         return (
           <Card key={p.id + index}>
             <Item {...p} />

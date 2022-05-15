@@ -90,7 +90,6 @@ export const Mobile = ({ overlayId }: { overlayId: string }) => {
   useEffectOnce(() => {
     applyOverlay(overlayId, true);
     return () => {
-      console.log("fgfg");
       applyOverlay(overlayId, false);
     };
   });
