@@ -5,12 +5,8 @@ import {
   DRAG_HANDLER_SELECTOR,
 } from "config/gridLayout";
 
-interface CardProps extends BoxProps {
-  disableOverflow?: boolean;
-}
-
-export const Card = forwardRef<CardProps, "div">(
-  ({ children, disableOverflow, className, ...boxProps }, ref) => {
+export const Card = forwardRef<BoxProps, "div">(
+  ({ children, className, ...boxProps }, ref) => {
     return (
       <Box
         ref={ref}
@@ -34,11 +30,9 @@ export const Card = forwardRef<CardProps, "div">(
         </Flex>
         <Divider marginBottom="2" />
         <Box
-          overflow={disableOverflow ? "initial" : "auto"}
           width="100%"
+          overflow="hidden"
           height="calc(100% - var(--chakra-space-9))"
-          paddingLeft="2"
-          paddingRight={disableOverflow ? "2" : "4"}
           sx={{
             scrollbarWidth: "none",
             scrollbarColor: "transparent",

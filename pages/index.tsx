@@ -72,7 +72,7 @@ export default function Home() {
         <Card key="a">
           <User />
         </Card>
-        <Card key="b" disableOverflow>
+        <Card key="b">
           <BlogList />
         </Card>
       </StyledReactGridLayout>

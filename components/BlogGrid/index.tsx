@@ -21,8 +21,9 @@ const _BlogGrid = ({
   return (
     <StyledReactGridLayout
       className="layout"
-      cols={BLOG_GRID_COLS}
+      overflowX="hidden"
       layouts={layouts}
+      cols={BLOG_GRID_COLS}
       rowHeight={GRID_ROW_HEIGHT}
       draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
       draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}

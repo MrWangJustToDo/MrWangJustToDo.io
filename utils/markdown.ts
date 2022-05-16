@@ -15,7 +15,7 @@ const mark = new Mark({
           ignoreIllegals: true,
         }).value;
         const transformArr = transformValue.split(/\n/).slice(0, -1);
-        const minWidth = String(transformArr.length).length - 0.4;
+        const minWidth = String(transformArr.length).length - 0.2;
         const html = transformArr.reduce(
           (p: string, c: string, idx: number) =>
             `${p}<span class='d-inline-block text-center border-right pr-2 mr-2 border-dark' style='min-width: ${minWidth}em; line-height: 1.5'>${
@@ -27,7 +27,7 @@ const mark = new Mark({
             <div class='position-absolute w-100 border-bottom border-dark' style='left: 0'></div>
           </div>`
         );
-        return `<pre class="rounded position-relative"><code class="hljs ${lang} p-2" style='font-size: 16px'>${html}</code></pre>`;
+        return `<pre class="rounded position-relative"><code class="hljs ${lang} p-2">${html}</code></pre>`;
       } catch (__) {}
     }
     return (

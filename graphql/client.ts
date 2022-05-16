@@ -45,11 +45,13 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const cache = new InMemoryCache();
+
 function createApolloClient() {
   return new ApolloClient({
     ssrMode: typeof window === "undefined",
     link: from([onErrorLink, authLink, httpLink]),
-    cache: new InMemoryCache(),
+    cache,
   });
 }
 

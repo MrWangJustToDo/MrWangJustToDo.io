@@ -13,6 +13,7 @@ import { mark } from "utils/markdown";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "config/source";
 import { GetSingleBlogDocument, GetSingleBlogQuery } from "graphql/generated";
 import { momentTo } from "utils/time";
+import { useOverlaysClose } from "hooks/useOverlay";
 
 const RenderWrapper = ({
   data,
@@ -27,8 +28,10 @@ const RenderWrapper = ({
 export const DetailModal = ({
   id,
   Render,
+  showLoading = false,
 }: {
   id: string;
+  showLoading?: boolean;
   Render: ({ data }: { data: GetSingleBlogQuery }) => JSX.Element;
 }) => {
   const open = useToast();
@@ -42,7 +45,7 @@ export const DetailModal = ({
     skip: id === undefined,
   });
 
-  if (loading) {
+  if (loading && showLoading) {
     return (
       <Center>
         <Spinner />
@@ -66,6 +69,7 @@ export const DetailModal = ({
 export const DetailModalBody = ({ id }: { id: string }) => (
   <DetailModal
     id={id}
+    showLoading
     Render={({ data }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const rendered = useMemo(
@@ -74,7 +78,11 @@ export const DetailModalBody = ({ id }: { id: string }) => (
       );
 
       return (
-        <div className="typo" dangerouslySetInnerHTML={{ __html: rendered }} />
+        <Box
+          className="typo"
+          fontSize={{ base: "sm", lg: "md" }}
+          dangerouslySetInnerHTML={{ __html: rendered }}
+        />
       );
     }}
   />
@@ -86,7 +94,7 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
     Render={({ data }) => {
       return (
         <Box>
-          <Text as="h1" fontSize="2xl">
+          <Text as="h1" fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
             {data?.repository?.issue?.title}
           </Text>
           <Flex marginTop="2" alignItems="center">

@@ -47,7 +47,7 @@ const _User = () => {
   }
 
   return (
-    <Flex flexDirection="column" padding="3">
+    <Flex flexDirection="column" padding="3" height="100%">
       <Box padding="2">
         <Avatar name={data.viewer.name} src={data.viewer.avatarUrl} size="xl">
           <AvatarBadge bg="green.500" boxSize="0.8em" />
@@ -67,22 +67,24 @@ const _User = () => {
         {momentTo(data.viewer.createdAt)}
       </Text>
       <Divider marginY="2" />
-      <Flex justifyContent="space-between">
-        <Flex flexDirection="column" alignItems="center">
-          <Flex alignItems="center" marginBottom="3">
-            <Text textTransform="capitalize" fontSize="sm">
-              followers :
-            </Text>
+      <Flex overflow="auto" flexDirection="column">
+        <Flex justifyContent="space-between" marginBottom="2">
+          <Flex flexDirection="column" alignItems="center">
+            <Flex alignItems="center" marginBottom="3">
+              <Text textTransform="capitalize" fontSize="sm">
+                followers :
+              </Text>
+            </Flex>
+            <Followers data={data.viewer.followers.nodes} />
           </Flex>
-          <Followers data={data.viewer.followers.nodes} />
-        </Flex>
-        <Flex flexDirection="column" alignItems="center">
-          <Flex alignItems="center" marginBottom="3">
-            <Text textTransform="capitalize" fontSize="sm">
-              following :
-            </Text>
+          <Flex flexDirection="column" alignItems="center">
+            <Flex alignItems="center" marginBottom="3">
+              <Text textTransform="capitalize" fontSize="sm">
+                following :
+              </Text>
+            </Flex>
+            <Followers data={data.viewer.following.nodes} />
           </Flex>
-          <Followers data={data.viewer.following.nodes} />
         </Flex>
       </Flex>
     </Flex>

@@ -2,7 +2,7 @@ import { useOverlaysOpen } from "hooks/useOverlay";
 import { omit } from "lodash-es";
 import { useRouter } from "next/router";
 import React, { memo, useEffect } from "react";
-import { DetailModal, DetailModalBody, DetailModalHeader } from "./DetailModal";
+import { DetailModalBody, DetailModalHeader } from "./DetailModal";
 
 const _BlogModal = () => {
   const { query, push } = useRouter();
