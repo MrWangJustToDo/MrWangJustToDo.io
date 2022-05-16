@@ -1,3 +1,4 @@
+import { BLOG_BASE } from "config/source";
 import { useOverlaysOpen } from "hooks/useOverlay";
 import { omit } from "lodash-es";
 import { useRouter } from "next/router";
@@ -10,6 +11,8 @@ const _BlogModal = () => {
   const blogId = query.detailId;
   const isModalOpen = query.overlay === "open";
 
+  console.log(blogId, isModalOpen, query);
+
   useEffect(() => {
     if (isModalOpen && blogId !== undefined) {
       open({
@@ -19,7 +22,7 @@ const _BlogModal = () => {
         body: <DetailModalBody id={blogId as string} />,
         closeHandler: () =>
           push({
-            pathname: "/",
+            pathname: process.env.NODE_ENV === "development" ? "/" : BLOG_BASE,
             query: {
               ...omit(query, ["overlay", "detailId"]),
             },

@@ -15,6 +15,7 @@ import { Hover } from "components/Hover";
 import { useMemo } from "react";
 import { markNOLineNumber } from "utils/markdown";
 import { VscLinkExternal } from "react-icons/vsc";
+import { BLOG_BASE } from "config/source";
 
 export const Item = (
   props: GetBlogListQuery["repository"]["issues"]["nodes"][0]
@@ -47,7 +48,8 @@ export const Item = (
               aria-label="detail"
               onClick={() => {
                 push({
-                  pathname: "/",
+                  pathname:
+                    process.env.NODE_ENV === "development" ? "/" : BLOG_BASE,
                   query: {
                     ...query,
                     overlay: "open",
