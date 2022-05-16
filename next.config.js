@@ -3,5 +3,5 @@ module.exports = {
   reactStrictMode: true,
   // Use the prefix in production and not development.
   assetPrefix: isProd ? "/MrWangJustToDo.io/" : "",
-  basePath: isProd ? "/MrWangJustToDo.io/" : "",
+  basePath: isProd ? "/MrWangJustToDo.io" : "",
 };
