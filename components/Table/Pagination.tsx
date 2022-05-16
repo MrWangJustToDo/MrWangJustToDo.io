@@ -1,5 +1,5 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
-import { Box, Button, ButtonProps, Flex } from "@chakra-ui/react";
+import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import { Box, Button, ButtonProps, Flex, Icon } from "@chakra-ui/react";
 
 import { PaginationProps } from "./type";
 import { usePagination, usePaginationBar } from "./usePaginationController";
@@ -44,7 +44,7 @@ export const Pagination = ({
       {hasPrePage && (
         <Navigator
           aria-label="Prev page"
-          leftIcon={<ChevronLeftIcon />}
+          leftIcon={<Icon as={AiOutlineLeft} />}
           onClick={() => {
             onChange(page - 1);
           }}
@@ -57,7 +57,7 @@ export const Pagination = ({
       {hasNextPage && (
         <Navigator
           aria-label="Next page"
-          rightIcon={<ChevronRightIcon />}
+          rightIcon={<Icon as={AiOutlineRight} />}
           onClick={() => {
             onChange(page + 1);
           }}
@@ -167,9 +167,9 @@ export const PaginationBar = ({
               }-page-button`}
             >
               {navigate < 0 ? (
-                <ChevronLeftIcon {...chevronStyles} />
+                <Icon {...chevronStyles} as={AiOutlineLeft} />
               ) : (
-                <ChevronRightIcon {...chevronStyles} />
+                <Icon {...chevronStyles} as={AiOutlineRight} />
               )}
             </BarNavigator>
           );
