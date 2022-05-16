@@ -1,5 +1,4 @@
 import { useToast } from "@chakra-ui/react";
-import { BLOG_BASE } from "config/source";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 
@@ -14,7 +13,7 @@ export default function Index() {
       status: "error",
     });
     push({
-      pathname: process.env.NODE_ENV === "development" ? "/" : BLOG_BASE,
+      pathname: "/",
     });
   }, [open, push]);
 
