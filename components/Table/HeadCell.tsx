@@ -1,5 +1,5 @@
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
-import { Box, Flex, Th, Tooltip } from "@chakra-ui/react";
+import { Box, Flex, Th, Tooltip, Icon, IconButton } from "@chakra-ui/react";
+import { AiOutlineDown, AiOutlineUp } from "react-icons/ai";
 import { useCallback, useContext, useMemo } from "react";
 
 import { HeadCellProps, HeadCellRender, Sorter, SortOrder } from "./type";
@@ -130,14 +130,14 @@ export function HeadCell<T>({
     >
       {content}
       <Flex transform="scale(0.7)" marginStart="2px" flexDirection="column">
-        <TriangleUpIcon
-          as="button"
+        <IconButton
+          icon={<Icon as={AiOutlineUp} />}
           aria-label="Sort ascend"
           fontSize="xx-small"
           color={getColor(SortOrder.Asc)}
         />
-        <TriangleDownIcon
-          as="button"
+        <IconButton
+          icon={<Icon as={AiOutlineDown} />}
           aria-label="Sort descend"
           fontSize="xx-small"
           color={getColor(SortOrder.Desc)}
