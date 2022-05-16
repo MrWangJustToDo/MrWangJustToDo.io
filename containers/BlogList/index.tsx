@@ -3,7 +3,11 @@ import { Center, Flex, Spinner, useToast, Box } from "@chakra-ui/react";
 import { BlogGrid } from "components/BlogGrid";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "config/source";
 import { BlogModal } from "containers/BlogModal";
-import { GetBlogListDocument } from "graphql/generated";
+import {
+  GetBlogListDocument,
+  IssueOrderField,
+  OrderDirection,
+} from "graphql/generated";
 import { useGetListParams } from "hooks/useGetListParams";
 import React, { memo } from "react";
 
@@ -19,6 +23,10 @@ const _BlogList = () => {
       first: ITEM_PER_PAGE,
       after,
       before,
+      orderBy: {
+        field: IssueOrderField.CreatedAt,
+        direction: OrderDirection.Desc,
+      },
     },
   });
 

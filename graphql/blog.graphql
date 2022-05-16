@@ -16,10 +16,22 @@ query getBlogList(
   $first: Int!
   $after: String
   $before: String
+  $labels: [String!]
+  $orderBy: IssueOrder
+  $states: [IssueState!]
+  $filterBy: IssueFilters
 ) {
   repository(name: $name, owner: $owner) {
     id
-    issues(first: $first, after: $after, before: $before) {
+    issues(
+      first: $first
+      after: $after
+      before: $before
+      labels: $labels
+      orderBy: $orderBy
+      states: $states
+      filterBy: $filterBy
+    ) {
       nodes {
         id
         author {
@@ -32,7 +44,8 @@ query getBlogList(
         updatedAt
         state
         title
-        bodyHTML
+        body
+        bodyText
       }
       pageInfo {
         ...pageInfoFragment

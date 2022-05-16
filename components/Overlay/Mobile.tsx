@@ -162,7 +162,9 @@ export const Mobile = ({ overlayId }: { overlayId: string }) => {
           />
         </Box>
         <Divider />
-        <Box backgroundColor="cardBackgroundColor">{head}</Box>
+        <Box backgroundColor="cardBackgroundColor" padding="3.5">
+          {head}
+        </Box>
         <Box
           flex="1"
           padding="3.5"
@@ -172,7 +174,9 @@ export const Mobile = ({ overlayId }: { overlayId: string }) => {
         >
           {body}
         </Box>
-        <Box backgroundColor="cardBackgroundColor">{foot}</Box>
+        <Box backgroundColor="cardBackgroundColor" padding="3.5">
+          {foot}
+        </Box>
       </motion.div>
     </motion.div>
   );

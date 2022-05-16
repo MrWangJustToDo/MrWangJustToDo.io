@@ -37,10 +37,10 @@ export const Desktop = ({ overlayId }: { overlayId: string }) => {
     >
       <ModalOverlay />
       <ModalContent className={className}>
-        <ModalHeader>{head}</ModalHeader>
+        {head && <ModalHeader>{head}</ModalHeader>}
         <ModalCloseButton />
         <ModalBody>{body}</ModalBody>
-        <ModalFooter>{foot}</ModalFooter>
+        {foot && <ModalFooter>{foot}</ModalFooter>}
       </ModalContent>
     </Modal>
   );

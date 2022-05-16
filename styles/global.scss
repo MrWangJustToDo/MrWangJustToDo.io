@@ -52,6 +52,12 @@
   font-weight: 400;
 }
 
+.typo code {
+  font-size: 0.95em;
+  margin-inline-start: 0.15em;
+  margin-inline-end: 0.15em;
+}
+
 /* 去掉列表前的标识, li 会继承，大部分网站通常用列表来很多内容，所以应该当去 */
 .typo ul,
 .typo ol {
@@ -91,22 +97,13 @@
   bottom: -0.25em;
 }
 
-.typo a:hover {
-  text-decoration: underline;
-}
-
-.typo a {
-  border-bottom: 1px solid #1abc9c;
-}
-
-.typo a:hover {
-  border-bottom-color: #555;
-  text-decoration: none;
-}
-
 /* 默认不显示下划线，保持页面简洁 */
-.typo ins,
 .typo a {
+  color: #0969DA;
+}
+
+.typo ins,
+.typo a, .typo a:hover {
   text-decoration: none;
 }
 
@@ -183,7 +180,7 @@
 
 /* 提供 serif 版本的字体设置: iOS 下中文自动 fallback 到 sans-serif */
 .typo .serif {
-  font-family: Palatino, Optima, Georgia, serif;
+  // font-family: Palatino, Optima, Georgia, serif;
 }
 
 /* 保证块/段落之间的空白隔行 */
@@ -213,7 +210,7 @@ blockquote {
 .typo h4,
 .typo h5,
 .typo h6 {
-  font-weight: 100;
+  font-weight: 300;
   line-height: 1.35;
 }
 

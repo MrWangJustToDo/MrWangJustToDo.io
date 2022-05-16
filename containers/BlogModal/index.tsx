@@ -2,7 +2,7 @@ import { useOverlaysOpen } from "hooks/useOverlay";
 import { omit } from "lodash-es";
 import { useRouter } from "next/router";
 import React, { memo, useEffect } from "react";
-import { DetailModal } from "./DetailModal";
+import { DetailModal, DetailModalBody, DetailModalHeader } from "./DetailModal";
 
 const _BlogModal = () => {
   const { query, push } = useRouter();
@@ -15,7 +15,8 @@ const _BlogModal = () => {
       open({
         key: blogId as string,
         id: blogId as string,
-        body: <DetailModal id={blogId as string} />,
+        head: <DetailModalHeader id={blogId as string} />,
+        body: <DetailModalBody id={blogId as string} />,
         closeHandler: () =>
           push({
             pathname: "/",
