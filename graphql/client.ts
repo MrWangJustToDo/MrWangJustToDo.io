@@ -10,12 +10,13 @@ import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
 import { log } from "utils/log";
 import { isBrowser } from "utils/env";
+import { BLOG_API } from "config/source";
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
-const httpLink = new HttpLink({ uri: "https://api.github.com/graphql" });
+const httpLink = new HttpLink({ uri: BLOG_API });
 
-const onErrorLink = onError(({ networkError, graphQLErrors, forward }) => {
+const onErrorLink = onError(({ networkError, graphQLErrors }) => {
   if (networkError) {
     log(
       `network error \n[message]: ${networkError.message}  \n[stack]: ${networkError.stack}`,

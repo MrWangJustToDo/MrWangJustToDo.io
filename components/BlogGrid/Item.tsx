@@ -14,6 +14,7 @@ import { momentTo } from "utils/time";
 import { Hover } from "components/Hover";
 import { useMemo } from "react";
 import { markNOLineNumber } from "utils/markdown";
+import { VscLinkExternal } from "react-icons/vsc";
 
 export const Item = (
   props: GetBlogListQuery["repository"]["issues"]["nodes"][0]
@@ -24,6 +25,7 @@ export const Item = (
     body,
     publishedAt,
     author: { avatarUrl, login },
+    url,
   } = props;
   const { push, query } = useRouter();
   const renderedBody = useMemo(() => markNOLineNumber.render(body), [body]);
@@ -56,6 +58,17 @@ export const Item = (
               variant="link"
               size="sm"
               icon={<Icon as={AiOutlineRight} userSelect="none" />}
+            />
+          </Hover>
+          <Hover>
+            <IconButton
+              size="sm"
+              variant="link"
+              aria-label="open"
+              icon={<Icon as={VscLinkExternal} />}
+              onClick={() => {
+                window.open(url, "_blank");
+              }}
             />
           </Hover>
         </Flex>

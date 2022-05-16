@@ -2,18 +2,18 @@ import React, { useMemo } from "react";
 import { useQuery } from "@apollo/client";
 import {
   Box,
-  Center,
-  Spinner,
   useToast,
   Text,
   Flex,
   Avatar,
+  SkeletonText,
+  SkeletonCircle,
 } from "@chakra-ui/react";
 import { mark } from "utils/markdown";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "config/source";
 import { GetSingleBlogDocument, GetSingleBlogQuery } from "graphql/generated";
 import { momentTo } from "utils/time";
-import { useOverlaysClose } from "hooks/useOverlay";
+import { Comment } from "components/Comment";
 
 const RenderWrapper = ({
   data,
@@ -28,10 +28,10 @@ const RenderWrapper = ({
 export const DetailModal = ({
   id,
   Render,
-  showLoading = false,
+  RenderLoading,
 }: {
   id: string;
-  showLoading?: boolean;
+  RenderLoading: JSX.Element;
   Render: ({ data }: { data: GetSingleBlogQuery }) => JSX.Element;
 }) => {
   const open = useToast();
@@ -45,12 +45,8 @@ export const DetailModal = ({
     skip: id === undefined,
   });
 
-  if (loading && showLoading) {
-    return (
-      <Center>
-        <Spinner />
-      </Center>
-    );
+  if (loading && RenderLoading) {
+    return RenderLoading;
   }
 
   if (error) {
@@ -66,34 +62,52 @@ export const DetailModal = ({
   return <RenderWrapper data={data} Render={Render} />;
 };
 
+const DetailModalBodyLoading = (
+  <Box padding="2">
+    <SkeletonText marginTop="4" noOfLines={8} />
+  </Box>
+);
+
 export const DetailModalBody = ({ id }: { id: string }) => (
   <DetailModal
     id={id}
-    showLoading
+    RenderLoading={DetailModalBodyLoading}
     Render={({ data }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const rendered = useMemo(
-        () => mark.render(data?.repository?.issue?.body),
+        () => mark.render(data?.repository?.issue?.body || ""),
         [data]
       );
 
       return (
-        <Box
-          className="typo"
-          fontSize={{ base: "sm", lg: "md" }}
-          dangerouslySetInnerHTML={{ __html: rendered }}
-        />
+        <>
+          <Box
+            className="typo"
+            fontSize={{ base: "sm", lg: "md" }}
+            dangerouslySetInnerHTML={{ __html: rendered }}
+          />
+          <Comment data={data.repository.issue.comments.nodes} />
+        </>
       );
     }}
   />
 );
 
+const DetailModalHeaderLoading = (
+  <Box padding="2">
+    <SkeletonText noOfLines={1} />
+    <SkeletonCircle marginY="3" />
+    <SkeletonText noOfLines={1} spacing="4" />
+  </Box>
+);
+
 export const DetailModalHeader = ({ id }: { id: string }) => (
   <DetailModal
     id={id}
+    RenderLoading={DetailModalHeaderLoading}
     Render={({ data }) => {
       return (
-        <Box>
+        <Box paddingRight="3em">
           <Text as="h1" fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
             {data?.repository?.issue?.title}
           </Text>

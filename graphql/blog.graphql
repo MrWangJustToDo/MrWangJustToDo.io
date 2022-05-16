@@ -1,17 +1,5 @@
 # import * from '../schema.graphql'
 
-fragment pageInfoFragment on PageInfo {
-  endCursor
-  startCursor
-  hasNextPage
-  hasPreviousPage
-}
-
-fragment authorFragment on Actor {
-  login
-  avatarUrl
-}
-
 query getBlogList(
   $name: String!
   $owner: String!
@@ -48,9 +36,13 @@ query getBlogList(
         title
         body
         bodyText
+        url
       }
       pageInfo {
-        ...pageInfoFragment
+        endCursor
+        startCursor
+        hasNextPage
+        hasPreviousPage
       }
       totalCount
     }
@@ -81,7 +73,8 @@ query getSingleBlog(
         nodes {
           id
           author {
-            ...authorFragment
+            login
+            avatarUrl
           }
           body
           createdAt
@@ -89,7 +82,10 @@ query getSingleBlog(
           viewerDidAuthor
         }
         pageInfo {
-          ...pageInfoFragment
+          endCursor
+          startCursor
+          hasNextPage
+          hasPreviousPage
         }
         totalCount
       }

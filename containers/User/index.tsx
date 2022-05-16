@@ -4,11 +4,12 @@ import {
   Avatar,
   AvatarBadge,
   Box,
-  Center,
   Divider,
   Flex,
   Icon,
-  Spinner,
+  Skeleton,
+  SkeletonCircle,
+  SkeletonText,
   Text,
   useToast,
 } from "@chakra-ui/react";
@@ -31,9 +32,11 @@ const _User = () => {
 
   if (loading) {
     return (
-      <Center>
-        <Spinner />
-      </Center>
+      <Box padding="3">
+        <SkeletonCircle />
+        <Skeleton marginY="2" />
+        <SkeletonText noOfLines={6} marginY="2" />
+      </Box>
     );
   }
 
