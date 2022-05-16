@@ -53,7 +53,7 @@ const GRID_LAYOUTS = {
     { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2, minH: 30 },
   ],
   xxs: [
-    { i: "a", x: 0, y: 0, w: 2, h: 10, minW: 1, minH: 10 },
+    { i: "a", x: 0, y: 0, w: 2, h: 10, minW: 2, minH: 10 },
     { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2, minH: 30 },
   ],
 };

@@ -52,8 +52,8 @@ const _User = () => {
         <Avatar name={data.viewer.name} src={data.viewer.avatarUrl} size="xl">
           <AvatarBadge bg="green.500" boxSize="0.8em" />
         </Avatar>
-        <Chart marginTop="2" marginLeft="-2.5" marginRight="-2.5" />
       </Box>
+      <Chart marginY="2" />
       <Divider marginY="2" />
       <Icon as={AiOutlineGithub} fontSize="xl" />
       <Text fontWeight="semibold">{data.viewer.login}</Text>

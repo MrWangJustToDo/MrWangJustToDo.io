@@ -1,4 +1,4 @@
-import { Box, BoxProps, Image } from "@chakra-ui/react";
+import { Box, BoxProps, Image, Skeleton } from "@chakra-ui/react";
 import { usePinch } from "hooks/usePinch";
 
 export const Chart = (props: BoxProps) => {
@@ -10,6 +10,7 @@ export const Chart = (props: BoxProps) => {
         src="http://ghchart.rshah.org/MrWangJustToDo"
         alt="chart"
         cursor="zoom-in"
+        objectFit="cover"
       />
     </Box>
   );
