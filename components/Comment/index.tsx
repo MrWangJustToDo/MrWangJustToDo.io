@@ -9,7 +9,7 @@ export const Comment = ({
 }) => {
   return (
     <>
-      <Divider marginY="2" />
+      {data.length > 0 && <Divider marginY="2" />}
       {data.map((p) => (
         <Item key={p.id} {...p} />
       ))}

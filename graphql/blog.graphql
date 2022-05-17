@@ -3,7 +3,8 @@
 query getBlogList(
   $name: String!
   $owner: String!
-  $first: Int!
+  $first: Int
+  $last: Int
   $after: String
   $before: String
   $labels: [String!]
@@ -15,6 +16,7 @@ query getBlogList(
     id
     issues(
       first: $first
+      last: $last
       after: $after
       before: $before
       labels: $labels

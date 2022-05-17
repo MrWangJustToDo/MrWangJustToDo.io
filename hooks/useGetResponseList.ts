@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Layout } from "react-grid-layout";
 
-export const BLOG_GRID_HEIGHT = 8;
+export const BLOG_GRID_HEIGHT = 10;
 
 const _generateFunction =
   (width: number) =>
@@ -12,7 +12,7 @@ const _generateFunction =
       y: Math.floor(index / width),
       w: 1,
       h: BLOG_GRID_HEIGHT + Math.floor(dataLength / 60),
-      minH: 10,
+      minH: BLOG_GRID_HEIGHT,
     };
   };
 

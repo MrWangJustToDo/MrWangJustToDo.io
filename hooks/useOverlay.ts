@@ -26,18 +26,19 @@ export interface OverlayProps {
   applyOverlay?: (id: string, isOpen?: boolean) => void;
   closeHandler?: () => void;
   closeComplete?: () => void;
-  clearAll?: () => void;
 }
 
 interface UseOverlayOpenType {
-  (props: OverlayProps): void;
+  (props: Omit<OverlayProps, "key">): void;
 }
 
 let count = 0;
 
 export const OverlayOpenContext = createContext<UseOverlayOpenType>(() => {});
 
-export const OverlayCloseContext = createContext<() => void>(() => {});
+export const OverlayCloseContext = createContext<
+  ({ modalId, closeAll }?: { modalId?: string; closeAll?: boolean }) => void
+>(() => {});
 
 export const OverlayArrayContext = createContext<{
   desktop: Array<OverlayProps>;
@@ -48,7 +49,6 @@ export const useOverlaysProps = () => {
   const [overlays, setOverlays] = useState<OverlayProps[]>([]);
   const overlaysRef = useRef(overlays);
   const forceUpdate = useUpdate();
-  const clearAll = useCallback(() => setOverlays([]), []);
   overlaysRef.current = overlays;
   const applyOverlayStyle = useCallback((key: string, isOpen) => {
     delay(
@@ -76,45 +76,52 @@ export const useOverlaysProps = () => {
     );
   }, []);
   const open = useCallback(
-    (props: OverlayProps) => {
+    (props: Omit<OverlayProps, "key">) => {
+      const overlayProps = props as OverlayProps;
       const allOverlay = overlaysRef.current;
       const lastOpen = findLast(allOverlay, (n) => n.showState);
-      props.key = `__overlay_${count++}`;
-      props.height = lastOpen ? lastOpen.height - 4 : 90;
-      props.showState = true;
-      const closeHandler = props.closeHandler;
-      const closeComplete = props.closeComplete;
-      props.closeHandler = () => {
-        props.showState = false;
+      overlayProps.key = `__overlay_${count++}`;
+      overlayProps.height = lastOpen ? lastOpen.height - 4 : 90;
+      overlayProps.showState = true;
+      const closeHandler = overlayProps.closeHandler;
+      const closeComplete = overlayProps.closeComplete;
+      overlayProps.closeHandler = () => {
+        overlayProps.showState = false;
         closeHandler && closeHandler();
         forceUpdate();
       };
-      props.closeComplete = () => {
+      overlayProps.closeComplete = () => {
         closeComplete && closeComplete();
-        setOverlays((last) => last.filter((n) => n !== props));
+        setOverlays((last) => last.filter((n) => n !== overlayProps));
       };
-      const _clearAll = props.clearAll;
-      props.clearAll = () => {
-        _clearAll && _clearAll();
-        clearAll();
-      };
-      props.applyOverlay = applyOverlayStyle;
+      overlayProps.applyOverlay = applyOverlayStyle;
       setOverlays((last) => {
         return [
-          ...last.filter((n) => n.id !== props.id).filter((n) => n.showState),
-          props,
+          ...last
+            .filter((n) => n.id !== overlayProps.id)
+            .filter((n) => n.showState),
+          overlayProps,
         ];
       });
     },
-    [clearAll, forceUpdate, applyOverlayStyle]
+    [forceUpdate, applyOverlayStyle]
   );
-  const close = useCallback(() => {
-    const allOverlay = overlaysRef.current;
-    const currentTopOverlay = findLast(allOverlay, (n) => n.showState);
-    if (currentTopOverlay && currentTopOverlay.closeHandler) {
-      currentTopOverlay.closeHandler();
-    }
-  }, []);
+  const close = useCallback(
+    (props?: { modalId?: string; closeAll?: boolean }) => {
+      const allOverlay = overlaysRef.current;
+      const { modalId, closeAll } = props || {};
+      if (modalId !== undefined) {
+        const currentOverlay = allOverlay.find((n) => n.id === modalId);
+        currentOverlay?.closeHandler();
+      } else if (closeAll) {
+        allOverlay.filter((n) => n.showState).forEach((n) => n?.closeHandler());
+      } else {
+        const currentTopOverlay = findLast(allOverlay, (n) => n.showState);
+        currentTopOverlay?.closeHandler();
+      }
+    },
+    []
+  );
   return { overlays, open, close };
 };
 

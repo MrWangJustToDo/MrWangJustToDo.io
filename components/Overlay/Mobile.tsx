@@ -6,15 +6,13 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
-import { useOverlayArray, useOverlaysClose } from "hooks/useOverlay";
-import { useCallback, useMemo, useRef } from "react";
+import { OverlayProps } from "hooks/useOverlay";
+import { useCallback, useRef } from "react";
 import { useEffectOnce, useWindowSize } from "react-use";
 
-export const Mobile = ({ overlayId }: { overlayId: string }) => {
-  const { mobile: overlays } = useOverlayArray();
-  const closeTopOverlay = useOverlaysClose();
-
+export const Mobile = (props: OverlayProps) => {
   const {
+    id,
     head,
     body,
     foot,
@@ -23,11 +21,7 @@ export const Mobile = ({ overlayId }: { overlayId: string }) => {
     closeComplete,
     closeHandler,
     applyOverlay,
-  } =
-    useMemo(
-      () => overlays.find((overlay) => overlay.key === overlayId),
-      [overlayId, overlays]
-    ) || {};
+  } = props;
 
   const isOpenRef = useRef(false);
 
@@ -88,16 +82,16 @@ export const Mobile = ({ overlayId }: { overlayId: string }) => {
   }, [closeComplete]);
 
   useEffectOnce(() => {
-    applyOverlay(overlayId, true);
+    applyOverlay(id, true);
     return () => {
-      applyOverlay(overlayId, false);
+      applyOverlay(id, false);
     };
   });
 
   return (
     <motion.div
       drag="y"
-      id={overlayId}
+      id={id}
       dragElastic={0}
       onDrag={handleDrag}
       dragMomentum={false}
@@ -111,10 +105,9 @@ export const Mobile = ({ overlayId }: { overlayId: string }) => {
         height="100%"
         left="0"
         right="0"
-        onClick={closeTopOverlay}
+        onClick={closeHandler}
       />
       <motion.div
-        layout
         ref={modalRef}
         style={{
           y,
@@ -127,10 +120,11 @@ export const Mobile = ({ overlayId }: { overlayId: string }) => {
           flexDirection: "column",
           borderRadius: "8px 8px 0 0",
           filter: "drop-shadow(0 0 0.75rem rgba(100, 100, 100, 0.35))",
+          border: "1px solid var(--chakra-colors-cardBorderColor)",
         }}
         initial={{ y: windowHeight }}
         animate={{ y: 0, transition: { type: "tween" } }}
-        exit={{ y: windowHeight }}
+        exit={{ y: windowHeight, transition: { type: "tween" } }}
         className={className}
         onAnimationComplete={animationComplete}
       >
@@ -150,7 +144,7 @@ export const Mobile = ({ overlayId }: { overlayId: string }) => {
               backgroundColor: "var(--chakra-colors-gray-300)",
             }}
           />
-          <Box width="1" />
+          <Box width="0.5" />
           <motion.span
             style={{
               width: "18px",

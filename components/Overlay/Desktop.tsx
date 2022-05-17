@@ -7,12 +7,9 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { useOverlayArray, useOverlaysClose } from "hooks/useOverlay";
-import { useMemo } from "react";
+import { OverlayProps } from "hooks/useOverlay";
 
-export const Desktop = ({ overlayId }: { overlayId: string }) => {
-  const { desktop: overlays } = useOverlayArray();
-  const closeTopOverlay = useOverlaysClose();
+export const Desktop = (props: OverlayProps) => {
   const {
     head,
     body,
@@ -21,18 +18,14 @@ export const Desktop = ({ overlayId }: { overlayId: string }) => {
     className,
     closeComplete,
     closeHandler,
-  } =
-    useMemo(
-      () => overlays.find((overlay) => overlay.key === overlayId),
-      [overlayId, overlays]
-    ) || {};
+  } = props;
 
   return (
     <Modal
       size="3xl"
       isOpen={showState}
       scrollBehavior="inside"
-      onClose={closeTopOverlay}
+      onClose={closeHandler}
       onCloseComplete={closeComplete}
     >
       <ModalOverlay />

@@ -6,6 +6,7 @@ import {
   SimpleGrid,
   SkeletonCircle,
   SkeletonText,
+  Portal,
 } from "@chakra-ui/react";
 import { BlogGrid } from "components/BlogGrid";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "config/source";
@@ -18,12 +19,13 @@ import {
 import { isBrowser } from "utils/env";
 import { useGetListParams } from "hooks/useGetListParams";
 import React, { memo } from "react";
+import { Pagination } from "containers/Pagination";
 
 const ITEM_PER_PAGE = 5;
 
 const _BlogList = () => {
   const open = useToast();
-  const { before, after } = useGetListParams();
+  const { before, after, navDirection = "first" } = useGetListParams();
   const { data, loading, error } = useQuery(GetBlogListDocument, {
     variables: {
       name: isBrowser
@@ -32,7 +34,8 @@ const _BlogList = () => {
       owner: isBrowser
         ? localStorage.getItem("blog_owner") || BLOG_REPOSITORY_OWNER
         : BLOG_REPOSITORY_OWNER,
-      first: ITEM_PER_PAGE,
+      first: navDirection === "first" ? ITEM_PER_PAGE : undefined,
+      last: navDirection === "last" ? ITEM_PER_PAGE : undefined,
       after,
       before,
       orderBy: {
@@ -67,10 +70,20 @@ const _BlogList = () => {
 
   return (
     <Flex flexDirection="column" height="100%">
-      <Box overflow="auto" paddingRight="2">
+      <Box overflow="auto" paddingRight="4">
         <BlogGrid data={data.repository.issues.nodes} />
       </Box>
       <BlogModal />
+      <Portal>
+        <Pagination
+          paginationProps={data.repository.issues.pageInfo}
+          containerProps={{
+            right: "4",
+            bottom: "4",
+            position: "fixed",
+          }}
+        />
+      </Portal>
     </Flex>
   );
 };

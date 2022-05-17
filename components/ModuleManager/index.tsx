@@ -1,4 +1,4 @@
-import { useBreakpointValue } from "@chakra-ui/react";
+import { Portal, useBreakpointValue } from "@chakra-ui/react";
 import {
   OverlayArrayContext,
   OverlayCloseContext,
@@ -29,8 +29,10 @@ export const ModuleManager = ({
       <OverlayCloseContext.Provider value={close}>
         <OverlayOpenContext.Provider value={open}>
           {children}
-          <MobileOverlay />
-          <DesktopOverlay />
+          <Portal>
+            <MobileOverlay />
+            <DesktopOverlay />
+          </Portal>
         </OverlayOpenContext.Provider>
       </OverlayCloseContext.Provider>
     </OverlayArrayContext.Provider>
