@@ -1,19 +1,16 @@
 import { Text, Icon, Link, Flex, Box } from "@chakra-ui/react";
 import { BLOG_SOURCE } from "config/source";
+import { memo } from "react";
 import { AiFillHeart } from "react-icons/ai";
 
-export const Footer = () => {
+const _Footer = () => {
   return (
     <Box textAlign="center">
-      <Flex
-        marginTop="6"
-        justifyContent="center"
-        alignItems="center"
-      >
+      <Flex marginTop="6" justifyContent="center" alignItems="center">
         <Text
           fontSize={{ base: "medium", md: "xl" }}
           fontWeight="semibold"
-          isTruncated
+          noOfLines={1}
           display="flex"
           alignItems="center"
         >
@@ -41,3 +38,5 @@ export const Footer = () => {
     </Box>
   );
 };
+
+export const Footer = memo(_Footer);

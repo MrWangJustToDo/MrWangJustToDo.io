@@ -11,43 +11,34 @@ import {
   SkeletonCircle,
   SkeletonText,
   Text,
-  useToast,
 } from "@chakra-ui/react";
 import { Chart } from "components/Chart";
 import { Followers } from "components/Follower";
 import { GetViewerDocument } from "graphql/generated";
 import React, { memo } from "react";
 import { momentTo } from "utils/time";
+import { ErrorCom } from "components/Error";
 
 const ITEM_FOLLOWER = 10;
 
-const _User = () => {
-  const open = useToast();
+const UserLoading = () => (
+  <Box padding="3">
+    <SkeletonCircle />
+    <Skeleton marginY="2" />
+    <SkeletonText noOfLines={6} marginY="2" />
+  </Box>
+);
 
+const _User = () => {
   const { data, loading, error } = useQuery(GetViewerDocument, {
     variables: {
       first: ITEM_FOLLOWER,
     },
   });
 
-  if (loading) {
-    return (
-      <Box padding="3">
-        <SkeletonCircle />
-        <Skeleton marginY="2" />
-        <SkeletonText noOfLines={6} marginY="2" />
-      </Box>
-    );
-  }
+  if (loading) return <UserLoading />;
 
-  if (error) {
-    open({
-      title: "Get Author Error",
-      description: error.message,
-      status: "error",
-    });
-    return <React.Fragment />;
-  }
+  if (error) return <ErrorCom error={error} />;
 
   return (
     <Flex flexDirection="column" padding="3" height="100%">

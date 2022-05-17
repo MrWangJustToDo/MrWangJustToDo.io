@@ -6,9 +6,10 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
+import { useEffectOnce } from "hooks/useEffectOnce";
 import { OverlayProps } from "hooks/useOverlay";
+import { useWindowSize } from "hooks/useWindowSize";
 import { useCallback, useRef } from "react";
-import { useEffectOnce, useWindowSize } from "react-use";
 
 export const Mobile = (props: OverlayProps) => {
   const {

@@ -5,16 +5,14 @@ export const Hover = forwardRef<BoxProps, "div">(
     return (
       <Box
         ref={ref}
-        transition="transform 0.2s"
-        transformOrigin="center"
         position="relative"
-        sx={{
-          "&:hover": {
-            transform: `scale(1.2, 1.2) ${transform ? transform : ""}`,
-            zIndex: 10,
-          },
-        }}
         transform={transform}
+        transformOrigin="center"
+        transition="transform 0.2s"
+        _hover={{
+          transform: `scale(1.2, 1.2) ${transform ? transform : ""}`,
+          zIndex: "1",
+        }}
         {...props}
       >
         {children}

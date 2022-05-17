@@ -5,10 +5,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useUpdate } from "react-use";
 import { findLast } from "lodash-es";
 import { applyOverlaysStyles, cleanupOverlaysStyles } from "utils/dom";
 import { delay } from "utils/delay";
+import { useUpdate } from "./useUpdate";
 
 const ROOT_BODY = "__next";
 
@@ -18,7 +18,7 @@ export interface OverlayProps {
   id: string;
   key: string;
   head?: React.ReactNode;
-  body: ((closeHandler: () => void) => JSX.Element) | JSX.Element;
+  body: JSX.Element;
   foot?: React.ReactNode;
   height?: number;
   className?: string;

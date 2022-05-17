@@ -1,9 +1,9 @@
-import { Avatar, Box, Flex, Text } from "@chakra-ui/react";
-import { Hover } from "components/Hover";
+import { Box } from "@chakra-ui/react";
+import { Actor } from "components/Actor";
+import { Card } from "components/Card";
 import { GetSingleBlogQuery } from "graphql/generated";
 import { useMemo } from "react";
 import { mark } from "utils/markdown";
-import { momentTo } from "utils/time";
 
 export const Item = (
   props: GetSingleBlogQuery["repository"]["issue"]["comments"]["nodes"][0]
@@ -15,26 +15,23 @@ export const Item = (
   } = props;
   const rendered = useMemo(() => mark.render(body), [body]);
   return (
-    <Box
-      marginY="2"
-      padding="2"
-      border="1px"
-      boxShadow="md"
-      borderRadius="md"
-      borderColor="cardBorderColor"
-    >
-      <Flex alignItems="flex-end">
-        <Avatar src={avatarUrl} name={login} title={login} size="sm" />
-        <Text marginLeft="2" fontSize="small" color="lightTextColor">
-          {momentTo(updatedAt)}
-        </Text>
-      </Flex>
+    <Card marginY="2" padding="2" backgroundColor="initial">
+      <Actor
+        avatarUrl={avatarUrl}
+        login={login}
+        time={updatedAt}
+        alignItems="flex-end"
+        avatarProps={{
+          width: 6,
+          height: 6,
+        }}
+      />
       <Box
         marginTop="3.5"
         className="typo"
         fontSize="small"
         dangerouslySetInnerHTML={{ __html: rendered }}
       />
-    </Box>
+    </Card>
   );
 };

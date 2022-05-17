@@ -1,5 +1,4 @@
-import { RefObject, useCallback, useEffect, useRef } from "react";
-import { useBoolean } from "react-use";
+import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { pinchHelper } from "utils/dom";
 import { Pointer, PointerTracker } from "utils/pointer";
 import { actionHandler } from "utils/action";
@@ -244,9 +243,9 @@ export const usePinch: UsePinchType = <
     forWardCoverRef,
     forWardPinchRef,
   } = props;
-  const [scale, setBoolean] = useBoolean(false);
-  const show = useCallback(() => setBoolean(true), [setBoolean]);
-  const hide = useCallback(() => setBoolean(false), [setBoolean]);
+  const [scale, setScale] = useState(false);
+  const show = useCallback(() => setScale(true), []);
+  const hide = useCallback(() => setScale(false), []);
   const pinchRef = useRef<T>(null);
   const coverRef = useRef<K>(null);
   const scaleRef = useRef<boolean>(false);

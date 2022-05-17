@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/react";
 import { Footer } from "components/Footer";
 import { Head } from "components/Head";
 import { Header } from "components/Header";
@@ -13,7 +12,9 @@ export const Layout = ({ children }: { children: JSX.Element }) => {
           <Header />
         </div>
         <div id="page-content">{children}</div>
-        <div id='page-footer'><Footer /></div>
+        <div id="page-footer">
+          <Footer />
+        </div>
       </ModuleManager>
     </>
   );

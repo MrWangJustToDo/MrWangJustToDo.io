@@ -1,5 +1,4 @@
-import { Container, useTheme } from "@chakra-ui/react";
-import { Card } from "components/Card";
+import { Container } from "@chakra-ui/react";
 import { StyledReactGridLayout } from "components/GridLayout";
 import { User } from "containers/User";
 import { BlogList } from "containers/BlogList";
@@ -9,6 +8,7 @@ import {
   GRID_ROW_HEIGHT,
 } from "config/gridLayout";
 import { CONTAINER_WIDTH } from "config/container";
+import { GridCard } from "components/GridCard";
 
 const GRID_COLS = { lg: 12, md: 12, sm: 12, xs: 2, xxs: 2 };
 const GRID_LAYOUTS = {
@@ -69,12 +69,12 @@ export default function Home() {
         draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
         draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
       >
-        <Card key="a">
+        <GridCard key="a">
           <User />
-        </Card>
-        <Card key="b">
+        </GridCard>
+        <GridCard key="b">
           <BlogList />
-        </Card>
+        </GridCard>
       </StyledReactGridLayout>
     </Container>
   );

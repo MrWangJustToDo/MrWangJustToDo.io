@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Card } from "components/Card";
 import { StyledReactGridLayout } from "components/GridLayout";
-import { useGetResponseList } from "hooks/useGetResponseList";
+import { useGetResponseListLayout } from "hooks/useGetResponseListLayout";
 import { GetBlogListQuery } from "graphql/generated";
 import { Item } from "./Item";
 import {
@@ -9,6 +9,7 @@ import {
   DRAG_HANDLER_SELECTOR,
   GRID_ROW_HEIGHT,
 } from "config/gridLayout";
+import { GridCard } from "components/GridCard";
 
 const BLOG_GRID_COLS = { lg: 3, md: 2, sm: 1, xs: 1, xxs: 1 };
 
@@ -17,7 +18,7 @@ const _BlogGrid = ({
 }: {
   data: GetBlogListQuery["repository"]["issues"]["nodes"];
 }) => {
-  const layouts = useGetResponseList(data);
+  const layouts = useGetResponseListLayout(data);
   return (
     <StyledReactGridLayout
       className="layout"
@@ -30,9 +31,9 @@ const _BlogGrid = ({
     >
       {data.map((p, index) => {
         return (
-          <Card key={p.id + index}>
+          <GridCard key={p.id + index}>
             <Item {...p} />
-          </Card>
+          </GridCard>
         );
       })}
     </StyledReactGridLayout>

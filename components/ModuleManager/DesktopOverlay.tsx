@@ -1,4 +1,4 @@
-import { Box, Portal } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { Desktop } from "components/Overlay";
 import { useOverlayArray } from "hooks/useOverlay";
 

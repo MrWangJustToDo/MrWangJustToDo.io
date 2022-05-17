@@ -20,7 +20,7 @@ const smGenerate = _generateFunction(1);
 const mdGenerate = _generateFunction(2);
 const lgGenerate = _generateFunction(3);
 
-export const useGetResponseList = (
+export const useGetResponseListLayout = (
   items: { id: string; bodyText: string }[]
 ) => {
   return useMemo(() => {

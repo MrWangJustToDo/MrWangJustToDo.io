@@ -1,7 +1,6 @@
 import { useQuery } from "@apollo/client";
 import {
   Flex,
-  useToast,
   Box,
   SimpleGrid,
   SkeletonCircle,
@@ -18,13 +17,24 @@ import {
 } from "graphql/generated";
 import { isBrowser } from "utils/env";
 import { useGetListParams } from "hooks/useGetListParams";
-import React, { memo } from "react";
+import { memo } from "react";
 import { Pagination } from "containers/Pagination";
+import { ErrorCom } from "components/Error";
 
 const ITEM_PER_PAGE = 5;
 
+const BlogListLoading = () => (
+  <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={10} padding="6">
+    {[1, 2, 3, 4, 5].map((i) => (
+      <Box key={i}>
+        <SkeletonCircle marginY="2" />
+        <SkeletonText noOfLines={6} marginY="2" />
+      </Box>
+    ))}
+  </SimpleGrid>
+);
+
 const _BlogList = () => {
-  const open = useToast();
   const { before, after, navDirection = "first" } = useGetListParams();
   const { data, loading, error } = useQuery(GetBlogListDocument, {
     variables: {
@@ -45,28 +55,9 @@ const _BlogList = () => {
     },
   });
 
-  if (loading) {
-    return (
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={10} padding="6">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <Box key={i}>
-            <SkeletonCircle marginY="2" />
-            <SkeletonText noOfLines={6} marginY="2" />
-          </Box>
-        ))}
-      </SimpleGrid>
-    );
-  }
+  if (loading) return <BlogListLoading />;
 
-  if (error) {
-    open({
-      title: "Get Blog Error",
-      description: error.message,
-      status: "error",
-    });
-
-    return <React.Fragment />;
-  }
+  if (error) return <ErrorCom error={error} />;
 
   return (
     <Flex flexDirection="column" height="100%">

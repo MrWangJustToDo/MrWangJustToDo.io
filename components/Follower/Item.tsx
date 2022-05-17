@@ -38,16 +38,18 @@ export const Follower = ({
             alignItems="flex-start"
             spacing="1"
           >
-            <Flex alignItems="center" width='100%'>
+            <Flex alignItems="center" width="100%">
               <Icon as={AiOutlineUser} />
-              <Text fontWeight="semibold" marginLeft="1" isTruncated>
+              <Text fontWeight="semibold" marginLeft="1" noOfLines={1}>
                 {name}
               </Text>
             </Flex>
             {email && (
-              <Flex alignItems="center" width='100%'>
+              <Flex alignItems="center" width="100%">
                 <Icon as={AiOutlineMail} />
-                <Text marginLeft="1" isTruncated>{email}</Text>
+                <Text marginLeft="1" noOfLines={1}>
+                  {email}
+                </Text>
               </Flex>
             )}
             {bioHTML && <Box dangerouslySetInnerHTML={{ __html: bioHTML }} />}
