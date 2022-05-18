@@ -18,12 +18,16 @@ const _BlogModal = () => {
         head: <DetailModalHeader id={blogId as string} />,
         body: <DetailModalBody id={blogId as string} />,
         closeComplete: () =>
-          push({
-            pathname: "/",
-            query: {
-              ...omit(query, ["overlay", "detailId"]),
+          push(
+            {
+              pathname: "/",
+              query: {
+                ...omit(query, ["overlay", "detailId"]),
+              },
             },
-          }),
+            undefined,
+            { scroll: false }
+          ),
       });
     } else {
       close();

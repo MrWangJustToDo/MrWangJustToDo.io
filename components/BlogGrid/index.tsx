@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { Card } from "components/Card";
 import { StyledReactGridLayout } from "components/GridLayout";
 import { useGetResponseListLayout } from "hooks/useGetResponseListLayout";
 import { GetBlogListQuery } from "graphql/generated";

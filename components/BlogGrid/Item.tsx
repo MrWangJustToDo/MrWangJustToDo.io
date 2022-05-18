@@ -20,14 +20,18 @@ const ItemHeader = ({
   const { push, query } = useRouter();
 
   const openModal = () =>
-    push({
-      pathname: "/",
-      query: {
-        ...query,
-        overlay: "open",
-        detailId: detailNumber,
+    push(
+      {
+        pathname: "/",
+        query: {
+          ...query,
+          overlay: "open",
+          detailId: detailNumber,
+        },
       },
-    });
+      undefined,
+      { scroll: false }
+    );
   const openExternal = () => window.open(externalUrl, "_blank");
 
   return (

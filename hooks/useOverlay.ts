@@ -92,16 +92,15 @@ export const useOverlaysProps = () => {
       };
       overlayProps.closeComplete = () => {
         closeComplete && closeComplete();
-        setOverlays((last) => last.filter((n) => n !== overlayProps));
+        setOverlays((last) => {
+          const newAllOverlays = last.filter((n) => n !== overlayProps);
+          return newAllOverlays;
+        });
       };
       overlayProps.applyOverlay = applyOverlayStyle;
       setOverlays((last) => {
-        return [
-          ...last
-            .filter((n) => n.id !== overlayProps.id)
-            .filter((n) => n.showState),
-          overlayProps,
-        ];
+        const newAllOverlays = last.filter((n) => n.showState);
+        return [...newAllOverlays, overlayProps];
       });
     },
     [forceUpdate, applyOverlayStyle]

@@ -11,6 +11,7 @@ import { setContext } from "@apollo/client/link/context";
 import { log } from "utils/log";
 import { isBrowser } from "utils/env";
 import { BLOG_API } from "config/source";
+import { ENABLE_INFINITY_SCROLL } from "config/gridLayout";
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
@@ -46,13 +47,32 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const cache = new InMemoryCache();
+const autoMergeCache = new InMemoryCache({
+  typePolicies: {
+    Repository: {
+      fields: {
+        issues: {
+          keyArgs: false,
+          merge(existing = { nodes: [] }, incoming) {
+            return {
+              ...existing,
+              ...incoming,
+              nodes: [...existing.nodes, ...incoming.nodes],
+            };
+          },
+        },
+      },
+    },
+  },
+});
+
+const plainCache = new InMemoryCache();
 
 function createApolloClient() {
   return new ApolloClient({
     ssrMode: typeof window === "undefined",
     link: from([onErrorLink, authLink, httpLink]),
-    cache,
+    cache: ENABLE_INFINITY_SCROLL ? autoMergeCache : plainCache,
   });
 }
 

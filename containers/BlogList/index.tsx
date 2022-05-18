@@ -6,6 +6,9 @@ import {
   SkeletonCircle,
   SkeletonText,
   Portal,
+  useCallbackRef,
+  Center,
+  Spinner,
 } from "@chakra-ui/react";
 import { BlogGrid } from "components/BlogGrid";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "config/source";
@@ -17,11 +20,12 @@ import {
 } from "graphql/generated";
 import { isBrowser } from "utils/env";
 import { useGetListParams } from "hooks/useGetListParams";
-import { memo } from "react";
+import { memo, useMemo, useRef } from "react";
 import { Pagination } from "containers/Pagination";
 import { ErrorCom } from "components/Error";
+import { throttle } from "lodash-es";
 
-const ITEM_PER_PAGE = 5;
+const ITEM_PER_PAGE = 15;
 
 const BlogListLoading = () => (
   <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={10} padding="6">
@@ -34,24 +38,28 @@ const BlogListLoading = () => (
   </SimpleGrid>
 );
 
+const BASIC_VARIABLE = {
+  name: isBrowser
+    ? localStorage.getItem("blog_name") || BLOG_REPOSITORY
+    : BLOG_REPOSITORY,
+  owner: isBrowser
+    ? localStorage.getItem("blog_owner") || BLOG_REPOSITORY_OWNER
+    : BLOG_REPOSITORY_OWNER,
+  orderBy: {
+    field: IssueOrderField.CreatedAt,
+    direction: OrderDirection.Desc,
+  },
+};
+
 const _BlogList = () => {
   const { before, after, navDirection = "first" } = useGetListParams();
   const { data, loading, error } = useQuery(GetBlogListDocument, {
     variables: {
-      name: isBrowser
-        ? localStorage.getItem("blog_name") || BLOG_REPOSITORY
-        : BLOG_REPOSITORY,
-      owner: isBrowser
-        ? localStorage.getItem("blog_owner") || BLOG_REPOSITORY_OWNER
-        : BLOG_REPOSITORY_OWNER,
+      ...BASIC_VARIABLE,
       first: navDirection === "first" ? ITEM_PER_PAGE : undefined,
       last: navDirection === "last" ? ITEM_PER_PAGE : undefined,
       after,
       before,
-      orderBy: {
-        field: IssueOrderField.CreatedAt,
-        direction: OrderDirection.Desc,
-      },
     },
   });
 
@@ -79,4 +87,62 @@ const _BlogList = () => {
   );
 };
 
+const _BlogListWithInfinityScroll = () => {
+  const ref = useRef<HTMLDivElement>();
+
+  const { data, loading, error, fetchMore } = useQuery(GetBlogListDocument, {
+    variables: {
+      ...BASIC_VARIABLE,
+      first: ITEM_PER_PAGE,
+    },
+  });
+
+  const fetchMoreCallback = useCallbackRef(() => {
+    if (data?.repository?.issues?.pageInfo?.hasNextPage) {
+      fetchMore({
+        variables: { after: data.repository.issues.pageInfo.endCursor },
+      });
+    }
+  }, []);
+
+  const onThrottleScroll = useMemo(
+    () =>
+      throttle(() => {
+        const node = ref.current;
+        if (node) {
+          if (node.scrollTop + node.clientHeight >= node.scrollHeight * 0.85) {
+            fetchMoreCallback();
+          }
+        }
+      }, 200),
+    [fetchMoreCallback]
+  );
+
+  if (loading && !data?.repository?.issues?.nodes?.length)
+    return <BlogListLoading />;
+
+  if (error) return <ErrorCom error={error} />;
+
+  return (
+    <Flex flexDirection="column" height="100%">
+      <Box
+        ref={ref}
+        overflow="auto"
+        paddingRight="4"
+        onScroll={onThrottleScroll}
+      >
+        <BlogGrid data={data.repository.issues.nodes} />
+        {loading && data.repository.issues.nodes.length && (
+          <Center>
+            <Spinner />
+          </Center>
+        )}
+      </Box>
+      <BlogModal />
+    </Flex>
+  );
+};
+
 export const BlogList = memo(_BlogList);
+
+export const BlogGridWithInfinityScroll = memo(_BlogListWithInfinityScroll);
