@@ -9,10 +9,12 @@ import {
   GRID_ROW_HEIGHT,
 } from "config/gridLayout";
 import { GridCard } from "components/GridCard";
+import { Flex, useBreakpointValue } from "@chakra-ui/react";
+import { Card } from "components/Card";
 
 const BLOG_GRID_COLS = { lg: 3, md: 2, sm: 1, xs: 1, xxs: 1 };
 
-const _BlogGrid = ({
+const _BlogGridWithGridLayout = ({
   data,
 }: {
   data: GetBlogListQuery["repository"]["issues"]["nodes"];
@@ -37,6 +39,29 @@ const _BlogGrid = ({
       })}
     </StyledReactGridLayout>
   );
+};
+
+const _BlogGrid = ({
+  data,
+}: {
+  data: GetBlogListQuery["repository"]["issues"]["nodes"];
+}) => {
+  const isMobileWidth = useBreakpointValue({ base: true, md: false });
+  if (isMobileWidth) {
+    return (
+      <Flex flexDirection="column" width="100%" padding="2">
+        {data.map((p, index) => (
+          <Card
+            key={p.id + index}
+            marginTop={index !== 0 ? "3" : "0"}
+          >
+            <Item {...p} />
+          </Card>
+        ))}
+      </Flex>
+    );
+  }
+  return <_BlogGridWithGridLayout data={data} />;
 };
 
 export const BlogGrid = memo(_BlogGrid);

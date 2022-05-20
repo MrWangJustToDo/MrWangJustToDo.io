@@ -1,12 +1,19 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useQuery } from "@apollo/client";
-import { Box, Text, SkeletonText, SkeletonCircle } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  SkeletonText,
+  SkeletonCircle,
+  useCallbackRef,
+} from "@chakra-ui/react";
 import { mark } from "utils/markdown";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "config/source";
 import { GetSingleBlogDocument, GetSingleBlogQuery } from "graphql/generated";
 import { Comment } from "components/Comment";
 import { ErrorCom } from "components/Error";
 import { Actor } from "components/Actor";
+import { throttle } from "lodash-es";
 
 const RenderWrapper = ({
   data,
@@ -18,6 +25,8 @@ const RenderWrapper = ({
   return Render({ data });
 };
 
+const COMMENT_LENGTH = 15;
+
 export const DetailModal = ({
   id,
   Render,
@@ -27,16 +36,50 @@ export const DetailModal = ({
   RenderLoading: () => JSX.Element;
   Render: ({ data }: { data: GetSingleBlogQuery }) => JSX.Element;
 }) => {
-  const { data, loading, error } = useQuery(GetSingleBlogDocument, {
+  const { data, loading, error, fetchMore } = useQuery(GetSingleBlogDocument, {
     variables: {
       name: BLOG_REPOSITORY,
       owner: BLOG_REPOSITORY_OWNER,
       number: Number(id),
+      first: COMMENT_LENGTH,
     },
     skip: id === undefined,
   });
 
-  if (loading) return <RenderLoading />;
+  const fetchMoreCallback = useCallbackRef(() => {
+    if (data?.repository?.issue?.comments?.pageInfo?.hasNextPage) {
+      fetchMore({
+        variables: { after: data.repository.issue.comments.pageInfo.endCursor },
+      });
+    }
+  }, []);
+
+  const onThrottleScroll = useMemo(
+    () =>
+      throttle((e: Event) => {
+        const node = e.target as HTMLDivElement;
+        if (node) {
+          if (node.scrollTop + node.clientHeight >= node.scrollHeight * 0.85) {
+            fetchMoreCallback();
+          }
+        }
+      }, 500),
+    [fetchMoreCallback]
+  );
+
+  useEffect(() => {
+    const scrollElement = document.querySelector(
+      "#modal-scroll-box"
+    ) as HTMLDivElement;
+    if (scrollElement) {
+      scrollElement.addEventListener("scroll", onThrottleScroll);
+      return () =>
+        scrollElement.removeEventListener("scroll", onThrottleScroll);
+    }
+  }, [onThrottleScroll]);
+
+  if (loading && !data?.repository?.issue?.comments?.nodes?.length)
+    return <RenderLoading />;
 
   if (error) return <ErrorCom error={error} />;
 

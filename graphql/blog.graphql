@@ -56,6 +56,7 @@ query getSingleBlog(
   $owner: String!
   $number: Int!
   $first: Int = 10
+  $after: String
 ) {
   repository(name: $name, owner: $owner) {
     id
@@ -71,7 +72,7 @@ query getSingleBlog(
       createdAt
       publishedAt
       updatedAt
-      comments(first: $first) {
+      comments(first: $first, after: $after) {
         nodes {
           id
           author {

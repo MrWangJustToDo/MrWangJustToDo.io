@@ -167,6 +167,7 @@ export const Mobile = (props: OverlayProps) => {
         <Divider />
         <Box
           flex="1"
+          id="modal-scroll-box"
           padding="3.5"
           overflow="auto"
           position="relative"

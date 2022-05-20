@@ -94,7 +94,7 @@ const cleanupRootStyles = (rootId: string) => {
 };
 
 export const applyOverlaysStyles = (ids: string[]) => {
-  ids.reverse().forEach((id, index) => applyRootStyles(id, 12 + index * 2));
+  ids.reverse().forEach((id, index) => applyRootStyles(id, 18 + index * 2));
 };
 
 export const cleanupOverlaysStyles = (ids: string[]) => {

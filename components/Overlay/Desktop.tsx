@@ -32,7 +32,7 @@ export const Desktop = (props: OverlayProps) => {
       <ModalContent className={className}>
         {head && <ModalHeader>{head}</ModalHeader>}
         <ModalCloseButton />
-        <ModalBody>{body}</ModalBody>
+        <ModalBody id="modal-scroll-box">{body}</ModalBody>
         {foot && <ModalFooter>{foot}</ModalFooter>}
       </ModalContent>
     </Modal>
