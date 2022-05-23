@@ -7,7 +7,7 @@ export const Chart = (props: Omit<BoxProps, "children">) => {
     <Box ref={coverRef} {...props}>
       <Image
         ref={targetRef}
-        src="http://ghchart.rshah.org/MrWangJustToDo"
+        src="https://ghchart.rshah.org/MrWangJustToDo"
         alt="chart"
         cursor="zoom-in"
         objectFit="cover"
