@@ -7,6 +7,7 @@ import {
   Divider,
   Flex,
   Icon,
+  Link,
   Skeleton,
   SkeletonCircle,
   SkeletonText,
@@ -51,6 +52,17 @@ const _User = () => {
       <Divider marginY="2" />
       <Icon as={AiOutlineGithub} fontSize="xl" />
       <Text fontWeight="semibold">{data.viewer.login}</Text>
+      <Box fontSize="sm" marginY="2">
+        <Text fontWeight="semibold">Recommend:</Text>
+        <Link
+          target="_blank"
+          color="red.400"
+          href="https://github.com/MrWangJustToDo/MyReact"
+          title="https://github.com/MrWangJustToDo/MyReact"
+        >
+          MyReact & MyReact-SSR
+        </Link>
+      </Box>
       <Flex alignItems="center" marginTop="1" color="lightTextColor">
         <Icon as={AiOutlineMail} />
         <Text fontSize="small" marginLeft="2">
