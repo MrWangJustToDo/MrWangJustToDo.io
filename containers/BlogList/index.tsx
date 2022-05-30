@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { NetworkStatus, useQuery } from "@apollo/client";
 import {
   Flex,
   Box,
@@ -9,6 +9,7 @@ import {
   useCallbackRef,
   Center,
   Spinner,
+  Button,
 } from "@chakra-ui/react";
 import { BlogGrid } from "components/BlogGrid";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "config/source";
@@ -20,7 +21,7 @@ import {
 } from "graphql/generated";
 import { isBrowser } from "utils/env";
 import { useGetListParams } from "hooks/useGetListParams";
-import { memo, useMemo, useRef } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import { Pagination } from "containers/Pagination";
 import { ErrorCom } from "components/Error";
 import { throttle } from "lodash-es";
@@ -90,12 +91,16 @@ const _BlogList = () => {
 const _BlogListWithInfinityScroll = () => {
   const ref = useRef<HTMLDivElement>();
 
-  const { data, loading, error, fetchMore } = useQuery(GetBlogListDocument, {
-    variables: {
-      ...BASIC_VARIABLE,
-      first: ITEM_PER_PAGE,
-    },
-  });
+  const { data, loading, error, fetchMore, refetch, networkStatus } = useQuery(
+    GetBlogListDocument,
+    {
+      variables: {
+        ...BASIC_VARIABLE,
+        first: ITEM_PER_PAGE,
+      },
+      notifyOnNetworkStatusChange: true,
+    }
+  );
 
   const fetchMoreCallback = useCallbackRef(() => {
     if (data?.repository?.issues?.pageInfo?.hasNextPage) {
@@ -118,7 +123,7 @@ const _BlogListWithInfinityScroll = () => {
     [fetchMoreCallback]
   );
 
-  if (loading && !data?.repository?.issues?.nodes?.length)
+  if (loading && networkStatus !== NetworkStatus.fetchMore)
     return <BlogListLoading />;
 
   if (error) return <ErrorCom error={error} />;
@@ -138,6 +143,18 @@ const _BlogListWithInfinityScroll = () => {
           </Center>
         )}
       </Box>
+      <Portal>
+        <Button
+          position="fixed"
+          variant="solid"
+          color="purple.500"
+          bottom="4"
+          right="4"
+          onClick={() => refetch()}
+        >
+          refresh
+        </Button>
+      </Portal>
       <BlogModal />
     </Flex>
   );

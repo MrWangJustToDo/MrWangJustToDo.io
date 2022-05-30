@@ -100,7 +100,7 @@ export function HeadCell<T>({
       : Render;
 
   const arialLabel = `Sort by ${
-    typeof Render === "string" ? Render : dataIndex
+    typeof Render === "string" ? Render : dataIndex.toString()
   }`;
 
   const thContent = sort ? (
