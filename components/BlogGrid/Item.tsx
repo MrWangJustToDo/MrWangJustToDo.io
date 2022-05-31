@@ -1,5 +1,12 @@
 import { useRouter } from "next/router";
-import { Text, Flex, Box, Icon, IconButton, Divider } from "@chakra-ui/react";
+import {
+  Text,
+  Flex,
+  Box,
+  Icon,
+  IconButton,
+  Divider,
+} from "@chakra-ui/react";
 import { AiOutlineRight } from "react-icons/ai";
 import { GetBlogListQuery } from "graphql/generated";
 import { Hover } from "components/Hover";
@@ -35,7 +42,7 @@ const ItemHeader = ({
   const openExternal = () => window.open(externalUrl, "_blank");
 
   return (
-    <Flex justifyContent="space-between" alignItems="baseline">
+    <Flex justifyContent="space-between" alignItems="center">
       <Text
         fontSize={{ base: "18", md: "20", lg: "22" }}
         width="85%"
@@ -45,7 +52,7 @@ const ItemHeader = ({
       >
         {title}
       </Text>
-      <Hover>
+      <Hover display="flex" alignItems="center">
         <IconButton
           aria-label="detail"
           onClick={openModal}
@@ -54,7 +61,7 @@ const ItemHeader = ({
           icon={<Icon as={AiOutlineRight} userSelect="none" />}
         />
       </Hover>
-      <Hover>
+      <Hover display="flex" alignItems="center">
         <IconButton
           size="sm"
           variant="link"

@@ -9,7 +9,7 @@ import {
   GRID_ROW_HEIGHT,
 } from "config/gridLayout";
 import { GridCard } from "components/GridCard";
-import { Box, useBreakpointValue } from "@chakra-ui/react";
+import { SimpleGrid, useBreakpointValue } from "@chakra-ui/react";
 import { Card } from "components/Card";
 
 const BLOG_GRID_COLS = { lg: 3, md: 2, sm: 1, xs: 1, xxs: 1 };
@@ -43,33 +43,26 @@ const _BlogGridWithGridLayout = ({
 
 const _BlogGrid = ({
   data,
+  disableGridLayout = true,
 }: {
   data: GetBlogListQuery["repository"]["issues"]["nodes"];
+  disableGridLayout?: boolean;
 }) => {
   const isMobileWidth = useBreakpointValue({ base: true, md: false });
-  if (isMobileWidth) {
+  if (isMobileWidth || disableGridLayout) {
     return (
-      <Box
+      <SimpleGrid
         width="100%"
         padding="2"
-        sx={{
-          columns: { base: "1 auto", md: "2 auto", lg: "3 auto" },
-          columnGap: "2",
-          breakBefore: "column",
-        }}
+        columns={{ base: 1, md: 2, lg: 3 }}
+        spacing={3}
       >
         {data.map((p, index) => (
-          <Card
-            key={p.id + index}
-            marginTop={index !== 0 ? "3" : "0"}
-            sx={{
-              breakBefore: "column",
-            }}
-          >
+          <Card key={p.id + index} maxHeight="96">
             <Item {...p} />
           </Card>
         ))}
-      </Box>
+      </SimpleGrid>
     );
   }
   return <_BlogGridWithGridLayout data={data} />;

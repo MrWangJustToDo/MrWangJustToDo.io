@@ -1,6 +1,7 @@
 import {
   Avatar,
   AvatarProps,
+  Box,
   Flex,
   FlexProps,
   forwardRef,
@@ -8,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { momentTo } from "utils/time";
 
-interface ActorProps extends Omit<FlexProps, "children"> {
+interface ActorProps extends FlexProps {
   avatarUrl: string;
   login?: string;
   time: string;
@@ -16,19 +17,27 @@ interface ActorProps extends Omit<FlexProps, "children"> {
 }
 
 export const Actor = forwardRef<ActorProps, "div">(
-  ({ avatarUrl, login, time, avatarProps, ...resProps }, ref) => {
+  ({ avatarUrl, login, time, avatarProps, children, ...resProps }, ref) => {
     return (
-      <Flex {...resProps}>
-        <Avatar
-          src={avatarUrl}
-          title={login}
-          name={login}
-          size="sm"
-          {...avatarProps}
-        />
-        <Text fontSize="small" color="lightTextColor" marginLeft="2">
-          {momentTo(time)}
-        </Text>
+      <Flex {...resProps} ref={ref}>
+        <Flex alignItems="center">
+          <Avatar
+            src={avatarUrl}
+            title={login}
+            name={login}
+            size="sm"
+            {...avatarProps}
+          />
+          <Box marginLeft="2">
+            <Text fontWeight="semibold" fontSize="sm">
+              {login}
+            </Text>
+            <Text fontSize="x-small" color="lightTextColor">
+              {momentTo(time)}
+            </Text>
+          </Box>
+        </Flex>
+        {children}
       </Flex>
     );
   }

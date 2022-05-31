@@ -68,14 +68,19 @@ const autoMergeCache = new InMemoryCache({
         comments: {
           keyArgs: false,
           merge(existing = { nodes: [] }, incoming) {
-            const addedNodes = incoming.nodes.filter((node) =>
-              existing.nodes.every((_node) => _node.__ref !== node.__ref)
-            );
-            return {
-              ...existing,
-              ...incoming,
-              nodes: [...existing.nodes, ...addedNodes],
-            };
+            const isList = !!incoming.nodes;
+            if (isList) {
+              const addedNodes = incoming.nodes.filter((node) =>
+                existing.nodes.every((_node) => _node.__ref !== node.__ref)
+              );
+              return {
+                ...existing,
+                ...incoming,
+                nodes: [...existing.nodes, ...addedNodes],
+              };
+            } else {
+              return existing;
+            }
           },
         },
       },

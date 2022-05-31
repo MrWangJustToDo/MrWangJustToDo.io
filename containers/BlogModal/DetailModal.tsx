@@ -1,11 +1,13 @@
 import { useEffect, useMemo } from "react";
-import { useQuery } from "@apollo/client";
+import { NetworkStatus, useApolloClient, useQuery } from "@apollo/client";
 import {
   Box,
   Text,
   SkeletonText,
   SkeletonCircle,
   useCallbackRef,
+  Icon,
+  IconButton,
 } from "@chakra-ui/react";
 import { mark } from "utils/markdown";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "config/source";
@@ -14,6 +16,8 @@ import { Comment } from "components/Comment";
 import { ErrorCom } from "components/Error";
 import { Actor } from "components/Actor";
 import { throttle } from "lodash-es";
+import { AiOutlineReload } from "react-icons/ai";
+import { Hover } from "components/Hover";
 
 const RenderWrapper = ({
   data,
@@ -36,15 +40,19 @@ export const DetailModal = ({
   RenderLoading: () => JSX.Element;
   Render: ({ data }: { data: GetSingleBlogQuery }) => JSX.Element;
 }) => {
-  const { data, loading, error, fetchMore } = useQuery(GetSingleBlogDocument, {
-    variables: {
-      name: BLOG_REPOSITORY,
-      owner: BLOG_REPOSITORY_OWNER,
-      number: Number(id),
-      first: COMMENT_LENGTH,
-    },
-    skip: id === undefined,
-  });
+  const { data, loading, error, fetchMore, networkStatus } = useQuery(
+    GetSingleBlogDocument,
+    {
+      variables: {
+        name: BLOG_REPOSITORY,
+        owner: BLOG_REPOSITORY_OWNER,
+        number: Number(id),
+        first: COMMENT_LENGTH,
+      },
+      skip: id === undefined,
+      notifyOnNetworkStatusChange: true,
+    }
+  );
 
   const fetchMoreCallback = useCallbackRef(() => {
     if (data?.repository?.issue?.comments?.pageInfo?.hasNextPage) {
@@ -78,7 +86,7 @@ export const DetailModal = ({
     }
   }, [onThrottleScroll]);
 
-  if (loading && !data?.repository?.issue?.comments?.nodes?.length)
+  if (loading && networkStatus !== NetworkStatus.fetchMore)
     return <RenderLoading />;
 
   if (error) return <ErrorCom error={error} />;
@@ -126,6 +134,14 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
       </Box>
     )}
     Render={({ data }) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const client = useApolloClient();
+
+      const refetch = () =>
+        client.refetchQueries({
+          include: [GetSingleBlogDocument],
+        });
+
       return (
         <Box paddingRight="3em">
           <Text as="h1" fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
@@ -137,7 +153,17 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
             time={data?.repository?.issue?.publishedAt}
             login={data?.repository?.issue?.author?.login}
             avatarUrl={data?.repository?.issue?.author?.avatarUrl}
-          />
+          >
+            <Hover marginLeft="2" display="flex" alignItems="center">
+              <IconButton
+                size="sm"
+                variant="link"
+                aria-label="reload"
+                onClick={() => refetch()}
+                icon={<Icon as={AiOutlineReload} />}
+              />
+            </Hover>
+          </Actor>
         </Box>
       );
     }}

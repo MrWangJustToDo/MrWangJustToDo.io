@@ -10,6 +10,7 @@ import {
   Center,
   Spinner,
   Button,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { BlogGrid } from "components/BlogGrid";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "config/source";
@@ -89,6 +90,8 @@ const _BlogList = () => {
 };
 
 const _BlogListWithInfinityScroll = () => {
+  const [disableGridLayout, setDisableGridLayout] = useState(false);
+
   const ref = useRef<HTMLDivElement>();
 
   const { data, loading, error, fetchMore, refetch, networkStatus } = useQuery(
@@ -136,7 +139,10 @@ const _BlogListWithInfinityScroll = () => {
         paddingRight="4"
         onScroll={onThrottleScroll}
       >
-        <BlogGrid data={data.repository.issues.nodes} />
+        <BlogGrid
+          data={data.repository.issues.nodes}
+          disableGridLayout={disableGridLayout}
+        />
         {loading && data.repository.issues.nodes.length && (
           <Center>
             <Spinner />
@@ -144,16 +150,18 @@ const _BlogListWithInfinityScroll = () => {
         )}
       </Box>
       <Portal>
-        <Button
-          position="fixed"
-          variant="solid"
-          color="purple.500"
-          bottom="4"
-          right="4"
-          onClick={() => refetch()}
-        >
-          refresh
-        </Button>
+        <ButtonGroup variant="solid" position="fixed" bottom="4" right="4">
+          <Button color="purple.500" onClick={() => refetch()}>
+            refresh
+          </Button>
+          <Button
+            color="purple.500"
+            display={{ base: "none", lg: "block" }}
+            onClick={() => setDisableGridLayout((last) => !last)}
+          >
+            {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}
+          </Button>
+        </ButtonGroup>
       </Portal>
       <BlogModal />
     </Flex>
