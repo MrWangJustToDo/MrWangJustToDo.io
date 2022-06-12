@@ -1,4 +1,4 @@
-import { Box, Divider } from "@chakra-ui/react";
+import { Box, Divider, useCallbackRef } from "@chakra-ui/react";
 import {
   animate,
   motion,
@@ -74,13 +74,14 @@ export const Mobile = (props: OverlayProps) => {
     [indicatorRotation] // eslint-disable-line
   );
 
-  const animationComplete = useCallback(() => {
+  const animationComplete = useCallbackRef(() => {
     if (!isOpenRef.current) {
       isOpenRef.current = true;
     } else if (isOpenRef.current && closeComplete) {
       closeComplete();
+      applyOverlay(id, false);
     }
-  }, [closeComplete]);
+  });
 
   useEffectOnce(() => {
     applyOverlay(id, true);
@@ -164,7 +165,7 @@ export const Mobile = (props: OverlayProps) => {
         >
           {head}
         </Box>
-        <Divider />
+        {/* <Divider /> */}
         <Box
           flex="1"
           id="modal-scroll-box"

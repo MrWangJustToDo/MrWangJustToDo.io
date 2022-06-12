@@ -18,6 +18,7 @@ import { Actor } from "components/Actor";
 import { throttle } from "lodash-es";
 import { AiOutlineReload } from "react-icons/ai";
 import { Hover } from "components/Hover";
+import { Card } from "components/Card";
 
 const RenderWrapper = ({
   data,
@@ -111,11 +112,13 @@ export const DetailModalBody = ({ id }: { id: string }) => (
 
       return (
         <>
-          <Box
-            className="typo"
-            fontSize={{ base: "sm", lg: "md" }}
-            dangerouslySetInnerHTML={{ __html: rendered }}
-          />
+          <Card padding="2" borderColor="Highlight" backgroundColor="initial">
+            <Box
+              className="typo"
+              fontSize={{ base: "sm", lg: "md" }}
+              dangerouslySetInnerHTML={{ __html: rendered }}
+            />
+          </Card>
           <Comment data={data.repository.issue.comments.nodes} />
         </>
       );

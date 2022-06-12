@@ -22,8 +22,8 @@ const mark = new Mark({
               idx + 1
             }</span>${c}\n`,
           `<div class='overflow-hidden w-100 mb-2' style='font-size: 0px'>
-            <div style='opacity: 0; font-size: 16px'>1</div>
-            <b class='position-absolute text-info' style='left: 10px; font-size: 16px; top: 4px'>${lang}</b>
+            <div style='opacity: 0; font-size: 12px'>1</div>
+            <b class='position-absolute text-info' style='left: 10px; font-size: 12px; top: 4px'>${lang}</b>
             <div class='position-absolute w-100 border-bottom border-dark' style='left: 0'></div>
           </div>`
         );
