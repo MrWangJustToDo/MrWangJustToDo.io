@@ -113,8 +113,23 @@ export const DetailModalBody = ({ id }: { id: string }) => (
       return (
         <>
           <Card padding="2" borderColor="Highlight" backgroundColor="initial">
+            <Actor
+              marginTop="2"
+              alignItems="center"
+              time={data?.repository?.issue?.publishedAt}
+              login={data?.repository?.issue?.author?.login}
+              avatarUrl={data?.repository?.issue?.author?.avatarUrl}
+              position={{ base: "static", lg: "sticky" }}
+              top="0"
+              avatarProps={{
+                width: 6,
+                height: 6,
+              }}
+              backgroundColor="cardBackgroundColor"
+            />
             <Box
               className="typo"
+              marginTop="3.5"
               fontSize={{ base: "sm", lg: "md" }}
               dangerouslySetInnerHTML={{ __html: rendered }}
             />
@@ -149,15 +164,7 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
         <Box paddingRight="3em">
           <Text as="h1" fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
             {data?.repository?.issue?.title}
-          </Text>
-          <Actor
-            marginTop="2"
-            alignItems="center"
-            time={data?.repository?.issue?.publishedAt}
-            login={data?.repository?.issue?.author?.login}
-            avatarUrl={data?.repository?.issue?.author?.avatarUrl}
-          >
-            <Hover marginLeft="2" display="flex" alignItems="center">
+            <Hover marginLeft="2" display="inline-flex" alignItems="center">
               <IconButton
                 size="sm"
                 variant="link"
@@ -166,7 +173,7 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
                 icon={<Icon as={AiOutlineReload} />}
               />
             </Hover>
-          </Actor>
+          </Text>
         </Box>
       );
     }}

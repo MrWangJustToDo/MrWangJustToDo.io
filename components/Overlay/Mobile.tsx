@@ -165,11 +165,11 @@ export const Mobile = (props: OverlayProps) => {
         >
           {head}
         </Box>
-        {/* <Divider /> */}
         <Box
           flex="1"
           id="modal-scroll-box"
-          padding="3.5"
+          paddingX="3.5"
+          marginTop='-1px'
           overflow="auto"
           position="relative"
           backgroundColor="cardBackgroundColor"
