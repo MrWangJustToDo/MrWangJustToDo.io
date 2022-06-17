@@ -119,13 +119,10 @@ export const DetailModalBody = ({ id }: { id: string }) => (
               time={data?.repository?.issue?.publishedAt}
               login={data?.repository?.issue?.author?.login}
               avatarUrl={data?.repository?.issue?.author?.avatarUrl}
-              position={{ base: "static", lg: "sticky" }}
-              top="0"
               avatarProps={{
                 width: 6,
                 height: 6,
               }}
-              backgroundColor="cardBackgroundColor"
             />
             <Box
               className="typo"

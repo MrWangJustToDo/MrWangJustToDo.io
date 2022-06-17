@@ -25,9 +25,6 @@ export const Item = (
           width: 6,
           height: 6,
         }}
-        position={{ base: "static", lg: "sticky" }}
-        top="0"
-        backgroundColor="cardBackgroundColor"
       />
       <Box
         marginTop="3.5"
