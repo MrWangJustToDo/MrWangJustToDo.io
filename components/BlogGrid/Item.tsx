@@ -1,12 +1,5 @@
 import { useRouter } from "next/router";
-import {
-  Text,
-  Flex,
-  Box,
-  Icon,
-  IconButton,
-  Divider,
-} from "@chakra-ui/react";
+import { Text, Flex, Box, Icon, IconButton, Divider } from "@chakra-ui/react";
 import { AiOutlineRight } from "react-icons/ai";
 import { GetBlogListQuery } from "graphql/generated";
 import { Hover } from "components/Hover";
@@ -105,8 +98,8 @@ export const Item = (
       <Divider />
       <Box
         className="typo"
-        overflow="auto"
-        paddingX="2"
+        overflow={{ base: "hidden", lg: "auto" }}
+        padding="2"
         fontSize="sm"
         dangerouslySetInnerHTML={{ __html: renderedBody }}
       />

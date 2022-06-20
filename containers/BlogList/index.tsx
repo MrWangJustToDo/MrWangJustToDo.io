@@ -151,11 +151,16 @@ const _BlogListWithInfinityScroll = () => {
       </Box>
       <Portal>
         <ButtonGroup variant="solid" position="fixed" bottom="4" right="4">
-          <Button color="purple.500" onClick={() => refetch()}>
+          <Button
+            color="purple.500"
+            textTransform="capitalize"
+            onClick={() => refetch()}
+          >
             refresh
           </Button>
           <Button
             color="purple.500"
+            textTransform="capitalize"
             display={{ base: "none", lg: "block" }}
             onClick={() => setDisableGridLayout((last) => !last)}
           >

@@ -1,8 +1,16 @@
-import { RefObject, useCallback, useEffect, useRef, useState } from "react";
+import {
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { pinchHelper } from "utils/dom";
 import { Pointer, PointerTracker } from "utils/pointer";
 import { actionHandler } from "utils/action";
 import { useAutoActionHandler } from "./useAuto";
+import { throttle } from "lodash-es";
 
 interface ApplyChangeOpts {
   panX?: number;
@@ -282,6 +290,7 @@ export const usePinch: UsePinchType = <
           item.style.cssText = `
         will-change: transform;
         transform-origin: 0 0;
+        pointer-events: none;
         transition: transform, 0.2s;
         transform: translate(0px, 0px) scale(1);
         `;
@@ -299,6 +308,7 @@ export const usePinch: UsePinchType = <
         will-change: transform;
         transform-origin: 0 0;
         transition: none;
+        pointer-events: none;
         transform: translate(${x}px, ${y}px) scale(${scale})
         `;
         }
@@ -447,6 +457,91 @@ export const usePinch: UsePinchType = <
     [applyChange, targetPinchRef]
   );
 
+  const onWheelWithThrottle = useMemo(
+    () =>
+      throttle(
+        (event?: WheelEvent) => {
+          const { current: item } = targetPinchRef;
+
+          if (!item || !event) return;
+
+          event.preventDefault();
+
+          const currentRect = item.getBoundingClientRect();
+          let { deltaY } = event;
+          const { ctrlKey, deltaMode } = event;
+
+          if (deltaMode === 1) {
+            // 1 is "lines", 0 is "pixels"
+            // Firefox uses "lines" for some types of mouse
+            deltaY *= 15;
+          }
+
+          // ctrlKey is true when pinch-zooming on a trackpad.
+          const divisor = ctrlKey ? 100 : 300;
+          const scaleDiff = 1 - deltaY / divisor;
+
+          applyChange({
+            scaleDiff,
+            originX: event.clientX - currentRect.left,
+            originY: event.clientY - currentRect.top,
+          });
+        },
+        20,
+        { leading: true, trailing: true }
+      ),
+    [applyChange, targetPinchRef]
+  );
+
+  const onPointerMoveWithThrottle = useMemo(
+    () =>
+      throttle(
+        (previousPointers: Pointer[], currentPointers: Pointer[]) => {
+          const { current: item } = targetPinchRef;
+          if (!item) return;
+
+          // Combine next points with previous points
+          const currentRect = item.getBoundingClientRect();
+
+          // For calculating panning movement
+          const prevMidpoint = pinchHelper.getMidpoint(
+            previousPointers[0],
+            previousPointers[1]
+          );
+          const newMidpoint = pinchHelper.getMidpoint(
+            currentPointers[0],
+            currentPointers[1]
+          );
+
+          // Midpoint within the element
+          const originX = prevMidpoint.clientX - currentRect.left;
+          const originY = prevMidpoint.clientY - currentRect.top;
+
+          // Calculate the desired change in scale
+          const prevDistance = pinchHelper.getDistance(
+            previousPointers[0],
+            previousPointers[1]
+          );
+          const newDistance = pinchHelper.getDistance(
+            currentPointers[0],
+            currentPointers[1]
+          );
+          const scaleDiff = prevDistance ? newDistance / prevDistance : 1;
+
+          applyChange({
+            originX,
+            originY,
+            scaleDiff,
+            panX: newMidpoint.clientX - prevMidpoint.clientX,
+            panY: newMidpoint.clientY - prevMidpoint.clientY,
+          });
+        },
+        20,
+        { leading: true, trailing: true }
+      ),
+    [applyChange, targetPinchRef]
+  );
+
   const onPointerMove = useCallback(
     (previousPointers: Pointer[], currentPointers: Pointer[]) => {
       const { current: item } = targetPinchRef;
@@ -493,7 +588,11 @@ export const usePinch: UsePinchType = <
 
   useWheel({ ref: targetCoverRef, action: onWheel });
 
-  useTouch({ ref: targetCoverRef, action: onPointerMove, scaleRef });
+  useTouch({
+    ref: targetCoverRef,
+    action: onPointerMoveWithThrottle,
+    scaleRef,
+  });
 
   return [targetPinchRef, targetCoverRef, scale];
 };
