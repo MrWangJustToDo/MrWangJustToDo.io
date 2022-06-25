@@ -28,7 +28,6 @@ export const GridCard = forwardRef<BoxProps, "div">(
         <Divider marginBottom="2" />
         <Box
           width="100%"
-          overflow="hidden"
           height="calc(100% - var(--chakra-space-9))"
           sx={{
             scrollbarWidth: "none",

@@ -590,7 +590,7 @@ export const usePinch: UsePinchType = <
 
   useTouch({
     ref: targetCoverRef,
-    action: onPointerMoveWithThrottle,
+    action: onPointerMove,
     scaleRef,
   });
 

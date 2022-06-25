@@ -1,4 +1,5 @@
 import { NetworkStatus, useQuery } from "@apollo/client";
+import router from "next/router";
 import {
   Flex,
   Box,
@@ -26,6 +27,7 @@ import { memo, useMemo, useRef, useState } from "react";
 import { Pagination } from "containers/Pagination";
 import { ErrorCom } from "components/Error";
 import { throttle } from "lodash-es";
+import { PlayGround } from "containers/PlayGround";
 
 const ITEM_PER_PAGE = 15;
 
@@ -162,6 +164,27 @@ const _BlogListWithInfinityScroll = () => {
             color="purple.500"
             textTransform="capitalize"
             display={{ base: "none", lg: "block" }}
+            onClick={() =>
+              router.push(
+                {
+                  pathname: router.pathname,
+                  query: {
+                    ...router.query,
+                    overlay: "open",
+                    playGround: "MyReact",
+                  },
+                },
+                undefined,
+                { scroll: false }
+              )
+            }
+          >
+            playGround
+          </Button>
+          <Button
+            color="purple.500"
+            textTransform="capitalize"
+            display={{ base: "none", lg: "block" }}
             onClick={() => setDisableGridLayout((last) => !last)}
           >
             {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}
@@ -169,6 +192,7 @@ const _BlogListWithInfinityScroll = () => {
         </ButtonGroup>
       </Portal>
       <BlogModal />
+      <PlayGround />
     </Flex>
   );
 };

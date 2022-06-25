@@ -4,6 +4,7 @@ import {
   Avatar,
   AvatarBadge,
   Box,
+  Button,
   Divider,
   Flex,
   Icon,
