@@ -1,12 +1,11 @@
 import {
   Modal,
   ModalBody,
-  ModalCloseButton,
+  // ModalCloseButton,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
+  // Button,
 } from "@chakra-ui/react";
-import { omit } from "lodash-es";
 import { Editor } from "components/Editor";
 import { GridCard } from "components/GridCard";
 import { StyledReactGridLayout } from "components/GridLayout";
@@ -16,13 +15,13 @@ import {
   DRAG_HANDLER_SELECTOR,
   GRID_ROW_HEIGHT,
 } from "config/gridLayout";
-import { useRouter } from "next/router";
+import { usePlayGround } from "hooks/usePlayGround";
 
 const GRID_COLS = { lg: 12, md: 12, sm: 12, xs: 2, xxs: 2 };
 
 const GRID_LAYOUTS = {
   lg: [
-    { i: "a", x: 0, y: 0, w: 6, h: 50, minW: 4, maxW: 8, minH: 50 },
+    { i: "a", x: 0, y: 0, w: 6, h: 50, minW: 4, maxW: 8, minH: 40 },
     {
       i: "b",
       x: 6,
@@ -31,7 +30,7 @@ const GRID_LAYOUTS = {
       h: 50,
       minW: 4,
       maxW: 10,
-      minH: 50,
+      minH: 40,
     },
   ],
   md: [
@@ -69,33 +68,25 @@ const GRID_LAYOUTS = {
 };
 
 export const PlayGround = () => {
-  const { query, push, pathname } = useRouter();
-
-  const isModalOpen = query.overlay === "open";
-  const isPlayGround = query.playGround === "MyReact";
+  const { isOpen, onClose } = usePlayGround();
 
   return (
     <Modal
       size="full"
-      isOpen={isModalOpen && isPlayGround}
+      isOpen={isOpen}
       scrollBehavior="inside"
-      onClose={() =>
-        push(
-          {
-            pathname,
-            query: {
-              ...omit(query, ["overlay", "playGround"]),
-            },
-          },
-          undefined,
-          { scroll: false }
-        )
-      }
+      onClose={onClose}
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>MyReact PlayGround</ModalHeader>
-        <ModalCloseButton />
+        {/* <ModalCloseButton
+          as={Button}
+          variant="solid"
+          position="fixed"
+          right={6}
+          bottom={4}
+          zIndex="popover"
+        /> */}
         <ModalBody id="modal-scroll-box" paddingTop="0">
           <StyledReactGridLayout
             className="layout"

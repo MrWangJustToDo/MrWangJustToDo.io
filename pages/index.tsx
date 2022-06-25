@@ -10,7 +10,6 @@ import {
 } from "config/gridLayout";
 import { CONTAINER_WIDTH } from "config/container";
 import { GridCard } from "components/GridCard";
-import { PlayGround } from "containers/PlayGround";
 
 const GRID_COLS = { lg: 12, md: 12, sm: 12, xs: 2, xxs: 2 };
 const GRID_LAYOUTS = {

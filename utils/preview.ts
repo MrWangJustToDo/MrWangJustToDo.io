@@ -51,12 +51,16 @@ const generateIframeDOC = ({
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <style id='global'>
         html, body {
-          width: 100vw;
-          height: 100vh;
+          width: 99.8%;
+          height: 100%;
           margin: 0;
           padding: 0;
         }
       </style>
+      <script>
+        /* MyReact highlight */
+        window.__highlight__ = true;
+      </script>
       ${links}
       ${styles}
     </head>

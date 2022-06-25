@@ -1,5 +1,4 @@
 import { NetworkStatus, useQuery } from "@apollo/client";
-import router from "next/router";
 import {
   Flex,
   Box,
@@ -28,6 +27,7 @@ import { Pagination } from "containers/Pagination";
 import { ErrorCom } from "components/Error";
 import { throttle } from "lodash-es";
 import { PlayGround } from "containers/PlayGround";
+import { usePlayGround } from "hooks/usePlayGround";
 
 const ITEM_PER_PAGE = 15;
 
@@ -92,9 +92,11 @@ const _BlogList = () => {
 };
 
 const _BlogListWithInfinityScroll = () => {
-  const [disableGridLayout, setDisableGridLayout] = useState(false);
+  const { onOpen } = usePlayGround();
 
   const ref = useRef<HTMLDivElement>();
+
+  const [disableGridLayout, setDisableGridLayout] = useState(false);
 
   const { data, loading, error, fetchMore, refetch, networkStatus } = useQuery(
     GetBlogListDocument,
@@ -161,23 +163,10 @@ const _BlogListWithInfinityScroll = () => {
             refresh
           </Button>
           <Button
-            color="purple.500"
+            color="red.500"
             textTransform="capitalize"
             display={{ base: "none", lg: "block" }}
-            onClick={() =>
-              router.push(
-                {
-                  pathname: router.pathname,
-                  query: {
-                    ...router.query,
-                    overlay: "open",
-                    playGround: "MyReact",
-                  },
-                },
-                undefined,
-                { scroll: false }
-              )
-            }
+            onClick={onOpen}
           >
             playGround
           </Button>

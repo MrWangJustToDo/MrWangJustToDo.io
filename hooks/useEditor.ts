@@ -1,46 +1,27 @@
+import { INITIAL_EDITOR, EDITOR_STORE_KEY } from "config/editor";
 import { debounce } from "lodash-es";
 import create from "zustand";
 import { persist, devtools } from "zustand/middleware";
 
-const initialFiles = {
-  "script.jsx": {
-    id: "main",
-    type: "text/babel",
-    name: "script.jsx",
-    language: "javascript",
-    content: "",
-  },
-  "style.css": {
-    id: "main",
-    name: "style.css",
-    language: "css",
-    content: "",
-  },
-  "index.html": {
-    id: "main",
-    name: "index.html",
-    language: "html",
-    content: "",
-  },
-};
-
 // SEE https://github.com/pmndrs/zustand/blob/main/docs/typescript.md#using-middlewares
 export const useEditor = create<{
-  file: keyof typeof initialFiles;
-  files: typeof initialFiles;
+  file: keyof typeof INITIAL_EDITOR;
+  files: typeof INITIAL_EDITOR;
+  reset: () => void;
   setFile: (newKey: string) => void;
   setContent: (newContent: string) => void;
 }>()(
   devtools(
     persist(
       (set, get) => ({
-        file: "script.jsx",
-        files: initialFiles,
+        file: "script.tsx",
+        files: INITIAL_EDITOR,
+        reset: () => set({ files: INITIAL_EDITOR, file: "script.tsx" }),
         setFile: (newFile) => {
           const { files, file } = get();
           const keys = Object.keys(files);
           if (newFile !== file && keys.includes(newFile)) {
-            set({ file: newFile as keyof typeof initialFiles });
+            set({ file: newFile as keyof typeof INITIAL_EDITOR });
           }
         },
         setContent: debounce(
@@ -62,7 +43,7 @@ export const useEditor = create<{
         ),
       }),
       {
-        name: "playGround",
+        name: EDITOR_STORE_KEY,
       }
     )
   )

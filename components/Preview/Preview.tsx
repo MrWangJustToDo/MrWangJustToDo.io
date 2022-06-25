@@ -39,7 +39,7 @@ export const IFramePreview = ({
     styles.concat(files["style.css"])
   );
   const scriptElement = generateScriptElementsString(
-    DEFAULT_SCRIPTS.concat(scripts).concat(files["script.jsx"])
+    DEFAULT_SCRIPTS.concat(scripts).concat(files["script.tsx"])
   );
   const linkElement = generateLinkElementsString(links);
 
