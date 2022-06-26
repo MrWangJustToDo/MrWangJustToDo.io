@@ -67,9 +67,29 @@ const GRID_LAYOUTS = {
   ],
 };
 
+const PlayGroundContent = () => {
+  return (
+    <StyledReactGridLayout
+      className="layout"
+      cols={GRID_COLS}
+      layouts={GRID_LAYOUTS}
+      rowHeight={GRID_ROW_HEIGHT}
+      measureBeforeMount={true}
+      draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
+      draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
+    >
+      <GridCard key="a">
+        <Editor />
+      </GridCard>
+      <GridCard key="b">
+        <Preview />
+      </GridCard>
+    </StyledReactGridLayout>
+  );
+};
+
 export const PlayGround = () => {
   const { isOpen, onClose } = usePlayGround();
-
   return (
     <Modal
       size="full"
@@ -88,21 +108,7 @@ export const PlayGround = () => {
           zIndex="popover"
         /> */}
         <ModalBody id="modal-scroll-box" paddingTop="0">
-          <StyledReactGridLayout
-            className="layout"
-            cols={GRID_COLS}
-            layouts={GRID_LAYOUTS}
-            rowHeight={GRID_ROW_HEIGHT}
-            draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
-            draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
-          >
-            <GridCard key="a">
-              <Editor />
-            </GridCard>
-            <GridCard key="b">
-              <Preview />
-            </GridCard>
-          </StyledReactGridLayout>
+          <PlayGroundContent />
         </ModalBody>
       </ModalContent>
     </Modal>

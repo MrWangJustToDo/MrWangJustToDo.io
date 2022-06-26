@@ -27,6 +27,7 @@ const _BlogGridWithGridLayout = ({
       layouts={layouts}
       cols={BLOG_GRID_COLS}
       rowHeight={GRID_ROW_HEIGHT}
+      measureBeforeMount={true}
       draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
       draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
     >
