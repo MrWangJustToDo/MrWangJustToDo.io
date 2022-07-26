@@ -1,6 +1,7 @@
 import {
   PLAYGROUND_BABEL,
   PLAYGROUND_MY_REACT,
+  PLAYGROUND_GRID_LAYOUT,
   PLAYGROUND_MY_REACT_DOM,
 } from "config/source";
 import { useEditor } from "hooks/useEditor";
@@ -14,8 +15,11 @@ import {
 const BABEL_URL = PLAYGROUND_BABEL;
 const REACT_URL = PLAYGROUND_MY_REACT;
 const REACT_DOM_URL = PLAYGROUND_MY_REACT_DOM;
+const GRID_LAYOUT = PLAYGROUND_GRID_LAYOUT;
 
-const ALL_SCRIPTS = Array.from(new Set([BABEL_URL, REACT_URL, REACT_DOM_URL]));
+const ALL_SCRIPTS = Array.from(
+  new Set([BABEL_URL, REACT_URL, REACT_DOM_URL, GRID_LAYOUT])
+);
 
 const DEFAULT_SCRIPTS: PreviewProps["scripts"] = ALL_SCRIPTS.map(
   (s, index) => ({ href: s, id: index.toString() })

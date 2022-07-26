@@ -38,6 +38,7 @@ export const setMonacoTSXSupport = (
     noSyntaxValidation: false,
   });
 
+  // add React & ReactDOM type support
   monaco.languages.typescript.typescriptDefaults.addExtraLib(
     `
     // Type definitions for React 18.0
@@ -4295,6 +4296,7 @@ export interface Renderer {
         callback?: () => void
     ): Component<any, ComponentState> | Element | void;
 }
+
     `,
     "file:///node_modules/@types/react/next.d.ts"
   );

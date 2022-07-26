@@ -1,10 +1,8 @@
 import {
   Modal,
   ModalBody,
-  // ModalCloseButton,
   ModalContent,
   ModalOverlay,
-  // Button,
 } from "@chakra-ui/react";
 import { Editor } from "components/Editor";
 import { GridCard } from "components/GridCard";
@@ -99,14 +97,6 @@ export const PlayGround = () => {
     >
       <ModalOverlay />
       <ModalContent>
-        {/* <ModalCloseButton
-          as={Button}
-          variant="solid"
-          position="fixed"
-          right={6}
-          bottom={4}
-          zIndex="popover"
-        /> */}
         <ModalBody id="modal-scroll-box" paddingTop="0">
           <PlayGroundContent />
         </ModalBody>

@@ -20,10 +20,15 @@ const generateScriptElementsString = (scripts: PreviewProps["scripts"]) =>
             s.type ?? "text/javascript"
           }' charset='utf-8' src='${s.href}'></script>`;
         }
+      } else if (s.type) {
+        return `<script id='${s.id}_script'>
+  const re = Babel.transform(\`${s.content}\`, {filename: 'index.tsx', presets: ['env','typescript', 'react']});
+  const renderScript = document.createElement('script');
+  renderScript.append(re.code);
+  document.head.append(renderScript);
+</script>`;
       } else {
-        return `<script id='${s.id}_script' type='${
-          s.type ?? "text/javascript"
-        }'>${s.content}</script>`;
+        return `<script id='${s.id}_script' type='text/javascript'>${s.content}</script>`;
       }
     })
     .join("");
