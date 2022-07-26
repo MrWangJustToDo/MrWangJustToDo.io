@@ -7,8 +7,9 @@ export const INITIAL_EDITOR = {
     name: "script.tsx",
     language: "typescript",
     content: `
+    const ReactGridLayout = (window as any).ReactGridLayout;
     const { WidthProvider } = ReactGridLayout;
-    const ReactGridLayout = WidthProvider(ReactGridLayout);
+    const WithReactGridLayout = WidthProvider(ReactGridLayout);
     const originalLayout = [];
     /**
      * This layout demonstrates how to sync to localstorage.
@@ -47,7 +48,7 @@ export const INITIAL_EDITOR = {
         return (
           <div>
             <button onClick={this.resetLayout}>Reset Layout</button>
-            <ReactGridLayout
+            <WithReactGridLayout
               {...this.props}
               layout={this.state.layout}
               onLayoutChange={this.onLayoutChange}
@@ -67,7 +68,7 @@ export const INITIAL_EDITOR = {
               <div key="5" data-grid={{ w: 2, h: 3, x: 8, y: 0 }}>
                 <span className="text">5</span>
               </div>
-            </ReactGridLayout>
+            </WithReactGridLayout>
           </div>
         );
       }
