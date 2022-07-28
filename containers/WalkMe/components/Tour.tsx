@@ -3,6 +3,7 @@ import TourMask from "@reactour/mask";
 import { Popover } from "@reactour/popover";
 import { Observables } from "@reactour/utils";
 
+import { useLockBodyScroll } from "hooks/useLockBodyScroll";
 import { useTourTargetSize } from "hooks/useSize";
 
 import type { WalkMeTourProps } from "../types";
@@ -11,6 +12,10 @@ const empty = [];
 
 export const Tour = ({ onClickModal, step, steps, children }: WalkMeTourProps) => {
   const currentStep = steps[step];
+
+  console.log('foo')
+
+  useLockBodyScroll(true);
 
   const { sizes, debouncedRefresh } = useTourTargetSize(currentStep?.selector, currentStep?.highlightedSelectors || empty, currentStep?.action);
 

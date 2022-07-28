@@ -80,7 +80,7 @@ const logOnceDev = once(() => {
   console.warn("pls make sure:\n 1. do not add hook into hyper column usage.\n 2. hyper column usage do not support hot reload");
 });
 
-export function useChildren<T extends Record<string, unknown>>(
+export function useChildren<T>(
   children?: ReactElement<any, (p: any) => ReactElement | null> | ReactElement<any, (p: any) => ReactElement | null>[],
   rowProps?: RowProps<T>
 ) {

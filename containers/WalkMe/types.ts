@@ -60,7 +60,6 @@ export type WalkMeTour = {
 };
 
 export enum Action {
-  Skip = "skip",
   Prev = "prev",
   Next = "next",
   GoTo = "goTo",

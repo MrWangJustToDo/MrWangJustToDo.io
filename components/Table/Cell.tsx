@@ -4,7 +4,8 @@ import { Td } from "./Td";
 
 import type { BodyCellProps, BodyCellRender } from "./type";
 
-const CellRender = <T extends Record<string, unknown>>({
+// eslint-disable-next-line @typescript-eslint/ban-types
+const CellRender = <T extends  {}>({
   Render,
   CustomRender,
   dataIndex,
@@ -51,7 +52,7 @@ const CellRender = <T extends Record<string, unknown>>({
   );
 };
 
-export function Cell<T extends Record<string, unknown>>({
+export function Cell<T>({
   Render,
   CustomRender,
   dataIndex,
