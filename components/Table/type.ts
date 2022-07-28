@@ -7,7 +7,9 @@ import type {
   TableRowProps,
   TooltipProps,
 } from "@chakra-ui/react";
-import React, { ReactElement } from "react";
+import type { ReactElement } from "react";
+import type React from "react";
+
 
 export type CompareFn<T> = (a: T, b: T) => number;
 

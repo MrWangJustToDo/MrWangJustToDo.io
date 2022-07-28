@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { PaginationBarButton, PaginationProps } from './type'
+import type { PaginationBarButton, PaginationProps } from './type'
 
 const defaultConfigs = {
   pageSize: 50,

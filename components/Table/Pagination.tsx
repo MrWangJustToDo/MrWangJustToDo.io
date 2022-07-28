@@ -1,8 +1,10 @@
+import { Box, Button, Flex, Icon } from "@chakra-ui/react";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
-import { Box, Button, ButtonProps, Flex, Icon } from "@chakra-ui/react";
 
-import { PaginationProps } from "./type";
 import { usePagination, usePaginationBar } from "./usePaginationController";
+
+import type { PaginationProps } from "./type";
+import type { ButtonProps} from "@chakra-ui/react";
 
 const Navigator = (props: ButtonProps) => (
   <Button

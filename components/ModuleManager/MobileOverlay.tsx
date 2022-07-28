@@ -1,6 +1,7 @@
 import { Box } from "@chakra-ui/react";
-import { Mobile } from "components/Overlay";
 import { AnimatePresence } from "framer-motion";
+
+import { Mobile } from "components/Overlay";
 import { useLockBodyScroll } from "hooks/useLockBodyScroll";
 import { useOverlayArray } from "hooks/useOverlay";
 

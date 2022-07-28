@@ -1,17 +1,20 @@
-import { useMemo } from "react";
 import {
   ApolloClient,
   InMemoryCache,
-  NormalizedCacheObject,
   HttpLink,
   from,
 } from "@apollo/client";
-import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
-import { log } from "utils/log";
-import { isBrowser } from "utils/env";
-import { BLOG_API } from "config/source";
+import { onError } from "@apollo/client/link/error";
+import { useMemo } from "react";
+
 import { ENABLE_INFINITY_SCROLL } from "config/gridLayout";
+import { BLOG_API } from "config/source";
+import { isBrowser } from "utils/env";
+import { log } from "utils/log";
+
+import type {
+  NormalizedCacheObject} from "@apollo/client";
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 

@@ -10,7 +10,7 @@ class Pointer {
   /** y offset from the top of the viewport */
   clientY: number;
   /** Unique ID for this pointer */
-  id: number = -1;
+  id = -1;
   /** The platform object used to create this Pointer */
   nativePointer: Touch | PointerEvent | MouseEvent;
 
@@ -62,7 +62,7 @@ enum Button {
   Left,
 }
 
-const noop = () => {};
+const noop = () => void 0;
 
 interface PointerTrackerOptions {
   /**

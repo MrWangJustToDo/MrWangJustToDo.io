@@ -1,24 +1,13 @@
 import { useQuery } from "@apollo/client";
+import { Avatar, AvatarBadge, Box, Divider, Flex, Icon, Link, Skeleton, SkeletonCircle, SkeletonText, Text } from "@chakra-ui/react";
+import React, { memo } from "react";
 import { AiOutlineGithub, AiOutlineMail } from "react-icons/ai";
-import {
-  Avatar,
-  AvatarBadge,
-  Box,
-  Divider,
-  Flex,
-  Icon,
-  Link,
-  Skeleton,
-  SkeletonCircle,
-  SkeletonText,
-  Text,
-} from "@chakra-ui/react";
+
 import { Chart } from "components/Chart";
+import { ErrorCom } from "components/Error";
 import { Followers } from "components/Follower";
 import { GetViewerDocument } from "graphql/generated";
-import React, { memo } from "react";
 import { momentTo } from "utils/time";
-import { ErrorCom } from "components/Error";
 
 const ITEM_FOLLOWER = 10;
 
@@ -42,24 +31,19 @@ const _User = () => {
   if (error) return <ErrorCom error={error} />;
 
   return (
-    <Flex flexDirection="column" padding="3" height="100%">
+    <Flex flexDirection="column" padding="3" height="100%" className="tour_about">
       <Box padding="2">
         <Avatar name={data.viewer.name} src={data.viewer.avatarUrl} size="xl">
           <AvatarBadge bg="green.500" boxSize="0.8em" />
         </Avatar>
       </Box>
-      <Chart marginY="2" />
+      <Chart marginY="2" className="tour_commit" />
       <Divider marginY="2" />
       <Icon as={AiOutlineGithub} fontSize="xl" />
       <Text fontWeight="semibold">{data.viewer.login}</Text>
       <Box fontSize="sm" marginY="2">
         <Text fontWeight="semibold">Recommend:</Text>
-        <Link
-          target="_blank"
-          color="red.400"
-          href="https://github.com/MrWangJustToDo/MyReact"
-          title="https://github.com/MrWangJustToDo/MyReact"
-        >
+        <Link target="_blank" color="red.400" href="https://github.com/MrWangJustToDo/MyReact" title="https://github.com/MrWangJustToDo/MyReact">
           MyReact & MyReact-SSR
         </Link>
       </Box>

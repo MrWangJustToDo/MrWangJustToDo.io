@@ -1,17 +1,15 @@
 import { createContext, useCallback, useMemo, useState } from "react";
 
-import { Sorter, SortOrder } from "./type";
+import { SortOrder } from "./type";
+
+import type { Sorter } from "./type";
 
 export const SorterContext = createContext<{
   sorter: Sorter<any>;
   onSort: (sorter: Sorter<any>) => void;
-}>({ sorter: { order: SortOrder.None }, onSort: () => {} });
+}>({ sorter: { order: SortOrder.None }, onSort: () => void 0 });
 
-export function useSorter<T>(
-  sorter?: Sorter<T>,
-  dataSource?: T[],
-  afterSorting?: () => void
-) {
+export function useSorter<T>(sorter?: Sorter<T>, dataSource?: T[], afterSorting?: () => void) {
   const [innerSorter, setInnerSorter] = useState<Sorter<T>>({
     order: SortOrder.None,
     genCompareFn: (sorter: Sorter<T>) => (a: T, b: T) => {

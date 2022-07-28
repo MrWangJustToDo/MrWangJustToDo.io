@@ -1,9 +1,11 @@
 import { Box } from "@chakra-ui/react";
+import { useMemo } from "react";
+
 import { Actor } from "components/Actor";
 import { Card } from "components/Card";
-import { GetSingleBlogQuery } from "graphql/generated";
-import { useMemo } from "react";
 import { mark } from "utils/markdown";
+
+import type { GetSingleBlogQuery } from "graphql/generated";
 
 export const Item = (
   props: GetSingleBlogQuery["repository"]["issue"]["comments"]["nodes"][0]

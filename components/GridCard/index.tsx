@@ -1,11 +1,14 @@
 import { forwardRef, Flex, Divider } from "@chakra-ui/react";
-import { Box, BoxProps } from "components/Box";
+
+import { Box } from "components/Box";
 import { Card } from "components/Card";
 import {
   DISABLE_DRAG_HANDLER_SELECTOR,
   DRAG_HANDLER_SELECTOR,
 } from "config/gridLayout";
 import { getClass } from "utils/dom";
+
+import type { BoxProps } from "components/Box";
 
 export const GridCard = forwardRef<
   BoxProps & { contentProps?: Omit<BoxProps, "children"> },

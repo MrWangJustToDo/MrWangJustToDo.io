@@ -60,7 +60,7 @@ export const IFramePreview = ({
       width="100%"
       height="100%"
       title="Preview"
-      className="playGround_preview"
+      className="tour_playGround_preview"
       sandbox="allow-modals allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts"
       srcDoc={iframeDOC}
     />

@@ -1,9 +1,11 @@
 import { Box, Flex, Th, Tooltip, Icon, IconButton } from "@chakra-ui/react";
-import { AiOutlineDown, AiOutlineUp } from "react-icons/ai";
 import { useCallback, useContext, useMemo } from "react";
+import { AiOutlineDown, AiOutlineUp } from "react-icons/ai";
 
-import { HeadCellProps, HeadCellRender, Sorter, SortOrder } from "./type";
+import { SortOrder } from "./type";
 import { SorterContext } from "./useSorter";
+
+import type { HeadCellProps, HeadCellRender, Sorter} from "./type";
 
 export function HeadCell<T>({
   Render,

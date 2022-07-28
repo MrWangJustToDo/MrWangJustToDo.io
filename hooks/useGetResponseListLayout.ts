@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { Layout } from "react-grid-layout";
+
+import type { Layout } from "react-grid-layout";
 
 export const BLOG_GRID_HEIGHT = 10;
 

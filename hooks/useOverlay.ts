@@ -1,14 +1,18 @@
-import React, {
+import { findLast } from "lodash-es";
+import {
   createContext,
   useCallback,
   useContext,
   useRef,
   useState,
 } from "react";
-import { findLast } from "lodash-es";
-import { applyOverlaysStyles, cleanupOverlaysStyles } from "utils/dom";
+
 import { delay } from "utils/delay";
+import { applyOverlaysStyles, cleanupOverlaysStyles } from "utils/dom";
+
 import { useUpdate } from "./useUpdate";
+
+import type React from "react";
 
 const ROOT_BODY = "__next";
 
@@ -34,11 +38,11 @@ interface UseOverlayOpenType {
 
 let count = 0;
 
-export const OverlayOpenContext = createContext<UseOverlayOpenType>(() => {});
+export const OverlayOpenContext = createContext<UseOverlayOpenType>(() => void 0);
 
 export const OverlayCloseContext = createContext<
   ({ modalId, closeAll }?: { modalId?: string; closeAll?: boolean }) => void
->(() => {});
+>(() => void 0);
 
 export const OverlayArrayContext = createContext<{
   desktop: Array<OverlayProps>;

@@ -11,14 +11,16 @@ import {
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
-import type monaco from "monaco-editor";
 import Editor from "@monaco-editor/react";
-import { useEditor } from "hooks/useEditor";
 import { useRef } from "react";
 import { AiOutlineDown, AiOutlineFile } from "react-icons/ai";
-import { setMonacoTSXSupport } from "utils/monaco";
-import { useSize } from "hooks/useSize";
+
+import { useEditor } from "hooks/useEditor";
 import { usePlayGround } from "hooks/usePlayGround";
+import { useSize } from "hooks/useSize";
+import { setMonacoTSXSupport } from "utils/monaco";
+
+import type monaco from "monaco-editor";
 
 const StyledMonaco = styled(Editor);
 
@@ -61,7 +63,7 @@ export const Monaco = () => {
           </Button>
         </WrapItem>
         <WrapItem>
-          <Button size="sm" variant="outline" onClick={onClose}>
+          <Button className="tour_close" size="sm" variant="outline" onClick={onClose}>
             Close
           </Button>
         </WrapItem>
@@ -70,7 +72,7 @@ export const Monaco = () => {
       <StyledMonaco
         width="100%"
         height={`calc(100% - ${height}px - 4px)`}
-        className="playGround_editor"
+        className="tour_playGround_editor"
         theme={theme}
         path={currentFile.name}
         defaultValue={currentFile.content}

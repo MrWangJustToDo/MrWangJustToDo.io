@@ -1,7 +1,8 @@
 import { Text, Icon, Link, Flex, Box } from "@chakra-ui/react";
-import { BLOG_SOURCE } from "config/source";
 import { memo } from "react";
 import { AiFillHeart } from "react-icons/ai";
+
+import { BLOG_SOURCE } from "config/source";
 
 const _Footer = () => {
   return (

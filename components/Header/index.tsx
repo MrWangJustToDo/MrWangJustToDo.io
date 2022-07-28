@@ -1,7 +1,9 @@
 import { Container, Flex, Text } from "@chakra-ui/react";
+import { memo } from "react";
+
 import { ColorMode } from "components/ColorMode";
 import { CONTAINER_WIDTH } from "config/container";
-import { memo } from "react";
+
 import { GlobalStyle } from "./GlobalStyle";
 
 const _Header = () => {

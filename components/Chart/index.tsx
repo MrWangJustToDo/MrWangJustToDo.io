@@ -1,6 +1,8 @@
-import { Box, BoxProps, Image } from "@chakra-ui/react";
+import { Box, Image } from "@chakra-ui/react";
 // import { usePinch } from "hooks/usePinch";
 import usePinch from "use-pinch-ref";
+
+import type { BoxProps} from "@chakra-ui/react";
 
 export const Chart = (props: Omit<BoxProps, "children">) => {
   const { pinchRef, coverRef } = usePinch<HTMLImageElement, HTMLDivElement>();

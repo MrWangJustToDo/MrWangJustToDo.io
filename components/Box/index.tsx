@@ -1,11 +1,13 @@
 import {
-  As,
   Box as OriginalBox,
-  BoxProps as OriginalBoxProps,
   shouldForwardProp,
   styled,
 } from "@chakra-ui/react";
-import { Layout } from "react-grid-layout";
+
+import type {
+  As,
+  BoxProps as OriginalBoxProps} from "@chakra-ui/react";
+import type { Layout } from "react-grid-layout";
 
 export interface BoxProps extends OriginalBoxProps {
   ["data-grid"]?: Partial<Layout>;

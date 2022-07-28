@@ -1,8 +1,9 @@
 import { parse } from "@babel/parser";
 import traverse from "@babel/traverse";
-import type monaco from "monaco-editor";
-import { Monaco } from "@monaco-editor/react";
 import MonacoJSXHighlighter from "monaco-jsx-highlighter";
+
+import type { Monaco } from "@monaco-editor/react";
+import type monaco from "monaco-editor";
 
 // SEE https://github.com/microsoft/monaco-editor/issues/264
 export const setMonacoTSXSupport = (

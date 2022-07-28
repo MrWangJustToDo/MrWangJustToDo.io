@@ -1,9 +1,10 @@
 import { Skeleton as DefaultSkeleton } from "@chakra-ui/react";
 
 import { Td } from "./Td";
-import { BodyCellProps, BodyCellRender } from "./type";
 
-const CellRender = <T extends {}>({
+import type { BodyCellProps, BodyCellRender } from "./type";
+
+const CellRender = <T extends Record<string, unknown>>({
   Render,
   CustomRender,
   dataIndex,
@@ -50,7 +51,7 @@ const CellRender = <T extends {}>({
   );
 };
 
-export function Cell<T>({
+export function Cell<T extends Record<string, unknown>>({
   Render,
   CustomRender,
   dataIndex,

@@ -3,10 +3,11 @@ import { Box } from "@chakra-ui/react";
 import { BaseTable } from "./BaseTable";
 import { Column } from "./Column";
 import { Pagination } from "./Pagination";
-import { TableProps } from "./type";
 import { useChildren } from "./useChildren";
 import { useSkeleton } from "./useSkeleton";
 import { SorterContext, useSorter } from "./useSorter";
+
+import type { TableProps } from "./type";
 
 export function Table<T>({
   dataSource,

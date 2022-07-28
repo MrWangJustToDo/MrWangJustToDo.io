@@ -2,14 +2,17 @@ import { Box, Divider, useCallbackRef } from "@chakra-ui/react";
 import {
   animate,
   motion,
-  PanInfo,
   useMotionValue,
   useTransform,
 } from "framer-motion";
-import { useEffectOnce } from "hooks/useEffectOnce";
-import { OverlayProps } from "hooks/useOverlay";
-import { useWindowSize } from "hooks/useWindowSize";
 import { useCallback, useRef } from "react";
+
+import { useEffectOnce } from "hooks/useEffectOnce";
+import { useWindowSize } from "hooks/useWindowSize";
+
+import type {
+  PanInfo} from "framer-motion";
+import type { OverlayProps } from "hooks/useOverlay";
 
 export const Mobile = (props: OverlayProps) => {
   const {

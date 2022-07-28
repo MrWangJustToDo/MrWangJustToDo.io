@@ -7,7 +7,8 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { OverlayProps } from "hooks/useOverlay";
+
+import type { OverlayProps } from "hooks/useOverlay";
 
 export const Desktop = (props: OverlayProps) => {
   const {

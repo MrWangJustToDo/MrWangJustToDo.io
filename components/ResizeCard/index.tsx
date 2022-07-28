@@ -1,8 +1,11 @@
-import { BoxProps, forwardRef, useSafeLayoutEffect } from "@chakra-ui/react";
-import { Card } from "components/Card";
-import { useIsMounted } from "hooks/useIsMounted";
+import { forwardRef, useSafeLayoutEffect } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { Resizable } from "react-resizable";
+
+import { Card } from "components/Card";
+import { useIsMounted } from "hooks/useIsMounted";
+
+import type { BoxProps} from "@chakra-ui/react";
 
 export const ResizeCard = forwardRef<BoxProps, "div">(
   ({ children, ...resProps }, ref) => {

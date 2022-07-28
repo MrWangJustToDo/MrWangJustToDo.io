@@ -1,7 +1,8 @@
-import { INITIAL_EDITOR, EDITOR_STORE_KEY } from "config/editor";
 import { debounce } from "lodash-es";
 import create from "zustand";
 import { persist, devtools } from "zustand/middleware";
+
+import { INITIAL_EDITOR, EDITOR_STORE_KEY } from "config/editor";
 
 // SEE https://github.com/pmndrs/zustand/blob/main/docs/typescript.md#using-middlewares
 export const useEditor = create<{

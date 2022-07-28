@@ -1,8 +1,10 @@
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
-import relativeTime from "dayjs/plugin/relativeTime";
 import calendarPlugin from "dayjs/plugin/calendar";
+import relativeTime from "dayjs/plugin/relativeTime";
+
 import { log } from "./log";
+
 import type { TimeToString } from "types/utils";
 
 dayjs.locale("zh-cn");

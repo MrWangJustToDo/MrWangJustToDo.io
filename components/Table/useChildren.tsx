@@ -1,28 +1,16 @@
 import { Tbody, Thead, Tr } from "@chakra-ui/react";
 import once from "lodash/once";
-import {
-  Children,
-  Fragment,
-  isValidElement,
-  ReactElement,
-  useCallback,
-  useRef,
-} from "react";
+import { Children, Fragment, isValidElement, useCallback, useRef } from "react";
 
 import { Cell } from "./Cell";
-import {
-  Column,
-  ColumnBodyCellRender,
-  ColumnHeadCellRender,
-  ColumnParams,
-} from "./Column";
+import { Column } from "./Column";
 import { HeadCell } from "./HeadCell";
-import { HeadCellProps, HeadCellPropsWithDataIndex, RowProps } from "./type";
 
-function useHead<T>(
-  headCellRender: ColumnHeadCellRender[][],
-  rowProps: RowProps<T> = {}
-) {
+import type { ColumnBodyCellRender, ColumnHeadCellRender, ColumnParams } from "./Column";
+import type { HeadCellProps, HeadCellPropsWithDataIndex, RowProps } from "./type";
+import type { ReactElement } from "react";
+
+function useHead<T>(headCellRender: ColumnHeadCellRender[][], rowProps: RowProps<T> = {}) {
   const renderRef = useRef<{
     headCellRender: ColumnHeadCellRender[][];
     rowProps: RowProps<T>;
@@ -48,9 +36,7 @@ function useHead<T>(
           return (
             <Tr key={rowIndex} {...trProps}>
               {/* we invoke this as function instead of component, so React will not unmount rendered node when rerender */}
-              {headCell.map((CellRender, colIndex) =>
-                CellRender({ rowIndex, colIndex })
-              )}
+              {headCell.map((CellRender, colIndex) => CellRender({ rowIndex, colIndex }))}
             </Tr>
           );
         })}
@@ -59,10 +45,7 @@ function useHead<T>(
   }, []);
 }
 
-function useBody<T>(
-  bodyCellRender: ColumnBodyCellRender<T>[],
-  rowProps: RowProps<T> = {}
-) {
+function useBody<T>(bodyCellRender: ColumnBodyCellRender<T>[], rowProps: RowProps<T> = {}) {
   const renderRef = useRef<{
     bodyCellRender: ColumnBodyCellRender<T>[];
     rowProps: RowProps<T>;
@@ -80,15 +63,11 @@ function useBody<T>(
             ...commonRow,
             ...tbodyRow,
           };
-          const dynamicProps = genTbodyRow
-            ? genTbodyRow({ rowIndex, rowData })
-            : {};
+          const dynamicProps = genTbodyRow ? genTbodyRow({ rowIndex, rowData }) : {};
 
           return (
             <Tr key={rowIndex} {...trProps} {...dynamicProps}>
-              {bodyCellRender.map((CellRender, colIndex) =>
-                CellRender({ rowData, rowIndex, colIndex })
-              )}
+              {bodyCellRender.map((CellRender, colIndex) => CellRender({ rowData, rowIndex, colIndex }))}
             </Tr>
           );
         })}
@@ -98,15 +77,11 @@ function useBody<T>(
 }
 
 const logOnceDev = once(() => {
-  console.warn(
-    "pls make sure:\n 1. do not add hook into hyper column usage.\n 2. hyper column usage do not support hot reload"
-  );
+  console.warn("pls make sure:\n 1. do not add hook into hyper column usage.\n 2. hyper column usage do not support hot reload");
 });
 
-export function useChildren<T>(
-  children?:
-    | ReactElement<any, (p: any) => ReactElement | null>
-    | ReactElement<any, (p: any) => ReactElement | null>[],
+export function useChildren<T extends Record<string, unknown>>(
+  children?: ReactElement<any, (p: any) => ReactElement | null> | ReactElement<any, (p: any) => ReactElement | null>[],
   rowProps?: RowProps<T>
 ) {
   const headCellRenderTemp: ColumnHeadCellRender[][] = [];
@@ -136,30 +111,12 @@ export function useChildren<T>(
     }
     // more usage write here
     if (_child) {
-      const {
-        dataIndex,
-        cellProps,
-        headCellProps,
-        bodyCellProps,
-        isHidden,
-        headCellRender,
-        bodyCellRender,
-      } = _child.props as ColumnParams<T>;
+      const { dataIndex, cellProps, headCellProps, bodyCellProps, isHidden, headCellRender, bodyCellRender } = _child.props as ColumnParams<T>;
 
-      const headCellArrayRender:
-        | HeadCellProps<T>[]
-        | HeadCellPropsWithDataIndex<T>[] = Array.isArray(headCellRender)
-        ? headCellRender
-        : [headCellRender];
+      const headCellArrayRender: HeadCellProps<T>[] | HeadCellPropsWithDataIndex<T>[] = Array.isArray(headCellRender) ? headCellRender : [headCellRender];
 
       const _childrenHeads = headCellArrayRender.map((headCellRender) => {
-        const _childrenHead = ({
-          rowIndex,
-          colIndex,
-        }: {
-          rowIndex: number;
-          colIndex: number;
-        }) => (
+        const _childrenHead = ({ rowIndex, colIndex }: { rowIndex: number; colIndex: number }) => (
           <HeadCell<T>
             key={dataIndex ? String(dataIndex) : `${rowIndex}-${colIndex}`}
             rowIndex={rowIndex}
@@ -176,15 +133,7 @@ export function useChildren<T>(
         return _childrenHead;
       });
 
-      const _childrenBody = ({
-        rowIndex,
-        colIndex,
-        rowData,
-      }: {
-        rowIndex: number;
-        colIndex: number;
-        rowData: T;
-      }) => (
+      const _childrenBody = ({ rowIndex, colIndex, rowData }: { rowIndex: number; colIndex: number; rowData: T }) => (
         <Cell<T>
           key={dataIndex ? String(dataIndex) : `${rowIndex}-${colIndex}`}
           rowIndex={rowIndex}

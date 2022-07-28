@@ -1,6 +1,9 @@
 import { Divider } from "@chakra-ui/react";
-import { GetSingleBlogQuery } from "graphql/generated";
+
 import { Item } from "./Item";
+
+import type { GetSingleBlogQuery } from "graphql/generated";
+
 
 export const Comment = ({
   data,

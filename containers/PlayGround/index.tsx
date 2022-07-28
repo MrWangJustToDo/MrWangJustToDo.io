@@ -4,6 +4,7 @@ import {
   ModalContent,
   ModalOverlay,
 } from "@chakra-ui/react";
+
 import { Editor } from "components/Editor";
 import { GridCard } from "components/GridCard";
 import { StyledReactGridLayout } from "components/GridLayout";

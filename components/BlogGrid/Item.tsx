@@ -1,12 +1,16 @@
-import { useRouter } from "next/router";
 import { Text, Flex, Box, Icon, IconButton, Divider } from "@chakra-ui/react";
-import { AiOutlineRight } from "react-icons/ai";
-import { GetBlogListQuery } from "graphql/generated";
-import { Hover } from "components/Hover";
+import { useRouter } from "next/router";
 import { useMemo } from "react";
-import { markNOLineNumber } from "utils/markdown";
+import { AiOutlineRight } from "react-icons/ai";
 import { VscLinkExternal } from "react-icons/vsc";
+
 import { Actor } from "components/Actor";
+import { Hover } from "components/Hover";
+import { markNOLineNumber } from "utils/markdown";
+
+import type { GetBlogListQuery } from "graphql/generated";
+
+
 
 const ItemHeader = ({
   title,

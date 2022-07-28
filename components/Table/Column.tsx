@@ -1,12 +1,12 @@
-import { TableCellProps } from '@chakra-ui/react'
-import { ReactElement } from 'react'
-
-import {
+import type {
   BodyCellProps,
   BodyCellPropsWithDataIndex,
   HeadCellProps,
   HeadCellPropsWithDataIndex,
 } from './type'
+import type { TableCellProps } from '@chakra-ui/react'
+import type { ReactElement } from 'react'
+
 
 export type ColumnHeadCellRender = ({
   rowIndex,

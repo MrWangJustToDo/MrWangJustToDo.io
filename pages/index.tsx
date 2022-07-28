@@ -1,15 +1,17 @@
 import { Container } from "@chakra-ui/react";
+
+import { GridCard } from "components/GridCard";
 import { StyledReactGridLayout } from "components/GridLayout";
-import { User } from "containers/User";
-import { BlogGridWithInfinityScroll, BlogList } from "containers/BlogList";
+import { CONTAINER_WIDTH } from "config/container";
 import {
   DISABLE_DRAG_HANDLER_SELECTOR,
   DRAG_HANDLER_SELECTOR,
   ENABLE_INFINITY_SCROLL,
   GRID_ROW_HEIGHT,
 } from "config/gridLayout";
-import { CONTAINER_WIDTH } from "config/container";
-import { GridCard } from "components/GridCard";
+import { BlogGridWithInfinityScroll, BlogList } from "containers/BlogList";
+import { User } from "containers/User";
+import { WalkMe } from "containers/WalkMe";
 
 const GRID_COLS = { lg: 12, md: 12, sm: 12, xs: 2, xxs: 2 };
 const GRID_LAYOUTS = {
@@ -62,6 +64,7 @@ const GRID_LAYOUTS = {
 export default function Home() {
   return (
     <Container maxWidth={CONTAINER_WIDTH}>
+      <WalkMe />
       <StyledReactGridLayout
         className="layout"
         cols={GRID_COLS}

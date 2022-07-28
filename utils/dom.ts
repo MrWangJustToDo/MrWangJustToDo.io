@@ -1,5 +1,7 @@
-import { GetClass, TransformArray } from "types/utils";
 import { log } from "./log";
+
+import type { GetClass, TransformArray } from "types/utils";
+
 
 interface Point {
   clientX: number;
@@ -12,7 +14,7 @@ const transformArray: TransformArray = (arr) => {
       return pre.concat(transformArray(current));
     }
     if (typeof current === "function") {
-      let re = current();
+      const re = current();
       if (Array.isArray(re)) {
         return pre.concat(transformArray(re));
       } else {

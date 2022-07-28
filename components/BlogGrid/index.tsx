@@ -1,16 +1,20 @@
+import { SimpleGrid, useBreakpointValue } from "@chakra-ui/react";
 import { memo } from "react";
+
+import { Card } from "components/Card";
+import { GridCard } from "components/GridCard";
 import { StyledReactGridLayout } from "components/GridLayout";
-import { useGetResponseListLayout } from "hooks/useGetResponseListLayout";
-import { GetBlogListQuery } from "graphql/generated";
-import { Item } from "./Item";
 import {
   DISABLE_DRAG_HANDLER_SELECTOR,
   DRAG_HANDLER_SELECTOR,
   GRID_ROW_HEIGHT,
 } from "config/gridLayout";
-import { GridCard } from "components/GridCard";
-import { SimpleGrid, useBreakpointValue } from "@chakra-ui/react";
-import { Card } from "components/Card";
+import { useGetResponseListLayout } from "hooks/useGetResponseListLayout";
+
+import { Item } from "./Item";
+
+import type { GetBlogListQuery } from "graphql/generated";
+
 
 const BLOG_GRID_COLS = { lg: 3, md: 2, sm: 1, xs: 1, xxs: 1 };
 

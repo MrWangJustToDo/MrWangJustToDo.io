@@ -1,11 +1,13 @@
 import { Portal, useBreakpointValue } from "@chakra-ui/react";
+import { useMemo } from "react";
+
 import {
   OverlayArrayContext,
   OverlayCloseContext,
   OverlayOpenContext,
   useOverlaysProps,
 } from "hooks/useOverlay";
-import { useMemo } from "react";
+
 import { DesktopOverlay } from "./DesktopOverlay";
 import { MobileOverlay } from "./MobileOverlay";
 

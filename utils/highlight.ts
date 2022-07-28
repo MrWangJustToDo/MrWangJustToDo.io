@@ -1,15 +1,15 @@
 // 语法高亮
 import Hljs from "highlight.js/lib/core";
 import css from "highlight.js/lib/languages/css";
-import json from "highlight.js/lib/languages/json";
 import java from "highlight.js/lib/languages/java";
 import javascript from "highlight.js/lib/languages/javascript";
-import typescript from "highlight.js/lib/languages/typescript";
+import json from "highlight.js/lib/languages/json";
 import less from "highlight.js/lib/languages/less";
 import scss from "highlight.js/lib/languages/scss";
 import shell from "highlight.js/lib/languages/shell";
-import xml from "highlight.js/lib/languages/xml";
 import sql from "highlight.js/lib/languages/sql";
+import typescript from "highlight.js/lib/languages/typescript";
+import xml from "highlight.js/lib/languages/xml";
 // import "highlight.js/styles/base16/dracula.css";
 
 Hljs.registerLanguage("css", css);

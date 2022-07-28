@@ -1,5 +1,6 @@
 import { isBrowser } from "framer-motion";
 import { useEffect } from "react";
+
 import { useDebounceState } from "./useDebounceState";
 
 export const useWindowSize = () => {

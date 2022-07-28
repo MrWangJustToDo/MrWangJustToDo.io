@@ -1,5 +1,8 @@
-import { RefObject, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+
 import { log } from "utils/log";
+
+import type { RefObject} from "react";
 
 interface UseAutoActionHandlerProps<T, K> {
   action?: (e?: T) => void;
@@ -10,19 +13,18 @@ interface UseAutoActionHandlerProps<T, K> {
   delayTime?: number; // 定时器执行时间间隔
   rightNow?: boolean; // 立即执行，for listener
   getRightNowState?: () => boolean;
-  componentName?: string;
   forwardRef?: RefObject<K>;
   addListener?: (action: (e?: T) => void, ele?: K) => void; // 添加事件监听
   removeListener?: (action: (e?: T) => void, ele?: K) => void; // 移除事件监听
   addListenerCallback?: (action: (e?: T) => void, ele?: K) => void; // 添加事件监听  不需要useCallback
   removeListenerCallback?: (action: (e?: T) => void, ele?: K) => void; // 移除事件监听  不需要useCallback
-  deps?: any[];
+  deps?: unknown[];
 }
 
 interface UseAutoActionHandlerType {
   <T extends Event, K>(
     props: UseAutoActionHandlerProps<T, K>,
-    ...deps: any[]
+    ...deps: unknown[]
   ): void;
 }
 
@@ -35,7 +37,6 @@ export const useAutoActionHandler: UseAutoActionHandlerType = <T, K>({
   delayTime,
   rightNow = false,
   getRightNowState,
-  componentName,
   forwardRef,
   addListener,
   removeListener,

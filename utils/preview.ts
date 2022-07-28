@@ -1,4 +1,4 @@
-import { PreviewProps } from "components/Preview/Preview";
+import type { PreviewProps } from "components/Preview/Preview";
 
 const generateStyleElementsString = (styles: PreviewProps["styles"]) =>
   styles

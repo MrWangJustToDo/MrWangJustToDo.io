@@ -9,8 +9,9 @@ import {
   StackDivider,
   useDisclosure,
 } from "@chakra-ui/react";
-import { Hover } from "components/Hover";
 import { AiOutlineMail, AiOutlineUser } from "react-icons/ai";
+
+import { Hover } from "components/Hover";
 
 type FollowerProps = {
   id: string;

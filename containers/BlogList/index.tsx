@@ -1,33 +1,18 @@
 import { NetworkStatus, useQuery } from "@apollo/client";
-import {
-  Flex,
-  Box,
-  SimpleGrid,
-  SkeletonCircle,
-  SkeletonText,
-  Portal,
-  useCallbackRef,
-  Center,
-  Spinner,
-  Button,
-  ButtonGroup,
-} from "@chakra-ui/react";
+import { Flex, Box, SimpleGrid, SkeletonCircle, SkeletonText, Portal, useCallbackRef, Center, Spinner, Button, ButtonGroup } from "@chakra-ui/react";
+import { throttle } from "lodash-es";
+import { memo, useMemo, useRef, useState } from "react";
+
 import { BlogGrid } from "components/BlogGrid";
+import { ErrorCom } from "components/Error";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "config/source";
 import { BlogModal } from "containers/BlogModal";
-import {
-  GetBlogListDocument,
-  IssueOrderField,
-  OrderDirection,
-} from "graphql/generated";
-import { isBrowser } from "utils/env";
-import { useGetListParams } from "hooks/useGetListParams";
-import { memo, useMemo, useRef, useState } from "react";
 import { Pagination } from "containers/Pagination";
-import { ErrorCom } from "components/Error";
-import { throttle } from "lodash-es";
 import { PlayGround } from "containers/PlayGround";
+import { GetBlogListDocument, IssueOrderField, OrderDirection } from "graphql/generated";
+import { useGetListParams } from "hooks/useGetListParams";
 import { usePlayGround } from "hooks/usePlayGround";
+import { isBrowser } from "utils/env";
 
 const ITEM_PER_PAGE = 15;
 
@@ -43,12 +28,8 @@ const BlogListLoading = () => (
 );
 
 const BASIC_VARIABLE = {
-  name: isBrowser
-    ? localStorage.getItem("blog_name") || BLOG_REPOSITORY
-    : BLOG_REPOSITORY,
-  owner: isBrowser
-    ? localStorage.getItem("blog_owner") || BLOG_REPOSITORY_OWNER
-    : BLOG_REPOSITORY_OWNER,
+  name: isBrowser ? localStorage.getItem("blog_name") || BLOG_REPOSITORY : BLOG_REPOSITORY,
+  owner: isBrowser ? localStorage.getItem("blog_owner") || BLOG_REPOSITORY_OWNER : BLOG_REPOSITORY_OWNER,
   orderBy: {
     field: IssueOrderField.CreatedAt,
     direction: OrderDirection.Desc,
@@ -98,16 +79,13 @@ const _BlogListWithInfinityScroll = () => {
 
   const [disableGridLayout, setDisableGridLayout] = useState(false);
 
-  const { data, loading, error, fetchMore, refetch, networkStatus } = useQuery(
-    GetBlogListDocument,
-    {
-      variables: {
-        ...BASIC_VARIABLE,
-        first: ITEM_PER_PAGE,
-      },
-      notifyOnNetworkStatusChange: true,
-    }
-  );
+  const { data, loading, error, fetchMore, refetch, networkStatus } = useQuery(GetBlogListDocument, {
+    variables: {
+      ...BASIC_VARIABLE,
+      first: ITEM_PER_PAGE,
+    },
+    notifyOnNetworkStatusChange: true,
+  });
 
   const fetchMoreCallback = useCallbackRef(() => {
     if (data?.repository?.issues?.pageInfo?.hasNextPage) {
@@ -130,23 +108,14 @@ const _BlogListWithInfinityScroll = () => {
     [fetchMoreCallback]
   );
 
-  if (loading && networkStatus !== NetworkStatus.fetchMore)
-    return <BlogListLoading />;
+  if (loading && networkStatus !== NetworkStatus.fetchMore) return <BlogListLoading />;
 
   if (error) return <ErrorCom error={error} />;
 
   return (
     <Flex flexDirection="column" height="100%">
-      <Box
-        ref={ref}
-        overflow="auto"
-        paddingRight="4"
-        onScroll={onThrottleScroll}
-      >
-        <BlogGrid
-          data={data.repository.issues.nodes}
-          disableGridLayout={disableGridLayout}
-        />
+      <Box ref={ref} overflow="auto" paddingRight="4" onScroll={onThrottleScroll}>
+        <BlogGrid data={data.repository.issues.nodes} disableGridLayout={disableGridLayout} />
         {loading && data.repository.issues.nodes.length && (
           <Center>
             <Spinner />
@@ -155,27 +124,13 @@ const _BlogListWithInfinityScroll = () => {
       </Box>
       <Portal>
         <ButtonGroup variant="solid" position="fixed" bottom="4" right="4">
-          <Button
-            color="purple.500"
-            textTransform="capitalize"
-            onClick={() => refetch()}
-          >
+          <Button color="purple.500" textTransform="capitalize" onClick={() => refetch()} size={{ base: "sm", lg: "md" }}>
             refresh
           </Button>
-          <Button
-            color="red.500"
-            textTransform="capitalize"
-            display={{ base: "none", lg: "block" }}
-            onClick={onOpen}
-          >
+          <Button color="red.500" textTransform="capitalize" className="tour_playground" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
             playGround
           </Button>
-          <Button
-            color="purple.500"
-            textTransform="capitalize"
-            display={{ base: "none", lg: "block" }}
-            onClick={() => setDisableGridLayout((last) => !last)}
-          >
+          <Button color="purple.500" textTransform="capitalize" display={{ base: "none", lg: "block" }} onClick={() => setDisableGridLayout((last) => !last)}>
             {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}
           </Button>
         </ButtonGroup>

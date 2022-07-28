@@ -1,6 +1,7 @@
-import { ApolloError } from "@apollo/client";
 import { useToast } from "@chakra-ui/react";
 import React, { useEffect } from "react";
+
+import type { ApolloError } from "@apollo/client";
 
 export const ErrorCom = ({ error }: { error: ApolloError }) => {
   const open = useToast();

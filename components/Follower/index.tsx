@@ -1,6 +1,9 @@
-import { GetViewerQuery } from "graphql/generated";
 import { memo } from "react";
+
 import { Follower } from "./Item";
+
+import type { GetViewerQuery } from "graphql/generated";
+
 
 const _Followers = ({
   data,
