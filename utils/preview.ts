@@ -1,4 +1,11 @@
 import type { PreviewProps } from "components/Preview/Preview";
+import type { INITIAL_EDITOR } from "config/editor";
+
+const getAllFiles = (files: typeof INITIAL_EDITOR, type: "tsx" | "css" | "html") => {
+  return Object.keys(files)
+    .filter((name) => name.endsWith(type))
+    .map((key) => files[key]);
+};
 
 const generateStyleElementsString = (styles: PreviewProps["styles"]) =>
   styles
@@ -12,43 +19,23 @@ const generateScriptElementsString = (scripts: PreviewProps["scripts"]) =>
     .map((s) => {
       if (s.href) {
         if (s.href.startsWith("http")) {
-          return `<script id='${s.id}_script' type='${
-            s.type ?? "text/javascript"
-          }' charset='utf-8' crossorigin='anonymous' src='${s.href}'></script>`;
+          return `<script id='${s.id}_script' type='${s.type ?? "text/javascript"}' charset='utf-8' crossorigin='anonymous' src='${s.href}'></script>`;
         } else {
-          return `<script id='${s.id}_script' type='${
-            s.type ?? "text/javascript"
-          }' charset='utf-8' src='${s.href}'></script>`;
+          return `<script id='${s.id}_script' type='${s.type ?? "text/javascript"}' charset='utf-8' src='${s.href}'></script>`;
         }
-      } else if (s.type) {
-        return `<script id='${s.id}_script'>
-  const re = Babel.transform(\`${s.content}\`, {filename: 'index.tsx', presets: ['env','typescript', 'react']});
-  const renderScript = document.createElement('script');
-  renderScript.append(re.code);
-  document.head.append(renderScript);
-</script>`;
       } else {
         return `<script id='${s.id}_script' type='text/javascript'>${s.content}</script>`;
       }
     })
     .join("");
+
 const generateLinkElementsString = (links: PreviewProps["links"]) =>
   links
     .filter((s) => s?.href)
     .map((s) => `<link id='${s.id}_link' rel='stylesheet' href='${s.href}' />`)
     .join("");
 
-const generateIframeDOC = ({
-  links,
-  styles,
-  scripts,
-  inlineHtml,
-}: {
-  links: string;
-  styles: string;
-  scripts: string;
-  inlineHtml: string;
-}) => {
+const generateIframeDOC = ({ links, styles, scripts, inlineHtml }: { links: string; styles: string; scripts: string; inlineHtml: string }) => {
   return `<!DOCTYPE html>
   <html>
     <head>
@@ -62,23 +49,44 @@ const generateIframeDOC = ({
           padding: 0;
         }
       </style>
-      <script>
-        /* MyReact highlight */
-        window.__highlight__ = true;
-      </script>
       ${links}
       ${styles}
     </head>
     <body>
       ${inlineHtml}
       ${scripts}
+      <script>
+        window.addEventListener('message', (e) => {
+          const js = e.data.js;
+          const css = e.data.css;
+          const jsId = 'dynamic_js';
+          const cssId = 'dynamic_css';
+          const jsElement = document.querySelector('#' + jsId);
+          const cssElement = document.querySelector('#' + cssId);
+          if (js) {
+            const element = document.createElement('script');
+            element.id = jsId;
+            element.innerHTML = js;
+            if (jsElement) {
+              jsElement.parentNode.replaceChild(element, jsElement);
+            } else {
+              document.body.appendChild(element);
+            }
+          }
+          if (css) {
+            const element = document.createElement('style');
+            element.id = cssId;
+            element.innerHTML = css;
+            if (cssElement) {
+              cssElement.parentNode.replaceChild(element, cssElement);
+            } else {
+              document.head.appendChild(element);
+            }
+          }
+        })
+      </script>
     </body>
   </html>`;
 };
 
-export {
-  generateIframeDOC,
-  generateLinkElementsString,
-  generateScriptElementsString,
-  generateStyleElementsString,
-};
+export { getAllFiles, generateIframeDOC, generateLinkElementsString, generateScriptElementsString, generateStyleElementsString };

@@ -7,6 +7,8 @@ export const INITIAL_EDITOR = {
     name: "script.tsx",
     language: "typescript",
     content: `
+// dev highlight
+(window as any).__highlight__ = true;
 const ReactGridLayout = (window as any).ReactGridLayout;
 const { WidthProvider } = ReactGridLayout;
 const WithReactGridLayout = WidthProvider(ReactGridLayout);
@@ -71,9 +73,9 @@ const root = document.querySelector("#root");
 ReactDOM.render(<LocalStorageLayout />, document.querySelector("#root"));
   `,
   },
-  "style.css": {
+  "main.css": {
     id: "main",
-    name: "style.css",
+    name: "main.css",
     language: "css",
     content: `
 #content {
@@ -129,20 +131,20 @@ ReactDOM.render(<LocalStorageLayout />, document.querySelector("#root"));
   cursor: grab;
   cursor: -moz-grab;
   cursor: -webkit-grab;
-}
+
 .toolbox {
   background-color: #dfd;
   width: 100%;
   height: 120px;
   overflow: scroll;
-}
+
 .hide-button {
   cursor: pointer;
   position: absolute;
   font-size: 20px;
   top: 0px;
   right: 5px;
-}
+
 .toolbox__title {
   font-size: 24px;
   margin-bottom: 5px;
@@ -170,6 +172,13 @@ ReactDOM.render(<LocalStorageLayout />, document.querySelector("#root"));
   margin: 10px 0;
   padding: 10px;
 }
+    `,
+  },
+  "style.css": {
+    id: "style",
+    name: "style.css",
+    language: "css",
+    content: `
 .react-grid-layout {
   position: relative;
   transition: height 200ms ease;
@@ -283,7 +292,6 @@ ReactDOM.render(<LocalStorageLayout />, document.querySelector("#root"));
     id: "main",
     name: "index.html",
     language: "html",
-    content:
-      "<h1 style='text-align: center;' >Play MyReact</h1> <div id='root'></div>",
+    content: "<h1 style='text-align: center;' >Play MyReact</h1> <div id='root'></div>",
   },
 };
