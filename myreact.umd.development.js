@@ -87,6 +87,7 @@
     };
 
     _proto.reconcileCommit = function reconcileCommit(_fiber, _hydrate, _parentFiberWithDom) {
+      return false;
     };
 
     _proto.reconcileCreate = function reconcileCreate(_list) {
@@ -589,7 +590,7 @@
     return Object.is(src, target);
   };
   var isArrayEquals = function isArrayEquals(src, target) {
-    if (src.length === target.length) {
+    if (Array.isArray(src) && Array.isArray(target) && src.length === target.length) {
       var re = true;
 
       for (var key in src) {
@@ -1676,7 +1677,7 @@
         callback: c.callback ? p.callback.concat(c.callback) : p.callback
       };
     }, {
-      newState: {},
+      newState: _extends({}, baseState),
       isForce: false,
       callback: []
     });
@@ -2509,7 +2510,7 @@
   var transformChildrenFiber = function transformChildrenFiber(parentFiber, children) {
     var index = 0;
     var isUpdate = parentFiber.__isUpdateRender__;
-    var newChildren = Array.isArray(children) ? children : [children];
+    var newChildren = Array.isArray(children) ? children : children === undefined ? [] : [children];
     var prevFiberChildren = isUpdate ? parentFiber.__renderedChildren__ : [];
     var assignPrevFiberChildren = getKeyMatchedChildren(newChildren, prevFiberChildren);
     parentFiber.__renderedChildren__ = [];
@@ -2808,15 +2809,16 @@
     var Component = fiber.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
     var typedComponent = Component;
     var typedInstance = fiber.instance;
-    var statePayload = null;
     var props = Object.assign({}, typedElement.props);
     var state = Object.assign({}, typedInstance.state);
 
     if (typeof typedComponent.getDerivedStateFromProps === 'function') {
-      statePayload = typedComponent.getDerivedStateFromProps(props, state);
-    }
+      var payloadState = typedComponent.getDerivedStateFromProps(props, state);
 
-    return statePayload;
+      if (payloadState) {
+        typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
+      }
+    }
   };
 
   var processComponentInstanceOnMount = function processComponentInstanceOnMount(fiber) {
@@ -2911,16 +2913,14 @@
 
   var classComponentMount = function classComponentMount(fiber) {
     processComponentInstanceOnMount(fiber);
-    var payloadState = processComponentStateFromProps(fiber);
-    var typedInstance = fiber.instance;
-    typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
+    processComponentStateFromProps(fiber);
     var children = processComponentRenderOnMountAndUpdate(fiber);
     processComponentDidMountOnMount(fiber);
     return children;
   };
   var classComponentUpdate = function classComponentUpdate(fiber) {
     processComponentFiberOnUpdate(fiber);
-    var payloadState = processComponentStateFromProps(fiber);
+    processComponentStateFromProps(fiber);
 
     var _processComponentUpda = processComponentUpdateQueue(fiber),
         newState = _processComponentUpda.newState,
@@ -2931,7 +2931,7 @@
     var baseState = typedInstance.state;
     var baseProps = typedInstance.props;
     var baseContext = typedInstance.context;
-    var nextState = Object.assign({}, baseState, newState, payloadState);
+    var nextState = Object.assign({}, baseState, newState);
     var nextProps = Object.assign({}, fiber.__props__);
     var nextContext = processComponentContextOnUpdate(fiber);
     var shouldUpdate = isForce;
@@ -3085,7 +3085,7 @@
 
   var clearFiberDom = function clearFiberDom(fiber) {
     if (fiber.dom) {
-      if (!fiber.__isPortal__) {
+      if (!fiber.__isPortal__ && !fiber.__root__) {
         var _fiber$dom;
 
         (_fiber$dom = fiber.dom) == null ? void 0 : _fiber$dom.remove();
@@ -3919,7 +3919,6 @@
     _proto.generateUpdateList = function generateUpdateList(_fiber) {
       if (_fiber) {
         if (pendingUpdateFiberList.current) {
-          // root trigger
           if (_fiber.__pendingCreate__ || _fiber.__pendingUpdate__ || _fiber.__pendingAppend__ || _fiber.__pendingContext__ || _fiber.__pendingPosition__ || _fiber.__effectQueue__.length || _fiber.__unmountQueue__.length || _fiber.__layoutEffectQueue__.length) {
             pendingUpdateFiberList.current.append(_fiber, _fiber.fiberIndex);
           }
@@ -3949,9 +3948,10 @@
           return append(_fiber, _parentFiberWithDom.dom);
         }
       });
+      var _final = true;
 
       if (_fiber.child) {
-        this.reconcileCommit(_fiber.child, _result, _fiber.dom ? _fiber : _parentFiberWithDom);
+        _final = this.reconcileCommit(_fiber.child, _result, _fiber.dom ? _fiber : _parentFiberWithDom);
       }
 
       safeCallWithFiber({
@@ -3970,7 +3970,13 @@
       });
 
       if (_fiber.sibling) {
-        this.reconcileCommit(_fiber.sibling, _result, _parentFiberWithDom);
+        this.reconcileCommit(_fiber.sibling, _fiber.dom ? _result : _final, _parentFiberWithDom);
+      }
+
+      if (_fiber.dom) {
+        return _result;
+      } else {
+        return _final;
       }
     };
 
@@ -4294,7 +4300,16 @@
             return p + c;
           }, '') + "</" + this.type + ">";
         } else {
-          return this.children.map(function (dom) {
+          return this.children.reduce(function (p, c) {
+            if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
+              p.push('<!-- -->');
+              p.push(c);
+            } else {
+              p.push(c);
+            }
+
+            return p;
+          }, []).map(function (dom) {
             return dom.toString();
           }).reduce(function (p, c) {
             return p + c;
@@ -4390,6 +4405,8 @@
       if (_fiber.sibling) {
         this.reconcileCommit(_fiber.sibling, _hydrate, _parentFiberWithDom);
       }
+
+      return true;
     };
 
     _proto.reconcileCreate = function reconcileCreate(_list) {
