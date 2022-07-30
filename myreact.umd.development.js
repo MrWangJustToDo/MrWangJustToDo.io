@@ -4102,6 +4102,7 @@
 
   var render = function render(element, container) {
     globalDispatch.current = new ClientDispatch();
+    isAppCrash.current = false;
     var containerFiber = container.__fiber__;
 
     if (containerFiber instanceof MyReactFiberNode) {
