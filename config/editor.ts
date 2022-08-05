@@ -131,20 +131,20 @@ ReactDOM.render(<LocalStorageLayout />, document.querySelector("#root"));
   cursor: grab;
   cursor: -moz-grab;
   cursor: -webkit-grab;
-
+}
 .toolbox {
   background-color: #dfd;
   width: 100%;
   height: 120px;
   overflow: scroll;
-
+}
 .hide-button {
   cursor: pointer;
   position: absolute;
   font-size: 20px;
   top: 0px;
   right: 5px;
-
+}
 .toolbox__title {
   font-size: 24px;
   margin-bottom: 5px;
