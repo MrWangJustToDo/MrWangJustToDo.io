@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { PLAYGROUND_BABEL, PLAYGROUND_MY_REACT, PLAYGROUND_GRID_LAYOUT, PLAYGROUND_MY_REACT_DOM } from "config/source";
 import { useDebounceState } from "hooks/useDebounceState";
@@ -24,6 +24,8 @@ export type PreviewProps = {
 export const IFramePreview = ({ styles = [], scripts = [], links = [], onLoad }: PreviewProps) => {
   const files = useEditor((state) => state.files);
 
+  const [compiled, setCompiled] = useState<{ js: string; id: number }>(null);
+
   const [tsx, setTsx] = useDebounceState(files["script.tsx"].content, 600);
 
   const content = files["script.tsx"].content;
@@ -42,7 +44,7 @@ export const IFramePreview = ({ styles = [], scripts = [], links = [], onLoad }:
     workRef.current = new Worker(new URL("../../worker/compiler.worker", import.meta.url));
     workRef.current.addEventListener("message", ({ data }) => {
       if (data.id === idRef.current) {
-        iframeRef.current.contentWindow.postMessage(data, "*");
+        setCompiled(data);
       }
     });
     return () => workRef.current.terminate();
@@ -52,6 +54,23 @@ export const IFramePreview = ({ styles = [], scripts = [], links = [], onLoad }:
     idRef.current++;
     workRef.current.postMessage({ tsx, id: idRef.current });
   }, [tsx]);
+
+  useEffect(() => {
+    if (compiled) {
+      const id = setInterval(() => {
+        iframeRef.current.contentWindow.postMessage(compiled, "*");
+      }, 100);
+      return () => clearInterval(id);
+    }
+  }, [compiled]);
+
+  useEffect(() => {
+    window.addEventListener("message", ({ data }) => {
+      if (data.id === idRef.current) {
+        setCompiled(null);
+      }
+    });
+  }, []);
 
   const styleElement = generateStyleElementsString(styles.concat(getAllFiles(files, "css")));
 

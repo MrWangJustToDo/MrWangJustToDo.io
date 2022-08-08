@@ -83,6 +83,7 @@ const generateIframeDOC = ({ links, styles, scripts, inlineHtml }: { links: stri
               document.head.appendChild(element);
             }
           }
+          top.postMessage(e.data, '*');
         })
       </script>
     </body>
