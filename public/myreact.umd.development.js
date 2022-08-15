@@ -162,6 +162,7 @@
   var enableAllCheck = /*#__PURE__*/createRef(true);
   var enableAsyncUpdate = /*#__PURE__*/createRef(true);
   var enableEventSystem = /*#__PURE__*/createRef(true);
+  var enableControlComponent = /*#__PURE__*/createRef(true); // ==== running ==== //
 
   var asyncUpdateTimeStep = /*#__PURE__*/createRef(null);
   var nRoundTransformFiberArray = /*#__PURE__*/createRef([]);
@@ -1973,7 +1974,7 @@
   var only = function only(child) {
     if (isValidElement(child)) return child;
     if (typeof child === 'string' || typeof child === 'number' || typeof child === 'boolean') return true;
-    throw new Error('Children.only expected to receive a single MyReact element child.');
+    throw new Error('Children.only() expected to receive a single MyReact element child.');
   };
 
   var MyReactComponent = /*#__PURE__*/function (_MyReactInternalInsta) {
@@ -3011,9 +3012,39 @@
     }
   };
 
+  // for invalid dom structure
+
+  var validDomNesting = function validDomNesting(fiber) {
+    if (!enableAllCheck.current) return;
+
+    if (fiber.__isPlainNode__) {
+      var typedElement = fiber.element;
+
+      if (typedElement.type === 'p') {
+        var parent = fiber.parent;
+
+        while (parent && parent.__isPlainNode__) {
+          var typedParentElement = parent.element;
+
+          if (typedParentElement.type === 'p') {
+            log({
+              fiber: fiber,
+              level: 'warn',
+              triggerOnce: true,
+              message: "invalid dom nesting: <p> cannot appear as a child of <p>"
+            });
+          }
+
+          parent = parent.parent;
+        }
+      }
+    }
+  };
+
   var create = function create(fiber, hydrate, parentFiberWithDom) {
     if (fiber.__pendingCreate__) {
       var re = false;
+      validDomNesting(fiber);
 
       if (hydrate) {
         var result = hydrateCreate(fiber, parentFiberWithDom);
@@ -3170,6 +3201,9 @@
     };
   };
 
+  var controlElementTag = {
+    input: true
+  };
   var addEventListener = function addEventListener(fiber, dom, key) {
     var typedElement = fiber.element;
     var callback = typedElement.props[key];
@@ -3204,6 +3238,13 @@
             },
             fiber: fiber
           });
+
+          if (enableControlComponent) {
+            if (controlElementTag[typedElement.type] && typeof typedElement.props['value'] !== 'undefined') {
+              dom['value'] = typedElement.props['value'];
+              dom.setAttribute('value', typedElement.props['value']);
+            }
+          }
         };
 
         handler.cb = [callback];

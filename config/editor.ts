@@ -7,15 +7,60 @@ export const INITIAL_EDITOR = {
     name: "script.tsx",
     language: "typescript",
     content: `
-// dev highlight
-(window as any).__highlight__ = true;
+// MyReact dev highlight
+(window as any).__highlight__ = false;
+
+const {useState, useEffect} = React;
+
 const ReactGridLayout = (window as any).ReactGridLayout;
+
+const ReactWindow = (window as any).ReactWindow;
+
 const { WidthProvider } = ReactGridLayout;
+
+const { VariableSizeList } = ReactWindow;
+
 const WithReactGridLayout = WidthProvider(ReactGridLayout);
+
 const originalLayout = [];
-/**
- * This layout demonstrates how to sync to localstorage.
- */
+
+const useTime = () => {
+  const [time, setTime] = useState(new Date().toString());
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTime(new Date().toString());
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return time;
+}
+
+const rowHeights = new Array(1000)
+  .fill(true)
+  .map(() => 25 + Math.round(Math.random() * 50));
+
+const getItemSize = index => rowHeights[index];
+
+const Row = ({ index, style }) => (
+  <div className={index % 2 ? 'ListItemOdd' : 'ListItemEven'} style={style}>
+    Row {index}
+  </div>
+);
+
+const ReactWindowExample = () => (
+  <VariableSizeList
+    className="List"
+    height={150}
+    itemCount={1000}
+    itemSize={getItemSize}
+    width={300}
+  >
+    {Row}
+  </VariableSizeList>
+);
+
 class LocalStorageLayout extends React.PureComponent<{onLayoutChange: Function}, {layout: any}> {
   static defaultProps = {
     className: "layout",
@@ -69,8 +114,24 @@ class LocalStorageLayout extends React.PureComponent<{onLayoutChange: Function},
     );
   }
 }
-const root = document.querySelector("#root");
-ReactDOM.render(<LocalStorageLayout />, document.querySelector("#root"));
+
+const App = () => {
+  const time = useTime();
+
+  return <div>
+  <p>time: {time}</p>
+  <div>
+    <h2>React window example</h2>
+    <ReactWindowExample />
+  </div>
+  <div>
+    <h2>React Grid Layout example</h2>
+    <LocalStorageLayout />
+  </div>
+  </div>
+}
+
+ReactDOM.render(<App />, document.querySelector("#root"));
   `,
   },
   "main.css": {
@@ -285,6 +346,20 @@ ReactDOM.render(<LocalStorageLayout />, document.querySelector("#root"));
 .react-grid-item > .react-resizable-handle.react-resizable-handle-s {
   bottom: 0;
   transform: rotate(45deg);
+}
+.List {
+  border: 1px solid #d9dddd;
+}
+
+.ListItemEven,
+.ListItemOdd {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ListItemEven {
+  background-color: #f8f8f0;
 }
   `,
   },

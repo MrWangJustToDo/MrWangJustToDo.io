@@ -8,8 +8,8 @@ const isProd = process.env.NODE_ENV === "production";
 const config = {
   reactStrictMode: true,
   // Use the prefix in production and not development.
-  assetPrefix: isProd ? "/MrWangJustToDo.io/" : "",
-  basePath: isProd ? "/MrWangJustToDo.io" : "",
+  assetPrefix: isProd ? "/MrWangJustToDo.io/" : undefined,
+  basePath: isProd ? "/MrWangJustToDo.io" : undefined,
 };
 
 module.exports = config;

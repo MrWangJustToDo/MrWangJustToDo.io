@@ -34,7 +34,7 @@ const _Footer = () => {
         marginBottom="4"
         color="lightTextColor"
       >
-        {new Date().getFullYear()}
+        {new Date().getFullYear()} power by Next.js
       </Text>
     </Box>
   );

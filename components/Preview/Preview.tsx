@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 
-import { PLAYGROUND_BABEL, PLAYGROUND_MY_REACT, PLAYGROUND_GRID_LAYOUT, PLAYGROUND_MY_REACT_DOM } from "config/source";
+import { PLAYGROUND_REACT_WINDOW, PLAYGROUND_MY_REACT, PLAYGROUND_GRID_LAYOUT, PLAYGROUND_MY_REACT_DOM } from "config/source";
 import { useDebounceState } from "hooks/useDebounceState";
 import { useEditor } from "hooks/useEditor";
 import { generateIframeDOC, generateLinkElementsString, generateScriptElementsString, generateStyleElementsString, getAllFiles } from "utils/preview";
 
-const BABEL_URL = PLAYGROUND_BABEL;
+// const BABEL_URL = PLAYGROUND_BABEL;
 const REACT_URL = PLAYGROUND_MY_REACT;
 const REACT_DOM_URL = PLAYGROUND_MY_REACT_DOM;
+const REACT_WINDOW = PLAYGROUND_REACT_WINDOW;
 const GRID_LAYOUT = PLAYGROUND_GRID_LAYOUT;
 
-const ALL_SCRIPTS = Array.from(new Set([BABEL_URL, REACT_URL, REACT_DOM_URL, GRID_LAYOUT]));
+const ALL_SCRIPTS = Array.from(new Set([REACT_URL, REACT_DOM_URL, GRID_LAYOUT, REACT_WINDOW]));
 
 const DEFAULT_SCRIPTS: PreviewProps["scripts"] = ALL_SCRIPTS.map((s, index) => ({ href: s, id: index.toString() }));
 
@@ -30,9 +31,22 @@ export const IFramePreview = ({ styles = [], scripts = [], links = [], onLoad }:
 
   const content = files["script.tsx"].content;
 
+  const styleElement = generateStyleElementsString(styles.concat(getAllFiles(files, "css")));
+
+  const scriptElement = generateScriptElementsString(DEFAULT_SCRIPTS.concat(scripts));
+
+  const linkElement = generateLinkElementsString(links);
+
+  const iframeDOC = generateIframeDOC({
+    links: linkElement,
+    styles: styleElement,
+    scripts: scriptElement,
+    inlineHtml: files["index.html"].content,
+  });
+
   useEffect(() => {
     setTsx(content);
-  }, [content, setTsx]);
+  }, [content, setTsx, iframeDOC]);
 
   const idRef = useRef(0);
 
@@ -53,7 +67,7 @@ export const IFramePreview = ({ styles = [], scripts = [], links = [], onLoad }:
   useEffect(() => {
     idRef.current++;
     workRef.current.postMessage({ tsx, id: idRef.current });
-  }, [tsx]);
+  }, [tsx, iframeDOC]);
 
   useEffect(() => {
     if (compiled) {
@@ -62,7 +76,7 @@ export const IFramePreview = ({ styles = [], scripts = [], links = [], onLoad }:
       }, 100);
       return () => clearInterval(id);
     }
-  }, [compiled]);
+  }, [compiled, iframeDOC]);
 
   useEffect(() => {
     window.addEventListener("message", ({ data }) => {
@@ -71,19 +85,6 @@ export const IFramePreview = ({ styles = [], scripts = [], links = [], onLoad }:
       }
     });
   }, []);
-
-  const styleElement = generateStyleElementsString(styles.concat(getAllFiles(files, "css")));
-
-  const scriptElement = generateScriptElementsString(DEFAULT_SCRIPTS.concat(scripts));
-
-  const linkElement = generateLinkElementsString(links);
-
-  const iframeDOC = generateIframeDOC({
-    links: linkElement,
-    styles: styleElement,
-    scripts: scriptElement,
-    inlineHtml: files["index.html"].content,
-  });
 
   return (
     <iframe
