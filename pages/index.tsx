@@ -3,12 +3,7 @@ import { Container } from "@chakra-ui/react";
 import { GridCard } from "components/GridCard";
 import { StyledReactGridLayout } from "components/GridLayout";
 import { CONTAINER_WIDTH } from "config/container";
-import {
-  DISABLE_DRAG_HANDLER_SELECTOR,
-  DRAG_HANDLER_SELECTOR,
-  ENABLE_INFINITY_SCROLL,
-  GRID_ROW_HEIGHT,
-} from "config/gridLayout";
+import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, ENABLE_INFINITY_SCROLL, GRID_ROW_HEIGHT } from "config/gridLayout";
 import { BlogGridWithInfinityScroll, BlogList } from "containers/BlogList";
 import { User } from "containers/User";
 import { WalkMe } from "containers/WalkMe";
@@ -76,13 +71,7 @@ export default function Home() {
         <GridCard key="a" contentProps={{ overflow: "auto" }}>
           <User />
         </GridCard>
-        <GridCard key="b">
-          {ENABLE_INFINITY_SCROLL ? (
-            <BlogGridWithInfinityScroll />
-          ) : (
-            <BlogList />
-          )}
-        </GridCard>
+        <GridCard key="b">{ENABLE_INFINITY_SCROLL ? <BlogGridWithInfinityScroll /> : <BlogList />}</GridCard>
       </StyledReactGridLayout>
     </Container>
   );

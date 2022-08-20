@@ -4,12 +4,7 @@ import { Item } from "./Item";
 
 import type { GetSingleBlogQuery } from "graphql/generated";
 
-
-export const Comment = ({
-  data,
-}: {
-  data: GetSingleBlogQuery["repository"]["issue"]["comments"]["nodes"];
-}) => {
+export const Comment = ({ data }: { data: GetSingleBlogQuery["repository"]["issue"]["comments"]["nodes"] }) => {
   return (
     <>
       {data.length > 0 && <Divider marginY="2" />}

@@ -5,9 +5,7 @@ export const ColorMode = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   return (
     <Button onClick={toggleColorMode} variant="ghost" size="sm">
-      <Icon
-        as={colorMode === "dark" ? MdOutlineDarkMode : MdOutlineLightMode}
-      />
+      <Icon as={colorMode === "dark" ? MdOutlineDarkMode : MdOutlineLightMode} />
     </Button>
   );
 };

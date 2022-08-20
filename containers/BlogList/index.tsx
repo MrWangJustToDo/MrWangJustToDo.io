@@ -1,5 +1,18 @@
 import { NetworkStatus, useQuery } from "@apollo/client";
-import { Flex, Box, SimpleGrid, SkeletonCircle, SkeletonText, Portal, useCallbackRef, Center, Spinner, Button, ButtonGroup } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  SimpleGrid,
+  SkeletonCircle,
+  SkeletonText,
+  Portal,
+  useCallbackRef,
+  Center,
+  Spinner,
+  Button,
+  ButtonGroup,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import { throttle } from "lodash-es";
 import { memo, useMemo, useRef, useState } from "react";
 
@@ -17,7 +30,7 @@ import { isBrowser } from "utils/env";
 const ITEM_PER_PAGE = 15;
 
 const BlogListLoading = () => (
-  <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={10} padding="6">
+  <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={10} padding="6" height="100%" overflow="hidden">
     {[1, 2, 3, 4, 5].map((i) => (
       <Box key={i}>
         <SkeletonCircle marginY="2" />
@@ -79,6 +92,8 @@ const _BlogListWithInfinityScroll = () => {
 
   const [disableGridLayout, setDisableGridLayout] = useState(false);
 
+  const isMobileWidth = useBreakpointValue({ base: true, md: false });
+
   const { data, loading, error, fetchMore, refetch, networkStatus } = useQuery(GetBlogListDocument, {
     variables: {
       ...BASIC_VARIABLE,
@@ -115,7 +130,7 @@ const _BlogListWithInfinityScroll = () => {
   return (
     <Flex flexDirection="column" height="100%">
       <Box ref={ref} overflow="auto" paddingRight="4" onScroll={onThrottleScroll}>
-        <BlogGrid data={data.repository.issues.nodes} disableGridLayout={disableGridLayout} />
+        <BlogGrid data={data.repository.issues.nodes} disableGridLayout={disableGridLayout || isMobileWidth} />
         {loading && data.repository.issues.nodes.length && (
           <Center>
             <Spinner />

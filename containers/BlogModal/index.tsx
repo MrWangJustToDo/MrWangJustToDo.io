@@ -1,7 +1,9 @@
-import { useOverlaysClose, useOverlaysOpen } from "hooks/useOverlay";
 import { omit } from "lodash-es";
 import { useRouter } from "next/router";
 import React, { memo, useEffect } from "react";
+
+import { useOverlaysClose, useOverlaysOpen } from "hooks/useOverlay";
+
 import { DetailModalBody, DetailModalHeader } from "./DetailModal";
 
 const _BlogModal = () => {

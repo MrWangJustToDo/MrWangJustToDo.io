@@ -1,16 +1,4 @@
-import {
-  styled,
-  useColorModeValue,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Button,
-  Icon,
-  Divider,
-  Wrap,
-  WrapItem,
-} from "@chakra-ui/react";
+import { useColorModeValue, Menu, MenuButton, MenuList, MenuItem, Button, Icon, Box, Divider, Wrap, WrapItem } from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
 import { useRef } from "react";
 import { AiOutlineDown, AiOutlineFile } from "react-icons/ai";
@@ -22,8 +10,6 @@ import { setMonacoTSXSupport } from "utils/monaco";
 
 import type monaco from "monaco-editor";
 
-const StyledMonaco = styled(Editor);
-
 export const Monaco = () => {
   const { onClose } = usePlayGround();
   const boxRef = useRef<HTMLDivElement>();
@@ -33,7 +19,7 @@ export const Monaco = () => {
   const currentFile = files[file];
   const theme = useColorModeValue("vs-light", "vs-dark");
   return (
-    <>
+    <Box height="100%">
       <Wrap paddingX="2" spacing="2" ref={boxRef}>
         <WrapItem>
           <Menu>
@@ -69,22 +55,22 @@ export const Monaco = () => {
         </WrapItem>
         <Divider marginY="2" />
       </Wrap>
-      <StyledMonaco
-        width="100%"
-        height={`calc(100% - ${height}px - 4px)`}
-        className="tour_playGround_editor"
-        theme={theme}
-        path={currentFile.name}
-        defaultValue={currentFile.content}
-        defaultLanguage={currentFile.language}
-        onMount={(editor, monaco) => {
-          monacoInstance.current = editor;
-          setMonacoTSXSupport(editor, monaco);
-        }}
-        onChange={() => {
-          setContent(monacoInstance.current?.getValue());
-        }}
-      />
-    </>
+      <Box height={`calc(100% - ${height}px - 2px)`} width="100%">
+        <Editor
+          className="tour_playGround_editor"
+          theme={theme}
+          path={currentFile.name}
+          defaultValue={currentFile.content}
+          defaultLanguage={currentFile.language}
+          onMount={(editor, monaco) => {
+            monacoInstance.current = editor;
+            setMonacoTSXSupport(editor, monaco);
+          }}
+          onChange={() => {
+            setContent(monacoInstance.current?.getValue());
+          }}
+        />
+      </Box>
+    </Box>
   );
 };

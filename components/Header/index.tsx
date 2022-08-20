@@ -11,11 +11,7 @@ const _Header = () => {
     <Container maxWidth={CONTAINER_WIDTH}>
       <GlobalStyle />
       <Flex paddingY="2" justifyContent="space-between" alignItems="center">
-        <Text
-          as="h1"
-          fontSize={{ base: "3xl", md: "6xl" }}
-          fontWeight={{ base: "bold", md: "extrabold" }}
-        >
+        <Text as="h1" fontSize={{ base: "3xl", md: "6xl" }} fontWeight={{ base: "bold", md: "extrabold" }}>
           Blog.
         </Text>
         <ColorMode />

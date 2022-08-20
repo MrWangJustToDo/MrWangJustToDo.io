@@ -1,21 +1,12 @@
 import { Portal, useBreakpointValue } from "@chakra-ui/react";
 import { useMemo } from "react";
 
-import {
-  OverlayArrayContext,
-  OverlayCloseContext,
-  OverlayOpenContext,
-  useOverlaysProps,
-} from "hooks/useOverlay";
+import { OverlayArrayContext, OverlayCloseContext, OverlayOpenContext, useOverlaysProps } from "hooks/useOverlay";
 
 import { DesktopOverlay } from "./DesktopOverlay";
 import { MobileOverlay } from "./MobileOverlay";
 
-export const ModuleManager = ({
-  children,
-}: {
-  children: JSX.Element | JSX.Element[];
-}) => {
+export const ModuleManager = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
   const { overlays, open, close } = useOverlaysProps();
   const overlaysObj = useBreakpointValue(
     useMemo(

@@ -119,15 +119,18 @@ const App = () => {
   const time = useTime();
 
   return <div>
-  <p>time: {time}</p>
-  <div>
-    <h2>React window example</h2>
-    <ReactWindowExample />
-  </div>
-  <div>
-    <h2>React Grid Layout example</h2>
-    <LocalStorageLayout />
-  </div>
+    <div>
+      <h2>MyReact timer</h2>
+      <p>Time: {time}</p>
+    </div>
+    <div>
+      <h2>MyReact window example</h2>
+      <ReactWindowExample />
+    </div>
+    <div>
+      <h2>MyReact Grid Layout example</h2>
+      <LocalStorageLayout />
+    </div>
   </div>
 }
 
@@ -367,6 +370,6 @@ ReactDOM.render(<App />, document.querySelector("#root"));
     id: "main",
     name: "index.html",
     language: "html",
-    content: "<h1 style='text-align: center;' >Play MyReact</h1> <div id='root'></div>",
+    content: "<h1 style='text-align: center;' >Play MyReact, open devtools to debug</h1> <div id='root'></div>",
   },
 };

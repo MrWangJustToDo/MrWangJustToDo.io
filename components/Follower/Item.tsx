@@ -1,14 +1,4 @@
-import {
-  Tooltip,
-  Box,
-  Text,
-  Flex,
-  Avatar,
-  Icon,
-  VStack,
-  StackDivider,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Tooltip, Box, Text, Flex, Avatar, Icon, VStack, StackDivider, useDisclosure } from "@chakra-ui/react";
 import { AiOutlineMail, AiOutlineUser } from "react-icons/ai";
 
 import { Hover } from "components/Hover";
@@ -22,23 +12,13 @@ type FollowerProps = {
   avatarUrl: string;
 };
 
-export const Follower = ({
-  isFirst,
-  name,
-  email,
-  avatarUrl,
-  bioHTML,
-}: FollowerProps) => {
+export const Follower = ({ isFirst, name, email, avatarUrl, bioHTML }: FollowerProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Hover>
       <Tooltip
         label={
-          <VStack
-            divider={<StackDivider borderColor="cardBorderColor" />}
-            alignItems="flex-start"
-            spacing="1"
-          >
+          <VStack divider={<StackDivider borderColor="cardBorderColor" />} alignItems="flex-start" spacing="1">
             <Flex alignItems="center" width="100%">
               <Icon as={AiOutlineUser} />
               <Text fontWeight="semibold" marginLeft="1" noOfLines={1}>

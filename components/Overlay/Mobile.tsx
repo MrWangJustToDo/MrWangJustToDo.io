@@ -1,31 +1,15 @@
 import { Box, Divider, useCallbackRef } from "@chakra-ui/react";
-import {
-  animate,
-  motion,
-  useMotionValue,
-  useTransform,
-} from "framer-motion";
+import { animate, motion, useMotionValue, useTransform } from "framer-motion";
 import { useCallback, useRef } from "react";
 
 import { useEffectOnce } from "hooks/useEffectOnce";
 import { useWindowSize } from "hooks/useWindowSize";
 
-import type {
-  PanInfo} from "framer-motion";
+import type { PanInfo } from "framer-motion";
 import type { OverlayProps } from "hooks/useOverlay";
 
 export const Mobile = (props: OverlayProps) => {
-  const {
-    id,
-    head,
-    body,
-    foot,
-    height,
-    className,
-    closeComplete,
-    closeHandler,
-    applyOverlay,
-  } = props;
+  const { id, head, body, foot, height, className, closeComplete, closeHandler, applyOverlay } = props;
 
   const isOpenRef = useRef(false);
 
@@ -35,15 +19,9 @@ export const Mobile = (props: OverlayProps) => {
 
   const indicatorRotation = useMotionValue(0);
 
-  const indicator1Transform = useTransform(
-    indicatorRotation,
-    (r) => `translateX(2px) rotate(${r}deg)`
-  );
+  const indicator1Transform = useTransform(indicatorRotation, (r) => `translateX(2px) rotate(${r}deg)`);
 
-  const indicator2Transform = useTransform(
-    indicatorRotation,
-    (r) => `translateX(-2px) rotate(${-1 * r}deg)`
-  );
+  const indicator2Transform = useTransform(indicatorRotation, (r) => `translateX(-2px) rotate(${-1 * r}deg)`);
 
   const y = useMotionValue(0);
 
@@ -104,14 +82,7 @@ export const Mobile = (props: OverlayProps) => {
       dragConstraints={{ bottom: 0, top: 0 }}
       style={{ height: "100%", width: "100%", position: "absolute" }}
     >
-      <Box
-        position="absolute"
-        width="100%"
-        height="100%"
-        left="0"
-        right="0"
-        onClick={closeHandler}
-      />
+      <Box position="absolute" width="100%" height="100%" left="0" right="0" onClick={closeHandler} />
       <motion.div
         ref={modalRef}
         style={{
@@ -133,13 +104,7 @@ export const Mobile = (props: OverlayProps) => {
         className={className}
         onAnimationComplete={animationComplete}
       >
-        <Box
-          height="25px"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          backgroundColor="cardBackgroundColor"
-        >
+        <Box height="25px" display="flex" alignItems="center" justifyContent="center" backgroundColor="cardBackgroundColor">
           <motion.span
             style={{
               width: "18px",
@@ -161,22 +126,10 @@ export const Mobile = (props: OverlayProps) => {
           />
         </Box>
         <Divider />
-        <Box
-          backgroundColor="cardBackgroundColor"
-          paddingX="3.5"
-          paddingY="1.5"
-        >
+        <Box backgroundColor="cardBackgroundColor" paddingX="3.5" paddingY="1.5">
           {head}
         </Box>
-        <Box
-          flex="1"
-          id="modal-scroll-box"
-          paddingX="3.5"
-          marginTop='-1px'
-          overflow="auto"
-          position="relative"
-          backgroundColor="cardBackgroundColor"
-        >
+        <Box flex="1" id="modal-scroll-box" paddingX="3.5" marginTop="-1px" overflow="auto" position="relative" backgroundColor="cardBackgroundColor">
           {body}
         </Box>
         <Box backgroundColor="cardBackgroundColor" padding="3.5" paddingY="1.5">

@@ -1,8 +1,11 @@
-import { Box, BoxProps, ButtonGroup, Icon, IconButton } from "@chakra-ui/react";
-import { GetBlogListQuery } from "graphql/generated";
+import { Box, ButtonGroup, Icon, IconButton } from "@chakra-ui/react";
 import { omit } from "lodash-es";
 import { useRouter } from "next/router";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+
+import type { BoxProps} from "@chakra-ui/react";
+import type { GetBlogListQuery } from "graphql/generated";
+
 
 export const Pagination = ({
   paginationProps,
@@ -12,8 +15,7 @@ export const Pagination = ({
   containerProps?: Omit<BoxProps, "children">;
 }) => {
   const { push, query } = useRouter();
-  const { hasNextPage, hasPreviousPage, endCursor, startCursor } =
-    paginationProps;
+  const { hasNextPage, hasPreviousPage, endCursor, startCursor } = paginationProps;
 
   return (
     <Box {...containerProps}>

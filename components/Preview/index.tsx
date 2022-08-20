@@ -1,5 +1,5 @@
+import { memo } from "react";
+
 import { IFramePreview } from "./Preview";
 
-export const Preview = () => {
-  return <IFramePreview />;
-};
+export const Preview = memo(IFramePreview);

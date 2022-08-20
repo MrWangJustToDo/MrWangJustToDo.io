@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { actionHandler } from "utils/action";
 import { pinchHelper } from "utils/dom";
@@ -12,10 +6,8 @@ import { PointerTracker } from "utils/pointer";
 
 import { useAutoActionHandler } from "./useAuto";
 
-import type {
-  RefObject} from "react";
-import type { Pointer} from "utils/pointer";
-
+import type { RefObject } from "react";
+import type { Pointer } from "utils/pointer";
 
 interface ApplyChangeOpts {
   panX?: number;
@@ -45,11 +37,7 @@ interface UsePinchProps<T, K> {
 }
 
 interface UsePinchType {
-  <T extends HTMLElement, K extends HTMLElement>(props?: UsePinchProps<T, K>): [
-    RefObject<T>,
-    RefObject<K>,
-    boolean
-  ];
+  <T extends HTMLElement, K extends HTMLElement>(props?: UsePinchProps<T, K>): [RefObject<T>, RefObject<K>, boolean];
 }
 
 interface UseWheelProps {
@@ -72,16 +60,10 @@ interface UseTouchTypes {
 }
 
 interface UseInitRefTypes {
-  <T extends HTMLElement, K extends HTMLElement>(props: {
-    coverRef: RefObject<K>;
-    pinchRef: RefObject<T>;
-  }): void;
+  <T extends HTMLElement, K extends HTMLElement>(props: { coverRef: RefObject<K>; pinchRef: RefObject<T> }): void;
 }
 
-const useInitRef: UseInitRefTypes = <
-  T extends HTMLElement,
-  K extends HTMLElement
->({
+const useInitRef: UseInitRefTypes = <T extends HTMLElement, K extends HTMLElement>({
   pinchRef,
   coverRef,
 }: {
@@ -101,9 +83,7 @@ const useInitRef: UseInitRefTypes = <
     if (pinch) {
       pinch.setAttribute("data-pinchTarget", "true");
       pinch.setAttribute("draggable", "false");
-      pinch
-        .querySelectorAll("img")
-        .forEach((img) => img.setAttribute("draggable", "false"));
+      pinch.querySelectorAll("img").forEach((img) => img.setAttribute("draggable", "false"));
     }
   }, [pinchRef]);
 };
@@ -121,20 +101,14 @@ const useMatrix: UseMatrixType = () => {
 const useWheel: UseWheelType = ({ action, ref }) => {
   const addListener = useCallback<(action: (e?: WheelEvent) => void) => void>(
     (action) => {
-      actionHandler<HTMLElement, void>(ref.current, (ele) =>
-        ele.addEventListener("wheel", action)
-      );
+      actionHandler<HTMLElement, void>(ref.current, (ele) => ele.addEventListener("wheel", action));
     },
     [ref]
   );
 
-  const removeListener = useCallback<
-    (action: (e?: WheelEvent) => void) => void
-  >(
+  const removeListener = useCallback<(action: (e?: WheelEvent) => void) => void>(
     (action) => {
-      actionHandler<HTMLElement, void>(ref.current, (ele) =>
-        ele.removeEventListener("wheel", action)
-      );
+      actionHandler<HTMLElement, void>(ref.current, (ele) => ele.removeEventListener("wheel", action));
     },
     [ref]
   );
@@ -184,46 +158,30 @@ const useTouch: UseTouchTypes = ({ ref, action, scaleRef }) => {
     twoFinger.current = false;
   }, []);
 
-  const addTouchStartListener = useCallback<
-    (action: (e?: TouchEvent) => void) => void
-  >(
+  const addTouchStartListener = useCallback<(action: (e?: TouchEvent) => void) => void>(
     (action) => {
-      actionHandler<HTMLElement, void>(ref.current, (ele) =>
-        ele.addEventListener("touchstart", action)
-      );
+      actionHandler<HTMLElement, void>(ref.current, (ele) => ele.addEventListener("touchstart", action));
     },
     [ref]
   );
 
-  const addTouchEndListener = useCallback<
-    (action: (e?: TouchEvent) => void) => void
-  >(
+  const addTouchEndListener = useCallback<(action: (e?: TouchEvent) => void) => void>(
     (action) => {
-      actionHandler<HTMLElement, void>(ref.current, (ele) =>
-        ele.addEventListener("touchend", action)
-      );
+      actionHandler<HTMLElement, void>(ref.current, (ele) => ele.addEventListener("touchend", action));
     },
     [ref]
   );
 
-  const removeTouchStartListener = useCallback<
-    (action: (e?: TouchEvent) => void) => void
-  >(
+  const removeTouchStartListener = useCallback<(action: (e?: TouchEvent) => void) => void>(
     (action) => {
-      actionHandler<HTMLElement, void>(ref.current, (ele) =>
-        ele.removeEventListener("touchstart", action)
-      );
+      actionHandler<HTMLElement, void>(ref.current, (ele) => ele.removeEventListener("touchstart", action));
     },
     [ref]
   );
 
-  const removeTouchEndListener = useCallback<
-    (action: (e?: TouchEvent) => void) => void
-  >(
+  const removeTouchEndListener = useCallback<(action: (e?: TouchEvent) => void) => void>(
     (action) => {
-      actionHandler<HTMLElement, void>(ref.current, (ele) =>
-        ele.removeEventListener("touchend", action)
-      );
+      actionHandler<HTMLElement, void>(ref.current, (ele) => ele.removeEventListener("touchend", action));
     },
     [ref]
   );
@@ -242,20 +200,8 @@ const useTouch: UseTouchTypes = ({ ref, action, scaleRef }) => {
 };
 
 // 让任何元素可以pinch
-export const usePinch: UsePinchType = <
-  T extends HTMLElement,
-  K extends HTMLElement
->(
-  props: UsePinchProps<T, K> = {}
-) => {
-  const {
-    maxScale = 8,
-    minScale = 1,
-    startScale,
-    endScale,
-    forWardCoverRef,
-    forWardPinchRef,
-  } = props;
+export const usePinch: UsePinchType = <T extends HTMLElement, K extends HTMLElement>(props: UsePinchProps<T, K> = {}) => {
+  const { maxScale = 8, minScale = 1, startScale, endScale, forWardCoverRef, forWardPinchRef } = props;
   const [scale, setScale] = useState(false);
   const show = useCallback(() => setScale(true), []);
   const hide = useCallback(() => setScale(false), []);
@@ -319,16 +265,7 @@ export const usePinch: UsePinchType = <
         }
       }
     },
-    [
-      targetPinchRef,
-      maxScale,
-      matrix,
-      minScale,
-      hide,
-      endScale,
-      show,
-      startScale,
-    ]
+    [targetPinchRef, maxScale, matrix, minScale, hide, endScale, show, startScale]
   );
 
   const setTransform = useCallback(
@@ -399,13 +336,7 @@ export const usePinch: UsePinchType = <
 
   const applyChange = useCallback(
     (opts: ApplyChangeOpts = {}) => {
-      const {
-        panX = 0,
-        panY = 0,
-        originX = 0,
-        originY = 0,
-        scaleDiff = 1,
-      } = opts;
+      const { panX = 0, panY = 0, originX = 0, originY = 0, scaleDiff = 1 } = opts;
       if (matrix.current) {
         const newMatrix = pinchHelper
           .createMatrix()
@@ -471,28 +402,16 @@ export const usePinch: UsePinchType = <
       const currentRect = item.getBoundingClientRect();
 
       // For calculating panning movement
-      const prevMidpoint = pinchHelper.getMidpoint(
-        previousPointers[0],
-        previousPointers[1]
-      );
-      const newMidpoint = pinchHelper.getMidpoint(
-        currentPointers[0],
-        currentPointers[1]
-      );
+      const prevMidpoint = pinchHelper.getMidpoint(previousPointers[0], previousPointers[1]);
+      const newMidpoint = pinchHelper.getMidpoint(currentPointers[0], currentPointers[1]);
 
       // Midpoint within the element
       const originX = prevMidpoint.clientX - currentRect.left;
       const originY = prevMidpoint.clientY - currentRect.top;
 
       // Calculate the desired change in scale
-      const prevDistance = pinchHelper.getDistance(
-        previousPointers[0],
-        previousPointers[1]
-      );
-      const newDistance = pinchHelper.getDistance(
-        currentPointers[0],
-        currentPointers[1]
-      );
+      const prevDistance = pinchHelper.getDistance(previousPointers[0], previousPointers[1]);
+      const newDistance = pinchHelper.getDistance(currentPointers[0], currentPointers[1]);
       const scaleDiff = prevDistance ? newDistance / prevDistance : 1;
 
       applyChange({

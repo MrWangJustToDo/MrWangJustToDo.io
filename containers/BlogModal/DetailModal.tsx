@@ -1,36 +1,25 @@
-import { useEffect, useMemo } from "react";
 import { NetworkStatus, useApolloClient, useQuery } from "@apollo/client";
-import {
-  Box,
-  Text,
-  SkeletonText,
-  SkeletonCircle,
-  useCallbackRef,
-  Icon,
-  IconButton,
-} from "@chakra-ui/react";
-import { mark } from "utils/markdown";
-import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "config/source";
-import { GetSingleBlogDocument, GetSingleBlogQuery } from "graphql/generated";
+import { Box, Text, SkeletonText, SkeletonCircle, useCallbackRef, Icon, IconButton } from "@chakra-ui/react";
+import { throttle } from "lodash-es";
+import { useEffect, useMemo } from "react";
+import { AiOutlineReload } from "react-icons/ai";
+
+import { Actor } from "components/Actor";
+import { Card } from "components/Card";
 import { Comment } from "components/Comment";
 import { ErrorCom } from "components/Error";
-import { Actor } from "components/Actor";
-import { throttle } from "lodash-es";
-import { AiOutlineReload } from "react-icons/ai";
 import { Hover } from "components/Hover";
-import { Card } from "components/Card";
+import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "config/source";
+import { GetSingleBlogDocument } from "graphql/generated";
+import { mark } from "utils/markdown";
 
-const RenderWrapper = ({
-  data,
-  Render,
-}: {
-  data: GetSingleBlogQuery;
-  Render: ({ data }: { data: GetSingleBlogQuery }) => JSX.Element;
-}) => {
-  return Render({ data });
-};
+import type { GetSingleBlogQuery } from "graphql/generated";
 
 const COMMENT_LENGTH = 15;
+
+const RenderWrapper = ({ data, Render }: { data: GetSingleBlogQuery; Render: ({ data }: { data: GetSingleBlogQuery }) => JSX.Element }) => {
+  return Render({ data });
+};
 
 export const DetailModal = ({
   id,
@@ -38,22 +27,19 @@ export const DetailModal = ({
   RenderLoading,
 }: {
   id: string;
-  RenderLoading: () => JSX.Element;
+  RenderLoading: JSX.Element;
   Render: ({ data }: { data: GetSingleBlogQuery }) => JSX.Element;
 }) => {
-  const { data, loading, error, fetchMore, networkStatus } = useQuery(
-    GetSingleBlogDocument,
-    {
-      variables: {
-        name: BLOG_REPOSITORY,
-        owner: BLOG_REPOSITORY_OWNER,
-        number: Number(id),
-        first: COMMENT_LENGTH,
-      },
-      skip: id === undefined,
-      notifyOnNetworkStatusChange: true,
-    }
-  );
+  const { data, loading, error, fetchMore, networkStatus } = useQuery(GetSingleBlogDocument, {
+    variables: {
+      name: BLOG_REPOSITORY,
+      owner: BLOG_REPOSITORY_OWNER,
+      number: Number(id),
+      first: COMMENT_LENGTH,
+    },
+    skip: id === undefined,
+    notifyOnNetworkStatusChange: true,
+  });
 
   const fetchMoreCallback = useCallbackRef(() => {
     if (data?.repository?.issue?.comments?.pageInfo?.hasNextPage) {
@@ -77,18 +63,14 @@ export const DetailModal = ({
   );
 
   useEffect(() => {
-    const scrollElement = document.querySelector(
-      "#modal-scroll-box"
-    ) as HTMLDivElement;
+    const scrollElement = document.querySelector("#modal-scroll-box") as HTMLDivElement;
     if (scrollElement) {
       scrollElement.addEventListener("scroll", onThrottleScroll);
-      return () =>
-        scrollElement.removeEventListener("scroll", onThrottleScroll);
+      return () => scrollElement.removeEventListener("scroll", onThrottleScroll);
     }
   }, [onThrottleScroll]);
 
-  if (loading && networkStatus !== NetworkStatus.fetchMore)
-    return <RenderLoading />;
+  if (loading && networkStatus !== NetworkStatus.fetchMore) return RenderLoading;
 
   if (error) return <ErrorCom error={error} />;
 
@@ -98,17 +80,14 @@ export const DetailModal = ({
 export const DetailModalBody = ({ id }: { id: string }) => (
   <DetailModal
     id={id}
-    RenderLoading={() => (
+    RenderLoading={
       <Box padding="2">
         <SkeletonText marginTop="4" noOfLines={8} />
       </Box>
-    )}
+    }
     Render={({ data }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const rendered = useMemo(
-        () => mark.render(data?.repository?.issue?.body || ""),
-        [data]
-      );
+      const rendered = useMemo(() => mark.render(data?.repository?.issue?.body || ""), [data]);
 
       return (
         <>
@@ -124,12 +103,7 @@ export const DetailModalBody = ({ id }: { id: string }) => (
                 height: 6,
               }}
             />
-            <Box
-              className="typo"
-              marginTop="3.5"
-              fontSize={{ base: "sm", lg: "md" }}
-              dangerouslySetInnerHTML={{ __html: rendered }}
-            />
+            <Box className="typo" marginTop="3.5" fontSize={{ base: "sm", lg: "md" }} dangerouslySetInnerHTML={{ __html: rendered }} />
           </Card>
           <Comment data={data.repository.issue.comments.nodes} />
         </>
@@ -141,13 +115,13 @@ export const DetailModalBody = ({ id }: { id: string }) => (
 export const DetailModalHeader = ({ id }: { id: string }) => (
   <DetailModal
     id={id}
-    RenderLoading={() => (
+    RenderLoading={
       <Box padding="2">
         <SkeletonText noOfLines={1} paddingRight="6" />
         <SkeletonCircle marginY="3" />
         <SkeletonText noOfLines={1} spacing="4" />
       </Box>
-    )}
+    }
     Render={({ data }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const client = useApolloClient();
@@ -162,13 +136,7 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
           <Text as="h1" fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
             {data?.repository?.issue?.title}
             <Hover marginLeft="2" display="inline-flex" alignItems="center">
-              <IconButton
-                size="sm"
-                variant="link"
-                aria-label="reload"
-                onClick={() => refetch()}
-                icon={<Icon as={AiOutlineReload} />}
-              />
+              <IconButton size="sm" variant="link" aria-label="reload" onClick={() => refetch()} icon={<Icon as={AiOutlineReload} />} />
             </Hover>
           </Text>
         </Box>

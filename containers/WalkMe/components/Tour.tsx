@@ -13,8 +13,6 @@ const empty = [];
 export const Tour = ({ onClickModal, step, steps, children }: WalkMeTourProps) => {
   const currentStep = steps[step];
 
-  console.log('foo')
-
   useLockBodyScroll(true);
 
   const { sizes, debouncedRefresh } = useTourTargetSize(currentStep?.selector, currentStep?.highlightedSelectors || empty, currentStep?.action);

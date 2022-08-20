@@ -21,19 +21,11 @@ const smGenerate = _generateFunction(1);
 const mdGenerate = _generateFunction(2);
 const lgGenerate = _generateFunction(3);
 
-export const useGetResponseListLayout = (
-  items: { id: string; bodyText: string }[]
-) => {
+export const useGetResponseListLayout = (items: { id: string; bodyText: string }[]) => {
   return useMemo(() => {
-    const sm = items.map(({ id, bodyText }, i) =>
-      smGenerate(i, id, bodyText.length)
-    );
-    const md = items.map(({ id, bodyText }, i) =>
-      mdGenerate(i, id, bodyText.length)
-    );
-    const lg = items.map(({ id, bodyText }, i) =>
-      lgGenerate(i, id, bodyText.length)
-    );
+    const sm = items.map(({ id, bodyText }, i) => smGenerate(i, id, bodyText.length));
+    const md = items.map(({ id, bodyText }, i) => mdGenerate(i, id, bodyText.length));
+    const lg = items.map(({ id, bodyText }, i) => lgGenerate(i, id, bodyText.length));
     return {
       lg,
       md,

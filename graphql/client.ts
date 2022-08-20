@@ -1,9 +1,4 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  HttpLink,
-  from,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, HttpLink, from } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { useMemo } from "react";
@@ -13,8 +8,7 @@ import { BLOG_API } from "config/source";
 import { isBrowser } from "utils/env";
 import { log } from "utils/log";
 
-import type {
-  NormalizedCacheObject} from "@apollo/client";
+import type { NormalizedCacheObject } from "@apollo/client";
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
@@ -22,17 +16,11 @@ const httpLink = new HttpLink({ uri: BLOG_API });
 
 const onErrorLink = onError(({ networkError, graphQLErrors }) => {
   if (networkError) {
-    log(
-      `network error \n[message]: ${networkError.message}  \n[stack]: ${networkError.stack}`,
-      "error"
-    );
+    log(`network error \n[message]: ${networkError.message}  \n[stack]: ${networkError.stack}`, "error");
   }
   if (graphQLErrors?.length) {
     graphQLErrors.forEach((error) => {
-      log(
-        `graphql error \n[message]: ${error.message} \n[stack]: ${error.stack}`,
-        "error"
-      );
+      log(`graphql error \n[message]: ${error.message} \n[stack]: ${error.stack}`, "error");
     });
   }
 });
@@ -41,11 +29,7 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization: `token ${
-        isBrowser
-          ? atob(process.env.NEXT_PUBLIC_TOKEN)
-          : process.env.NEXT_PUBLIC_TOKEN
-      }`,
+      Authorization: `token ${isBrowser ? atob(process.env.NEXT_PUBLIC_TOKEN) : process.env.NEXT_PUBLIC_TOKEN}`,
     },
   };
 });
@@ -73,9 +57,7 @@ const autoMergeCache = new InMemoryCache({
           merge(existing = { nodes: [] }, incoming) {
             const isList = !!incoming.nodes;
             if (isList) {
-              const addedNodes = incoming.nodes.filter((node) =>
-                existing.nodes.every((_node) => _node.__ref !== node.__ref)
-              );
+              const addedNodes = incoming.nodes.filter((node) => existing.nodes.every((_node) => _node.__ref !== node.__ref));
               return {
                 ...existing,
                 ...incoming,

@@ -22,13 +22,12 @@ const mark = new Mark({
             `${p}<span class='d-inline-block text-center border-right pr-2 mr-2 border-dark' style='min-width: ${minWidth}em; line-height: 1.5'>${
               idx + 1
             }</span>${c}\n`,
-          `<div class='overflow-hidden w-100 mb-2' style='font-size: 0px'>
-            <div style='opacity: 0; font-size: 12px'>1</div>
-            <b class='position-absolute text-info' style='left: 10px; font-size: 12px; top: 4px'>${lang}</b>
-            <div class='position-absolute w-100 border-bottom border-dark' style='left: 0'></div>
+          `<div class='w-100 position-absolute' style='left: 0; top: 0; font-size: 0px'>
+            <b class='position-absolute text-info' style='left: 10px; font-size: 12px; top: 4px;'>${lang}</b>
+            <div class='position-absolute w-100 border-bottom border-dark' style='left: 0; top: 24px;'></div>
           </div>`
         );
-        return `<pre class="rounded position-relative"><code class="hljs ${lang} p-2">${html}</code></pre>`;
+        return `<pre class="rounded position-relative"><code class="hljs ${lang}" style='padding-top: 30px;'>${html}</code></pre>`;
       } catch (__) {}
     }
     return (

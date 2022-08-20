@@ -1,11 +1,5 @@
 import { findLast } from "lodash-es";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useRef, useState } from "react";
 
 import { delay } from "utils/delay";
 import { applyOverlaysStyles, cleanupOverlaysStyles } from "utils/dom";
@@ -40,9 +34,7 @@ let count = 0;
 
 export const OverlayOpenContext = createContext<UseOverlayOpenType>(() => void 0);
 
-export const OverlayCloseContext = createContext<
-  ({ modalId, closeAll }?: { modalId?: string; closeAll?: boolean }) => void
->(() => void 0);
+export const OverlayCloseContext = createContext<({ modalId, closeAll }?: { modalId?: string; closeAll?: boolean }) => void>(() => void 0);
 
 export const OverlayArrayContext = createContext<{
   desktop: Array<OverlayProps>;
@@ -109,22 +101,19 @@ export const useOverlaysProps = () => {
     },
     [forceUpdate, applyOverlayStyle]
   );
-  const close = useCallback(
-    (props?: { modalId?: string; closeAll?: boolean }) => {
-      const allOverlay = overlaysRef.current;
-      const { modalId, closeAll } = props || {};
-      if (modalId !== undefined) {
-        const currentOverlay = allOverlay.find((n) => n.id === modalId);
-        currentOverlay?.closeHandler();
-      } else if (closeAll) {
-        allOverlay.filter((n) => n.showState).forEach((n) => n?.closeHandler());
-      } else {
-        const currentTopOverlay = findLast(allOverlay, (n) => n.showState);
-        currentTopOverlay?.closeHandler();
-      }
-    },
-    []
-  );
+  const close = useCallback((props?: { modalId?: string; closeAll?: boolean }) => {
+    const allOverlay = overlaysRef.current;
+    const { modalId, closeAll } = props || {};
+    if (modalId !== undefined) {
+      const currentOverlay = allOverlay.find((n) => n.id === modalId);
+      currentOverlay?.closeHandler();
+    } else if (closeAll) {
+      allOverlay.filter((n) => n.showState).forEach((n) => n?.closeHandler());
+    } else {
+      const currentTopOverlay = findLast(allOverlay, (n) => n.showState);
+      currentTopOverlay?.closeHandler();
+    }
+  }, []);
   return { overlays, open, close };
 };
 

@@ -147,7 +147,6 @@
   var asyncUpdateTimeLimit = 8;
   var globalLoop = /*#__PURE__*/createRef(false);
   var globalDispatch = /*#__PURE__*/createRef( /*#__PURE__*/new EmptyDispatch());
-  var rootFiber = /*#__PURE__*/createRef(null);
   var currentRunningFiber = /*#__PURE__*/createRef(null);
   var currentFunctionFiber = /*#__PURE__*/createRef(null);
   var currentHookDeepIndex = /*#__PURE__*/createRef(0);
@@ -2626,20 +2625,8 @@
     }
   };
 
-  var getFiberWithDom = function getFiberWithDom(fiber, transform) {
-    if (fiber) {
-      if (fiber.dom) return fiber;
-      return getFiberWithDom(transform(fiber), transform);
-    }
-
-    return null;
-  };
-
   var reconcileMount = function reconcileMount(fiber, hydrate) {
-    var parentDomFiber = getFiberWithDom(fiber.parent, function (f) {
-      return f.parent;
-    }) || rootFiber.current;
-    globalDispatch.current.reconcileCommit(fiber, hydrate, parentDomFiber);
+    globalDispatch.current.reconcileCommit(fiber, hydrate, fiber);
   };
 
   var startRender = function startRender(fiber, hydrate) {
@@ -2794,6 +2781,15 @@
       return globalDispatch.current.reconcileUpdate(l);
     });
     pendingUpdateFiberListArray.current = [];
+  };
+
+  var getFiberWithDom = function getFiberWithDom(fiber, transform) {
+    if (fiber) {
+      if (fiber.dom) return fiber;
+      return getFiberWithDom(transform(fiber), transform);
+    }
+
+    return null;
   };
 
   var currentYield = null;
@@ -3111,7 +3107,17 @@
     if (!fiber) return null;
     if (fiber.__isPortal__) return null;
     if (fiber.dom) return fiber;
-    return getFiberWithDom(transform(fiber), transform);
+    var nextFibers = transform(fiber);
+
+    if (Array.isArray(nextFibers)) {
+      return nextFibers.reduce(function (p, c) {
+        if (p) return p;
+        p = getFiberWithDom(c, transform);
+        return p;
+      }, null);
+    } else {
+      return getFiberWithDom(nextFibers, transform);
+    }
   };
 
   var getInsertBeforeDomFromSibling = function getInsertBeforeDomFromSibling(fiber) {
@@ -3120,7 +3126,7 @@
 
     if (sibling) {
       return getFiberWithDom$1(sibling, function (f) {
-        return f.child;
+        return f.children;
       }) || getInsertBeforeDomFromSibling(sibling);
     } else {
       return null;
@@ -3144,16 +3150,15 @@
     if (fiber.__isPlainNode__ || fiber.__isTextNode__) {
       parentDOM.insertBefore(fiber.dom, beforeDOM);
       return;
-    } // let child = fiber.child;
-    // while (child) {
-    //   insertBefore(child, beforeDOM, parentDOM);
-    //   child = child.sibling;
-    // }
+    }
 
+    var child = fiber.child;
 
-    fiber.children.forEach(function (f) {
-      return insertBefore(f, beforeDOM, parentDOM);
-    });
+    while (child) {
+      insertBefore(child, beforeDOM, parentDOM);
+      child = child.sibling;
+    } // fiber.children.forEach((f) => insertBefore(f, beforeDOM, parentDOM));
+
   };
 
   var position = function position(fiber, parentFiberWithDom) {
@@ -3829,7 +3834,6 @@
     }, element);
     fiber.dom = container;
     fiber.__root__ = true;
-    rootFiber.current = fiber;
     container.setAttribute == null ? void 0 : container.setAttribute('render', 'MyReact');
     container.__fiber__ = fiber;
     startRender(fiber);
@@ -3844,15 +3848,17 @@
     }, element);
     fiber.dom = container;
     fiber.__root__ = true;
-    rootFiber.current = fiber;
     container.setAttribute == null ? void 0 : container.setAttribute('hydrate', 'MyReact');
     container.__fiber__ = fiber;
     startRender(fiber, true);
     isHydrateRender.current = false;
   };
 
-  var append$2 = function append(fiber, parentDom) {
+  var append$2 = function append(fiber, parentFiberWithDom) {
     if (fiber.__pendingAppend__) {
+      if (!fiber.dom || !parentFiberWithDom.dom) throw new Error('append error');
+      var parentDom = parentFiberWithDom.dom;
+
       if (fiber.dom) {
         parentDom.appendChild(fiber.dom);
       }
@@ -4098,7 +4104,7 @@
       safeCallWithFiber({
         fiber: _fiber,
         action: function action() {
-          return append$2(_fiber, _parentFiberWithDom.dom);
+          return append$2(_fiber, _parentFiberWithDom);
         }
       });
 
@@ -4129,7 +4135,10 @@
     };
 
     _proto.pendingCreate = function pendingCreate(_fiber) {
-      if (_fiber.__isPortal__) throw new Error('should not use portal element on the server');
+      if (_fiber.__isPortal__) {
+        throw new Error('should not use portal element on the server');
+      }
+
       if (!_fiber.__isTextNode__ && !_fiber.__isPlainNode__) return;
       _fiber.__pendingCreate__ = true;
     };
@@ -4178,7 +4187,6 @@
     }, element);
     fiber.dom = container;
     fiber.__root__ = true;
-    rootFiber.current = fiber;
     startRender(fiber, false);
     isServerRender.current = false;
     return container.toString();
@@ -4562,7 +4570,8 @@
     useDebugValue: useDebugValue,
     useLayoutEffect: useLayoutEffect,
     useImperativeHandle: useImperativeHandle,
-    Children: Children
+    Children: Children,
+    version: '0.0.1'
   };
   var ReactDOM = {
     render: render,
@@ -4571,7 +4580,8 @@
     createPortal: createPortal,
     renderToString: renderToString,
     unmountComponentAtNode: unmountComponentAtNode,
-    unstable_batchedUpdates: unstable_batchedUpdates
+    unstable_batchedUpdates: unstable_batchedUpdates,
+    version: '0.0.1'
   };
 
   var mixin = /*#__PURE__*/_extends({}, React, ReactDOM);

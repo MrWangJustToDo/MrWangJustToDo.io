@@ -1,19 +1,10 @@
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalOverlay,
-} from "@chakra-ui/react";
+import { Modal, ModalBody, ModalContent, ModalOverlay } from "@chakra-ui/react";
 
 import { Editor } from "components/Editor";
 import { GridCard } from "components/GridCard";
 import { StyledReactGridLayout } from "components/GridLayout";
 import { Preview } from "components/Preview";
-import {
-  DISABLE_DRAG_HANDLER_SELECTOR,
-  DRAG_HANDLER_SELECTOR,
-  GRID_ROW_HEIGHT,
-} from "config/gridLayout";
+import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, GRID_ROW_HEIGHT } from "config/gridLayout";
 import { usePlayGround } from "hooks/usePlayGround";
 
 const GRID_COLS = { lg: 12, md: 12, sm: 12, xs: 2, xxs: 2 };
@@ -90,12 +81,7 @@ const PlayGroundContent = () => {
 export const PlayGround = () => {
   const { isOpen, onClose } = usePlayGround();
   return (
-    <Modal
-      size="full"
-      isOpen={isOpen}
-      scrollBehavior="inside"
-      onClose={onClose}
-    >
+    <Modal size="full" isOpen={isOpen} scrollBehavior="inside" onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalBody id="modal-scroll-box" paddingTop="0">

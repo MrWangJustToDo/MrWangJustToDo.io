@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { log } from "utils/log";
 
-import type { RefObject} from "react";
+import type { RefObject } from "react";
 
 interface UseAutoActionHandlerProps<T, K> {
   action?: (e?: T) => void;
@@ -22,10 +22,7 @@ interface UseAutoActionHandlerProps<T, K> {
 }
 
 interface UseAutoActionHandlerType {
-  <T extends Event, K>(
-    props: UseAutoActionHandlerProps<T, K>,
-    ...deps: unknown[]
-  ): void;
+  <T extends Event, K>(props: UseAutoActionHandlerProps<T, K>, ...deps: unknown[]): void;
 }
 
 export const useAutoActionHandler: UseAutoActionHandlerType = <T, K>({
@@ -47,16 +44,12 @@ export const useAutoActionHandler: UseAutoActionHandlerType = <T, K>({
   const actionStateRef = useRef<boolean>();
   actionStateRef.current = actionState;
   useEffect(() => {
-    const currentRightNow = rightNow
-      ? rightNow
-      : typeof getRightNowState === "function"
-      ? getRightNowState()
-      : false;
+    const currentRightNow = rightNow ? rightNow : typeof getRightNowState === "function" ? getRightNowState() : false;
     const currentAction = action || actionCallback;
     if (!currentAction) {
       throw new Error("autoAction need a action to handle");
     }
-    const actionCallbackWithState = (...props: any[]) => {
+    const actionCallbackWithState = (...props: unknown[]) => {
       if (actionStateRef.current) currentAction.call(null, ...props);
     };
     // 定时器
@@ -76,9 +69,7 @@ export const useAutoActionHandler: UseAutoActionHandlerType = <T, K>({
     } else if (addListener) {
       // 事件监听
       if (!removeListener) {
-        throw new Error(
-          "every addListener need a removeListener! ---> useAutoActionHandler"
-        );
+        throw new Error("every addListener need a removeListener! ---> useAutoActionHandler");
       } else {
         if (currentRightNow) actionCallbackWithState();
         const ele = forwardRef?.current || undefined;
@@ -87,9 +78,7 @@ export const useAutoActionHandler: UseAutoActionHandlerType = <T, K>({
       }
     } else if (addListenerCallback) {
       if (!removeListenerCallback) {
-        throw new Error(
-          "every addListenerCallback need a removeListenerCallback! ---> useAutoActionHandler"
-        );
+        throw new Error("every addListenerCallback need a removeListenerCallback! ---> useAutoActionHandler");
       } else {
         if (currentRightNow) actionCallbackWithState();
         const ele = forwardRef?.current || undefined;
@@ -99,15 +88,5 @@ export const useAutoActionHandler: UseAutoActionHandlerType = <T, K>({
     } else if (currentRightNow) {
       actionCallbackWithState();
     }
-  }, [
-    action,
-    timer,
-    once,
-    delayTime,
-    rightNow,
-    addListener,
-    removeListener,
-    forwardRef,
-    ...deps,
-  ]);
+  }, [action, timer, once, delayTime, rightNow, addListener, removeListener, forwardRef, ...deps]);
 };

@@ -7,9 +7,7 @@ import { mark } from "utils/markdown";
 
 import type { GetSingleBlogQuery } from "graphql/generated";
 
-export const Item = (
-  props: GetSingleBlogQuery["repository"]["issue"]["comments"]["nodes"][0]
-) => {
+export const Item = (props: GetSingleBlogQuery["repository"]["issue"]["comments"]["nodes"][0]) => {
   const {
     body,
     author: { login, avatarUrl },
@@ -28,12 +26,7 @@ export const Item = (
           height: 6,
         }}
       />
-      <Box
-        marginTop="3.5"
-        className="typo"
-        fontSize="small"
-        dangerouslySetInnerHTML={{ __html: rendered }}
-      />
+      <Box marginTop="3.5" className="typo" fontSize="small" dangerouslySetInnerHTML={{ __html: rendered }} />
     </Card>
   );
 };
