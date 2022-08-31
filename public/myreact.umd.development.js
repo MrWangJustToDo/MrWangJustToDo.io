@@ -1487,12 +1487,19 @@
   var ListTreeNode = function ListTreeNode(value) {
     this.prev = null;
     this.next = null;
+    this.children = [];
     this.value = value;
   };
   var LinkTreeList = /*#__PURE__*/function () {
     function LinkTreeList() {
       this.rawArray = [];
-      this.listArray = [];
+      this.scopeRoot = {
+        index: -1,
+        value: new ListTreeNode(false)
+      };
+      this.scopeArray = []; // listArray: ListTreeNode<T>[][] = [];
+
+      this.scopeLength = 0;
       this.length = 0;
       this.head = null;
       this.foot = null;
@@ -1500,18 +1507,36 @@
 
     var _proto = LinkTreeList.prototype;
 
+    _proto.scopePush = function scopePush(scopeItem) {
+      while (this.scopeLength && this.scopeArray[this.scopeLength - 1].index >= scopeItem.index) {
+        this.scopeArray.pop();
+        this.scopeLength--;
+      }
+
+      if (this.scopeLength) {
+        this.scopeArray[this.scopeLength - 1].value.children.push(scopeItem.value);
+      } else {
+        this.scopeRoot.value.children.push(scopeItem.value);
+      }
+
+      this.scopeArray.push(scopeItem);
+      this.scopeLength++;
+    };
+
     _proto.append = function append(node, index) {
       this.length++;
       this.rawArray.push(node);
       var listNode = new ListTreeNode(node);
       this.push(listNode);
-
-      if (this.listArray[index]) {
-        var array = this.listArray[index];
-        array.push(listNode);
-      } else {
-        this.listArray[index] = [listNode];
-      }
+      this.scopePush({
+        index: index,
+        value: listNode
+      }); // if (this.listArray[index]) {
+      //   const array = this.listArray[index];
+      //   array.push(listNode);
+      // } else {
+      //   this.listArray[index] = [listNode];
+      // }
     };
 
     _proto.unshift = function unshift(node) {
@@ -1601,15 +1626,23 @@
     };
 
     _proto.reconcile = function reconcile(action) {
-      for (var i = this.listArray.length - 1; i >= 0; i--) {
-        var array = this.listArray[i];
-
-        if (array) {
-          array.forEach(function (p) {
-            return action(p.value);
-          });
+      var reconcileScope = function reconcileScope(node) {
+        if (node.children) {
+          node.children.forEach(reconcileScope);
         }
-      }
+
+        action(node.value);
+      };
+
+      if (this.scopeLength) {
+        this.scopeRoot.value.children.forEach(reconcileScope);
+      } // for (let i = this.listArray.length - 1; i >= 0; i--) {
+      //   const array = this.listArray[i];
+      //   if (array) {
+      //     array.forEach((p) => action(p.value));
+      //   }
+      // }
+
     };
 
     _proto.has = function has() {
@@ -2881,19 +2914,6 @@
     }
   };
 
-  var fallback = function fallback(dom) {
-    var pendingRemove = [];
-
-    while (dom) {
-      pendingRemove.push(dom);
-      dom = dom.nextSibling;
-    }
-
-    pendingRemove.forEach(function (m) {
-      return m.remove();
-    });
-  };
-
   var getNextHydrateDom = function getNextHydrateDom(parentDom) {
     var children = Array.from(parentDom.childNodes);
     return children.find(function (dom) {
@@ -2952,7 +2972,7 @@
   };
 
   var getHydrateDom = function getHydrateDom(fiber, parentDom) {
-    if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, parentDom.tagName.toLowerCase())) return {
+    if (IS_SINGLE_ELEMENT[parentDom.tagName.toLowerCase()]) return {
       result: true
     };
     var dom = getNextHydrateDom(parentDom);
@@ -2960,7 +2980,6 @@
 
     if (result) {
       var typedDom = dom;
-      typedDom.__hydrate__ = true;
       fiber.dom = typedDom;
       return {
         dom: typedDom,
@@ -2974,19 +2993,13 @@
     }
   };
 
+  // import { fallback } from './fallback';
   var hydrateCreate = function hydrateCreate(fiber, parentFiberWithDom) {
     if (fiber.__isTextNode__ || fiber.__isPlainNode__) {
       var _getHydrateDom = getHydrateDom(fiber, parentFiberWithDom.dom),
-          dom = _getHydrateDom.dom,
           result = _getHydrateDom.result;
 
-      if (result) {
-        return true;
-      } else if (dom) {
-        fallback(dom);
-      }
-
-      return false;
+      return result;
     }
 
     throw new Error('hydrate error, portal element can not hydrate');
@@ -3054,6 +3067,19 @@
         nativeCreate(fiber);
       }
 
+      if (isHydrateRender.current) {
+        var typedDom = fiber.dom;
+        typedDom.__hydrate__ = true;
+
+        if (enableAllCheck.current && fiber.__isPlainNode__) {
+          if (!re) {
+            typedDom.setAttribute('debug_hydrate', 'fail');
+          } else {
+            typedDom.setAttribute('debug_hydrate', 'success');
+          }
+        }
+      }
+
       fiber.__pendingCreate__ = false;
       return re;
     }
@@ -3076,6 +3102,22 @@
       return effect.call(null);
     });
     fiber.__effectQueue__ = [];
+  };
+
+  var fallback = function fallback(fiber) {
+    if (isHydrateRender.current && fiber.__isPlainNode__) {
+      var dom = fiber.dom;
+      var children = Array.from(dom.childNodes);
+      children.forEach(function (node) {
+        var typedNode = node;
+
+        if (typedNode.nodeType !== document.COMMENT_NODE && !typedNode.__hydrate__) {
+          node.remove();
+        }
+
+        delete typedNode['__hydrate__'];
+      });
+    }
   };
 
   var append$1 = function append(fiber, parentDOM) {
@@ -3244,10 +3286,9 @@
             fiber: fiber
           });
 
-          if (enableControlComponent) {
+          if (enableControlComponent.current) {
             if (controlElementTag[typedElement.type] && typeof typedElement.props['value'] !== 'undefined') {
               dom['value'] = typedElement.props['value'];
-              dom.setAttribute('value', typedElement.props['value']);
             }
           }
         };
@@ -3474,6 +3515,7 @@
     };
 
     this.container = document.createElement('div');
+    this.container.setAttribute('debug_highlight', 'MyReact');
     this.container.style.cssText = "\n      position: absolute;\n      z-index: 999999;\n      width: 100%;\n      left: 0;\n      top: 0;\n      pointer-events: none;\n      ";
     document.body.append(this.container);
   };
@@ -3584,7 +3626,6 @@
     }
 
     debugWithDOM(fiber);
-    fiber.applyVDom();
 
     if (isAppMounted.current && !isHydrateRender.current && !isServerRender.current && (enableHighlight.current || window.__highlight__)) {
       HighLight.getHighLightInstance().highLight(fiber);
@@ -3599,6 +3640,7 @@
         nativeUpdate(fiber);
       }
 
+      fiber.applyVDom();
       fiber.__pendingUpdate__ = false;
     }
   };
@@ -3662,6 +3704,7 @@
 
       if (_fiber.child) {
         _final = this.reconcileCommit(_fiber.child, _result, _fiber.dom ? _fiber : _parentFiberWithDom);
+        fallback(_fiber);
       }
 
       safeCallWithFiber({
@@ -4255,6 +4298,7 @@
         var ProviderFiber = getContextFiber(this.__fiber__, this.value);
         this.setContext(ProviderFiber);
         this.result = getContextValue(ProviderFiber, this.value);
+        this.context = this.result;
         return;
       }
     };
@@ -4312,8 +4356,10 @@
           var ProviderFiber = getContextFiber(this.__fiber__, this.value);
           this.setContext(ProviderFiber);
           this.result = getContextValue(ProviderFiber, this.value);
+          this.context = this.result;
         } else {
           this.result = getContextValue(this.__context__, this.value);
+          this.context = this.result;
         }
 
         return;

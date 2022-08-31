@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import React, { useCallback, useMemo } from "react";
 import shallow from "zustand/shallow";
 
-import { useOpenTourAfterRedirect, useSyncToursWithPathName } from "../hooks/controller";
+import { useOpenTourAfterRedirect, useOpenTourByInit, useSyncToursWithPathName } from "../hooks/controller";
 import { useWalkMeStore } from "../hooks/useWalkMeStore";
 
 import { Container } from "./Container";
@@ -28,6 +28,8 @@ export const Controller = ({ onFinish }: WalkMeControllerProps) => {
   useSyncToursWithPathName();
 
   useOpenTourAfterRedirect();
+
+  useOpenTourByInit();
 
   const goTo = useCallback(() => {
     // TODO:

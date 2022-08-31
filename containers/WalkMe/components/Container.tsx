@@ -12,7 +12,7 @@ export const Container = ({ steps, stepIndex, stepLen, actions }: ContainerProps
   const isMobile = useIsMobile();
   const step = steps[stepIndex];
   return (
-    <Flex width={isMobile ? "240px" : "320px"} flexDirection="column" paddingX="4" paddingY="2">
+    <Flex width={isMobile ? "240px" : "320px"} flexDirection="column" paddingX="4" paddingY="2" backgroundColor='cardBackgroundColor'>
       <Title steps={steps} stepIndex={stepIndex} stepLen={stepLen} actions={actions}>
         {step?._title}
       </Title>

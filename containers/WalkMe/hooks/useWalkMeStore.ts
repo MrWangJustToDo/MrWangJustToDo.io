@@ -10,8 +10,6 @@ export const useWalkMeStore = create<{
   isOpen: boolean;
   history: WalkMeHistoryItem[];
   updateHistory: (items: WalkMeHistoryItem[]) => void;
-  pushHistory: (tour: WalkMeHistoryItem) => void;
-  popHistory: () => void;
 
   tours: WalkMeTour[];
   currentTour: WalkMeTourItem | null;
@@ -29,13 +27,6 @@ export const useWalkMeStore = create<{
 
   updateHistory: (history) => set({ history }),
 
-  pushHistory: (tour) => set((state) => ({ history: [...state.history, tour] })),
-
-  popHistory: () =>
-    set((state) => ({
-      history: state.history.slice(0, -1),
-    })),
-
   tours: [],
 
   currentTour: null,
@@ -44,8 +35,8 @@ export const useWalkMeStore = create<{
 
   gotoNextTour: () => {
     const { currentTour, tours, history } = get();
-    if (!currentTour || currentTour.tours !== tours) {
-      set({ currentTour: null });
+    if (!currentTour) {
+      set({ isOpen: false });
       return null;
     }
     const { stepIndex, steps, tourIndex, tourName } = currentTour;
@@ -67,7 +58,7 @@ export const useWalkMeStore = create<{
         if (_redirect) {
           const { nextTour, nextPath, nextIndex = 0 } = _redirect;
           if (history.some((item) => item.tourName === nextTour)) {
-            set({ currentTour: null });
+            set({ currentTour: null, isOpen: false });
             return null;
           }
           // redirect
@@ -80,13 +71,15 @@ export const useWalkMeStore = create<{
             redirectPath: nextPath,
           };
           const newHistory = history.concat(newHistoryItem);
+          const redirectedTour = restoreTourFromHistoryItem(newHistoryItem);
           set({
-            currentTour: restoreTourFromHistoryItem(newHistoryItem),
+            currentTour: redirectedTour,
             history: newHistory,
+            tours: redirectedTour.tours,
           });
           return newHistoryItem;
         } else {
-          set({ currentTour: null });
+          set({ currentTour: null, isOpen: false });
           return null;
         }
       } else if (tourIndex < tours.length - 1) {
@@ -102,7 +95,7 @@ export const useWalkMeStore = create<{
         return newHistoryItem;
       }
     }
-    set({ currentTour: null });
+    set({ currentTour: null, isOpen: false });
     return null;
   },
 
@@ -113,7 +106,7 @@ export const useWalkMeStore = create<{
   close: () => set({ isOpen: false }),
   // start entry
   open: () => {
-    const { isOpen, history, tours } = get();
+    const { isOpen, history, tours, currentTour } = get();
     if (isOpen) return true;
     if (!history.length && !tours.length) return false;
     if (!history.length) {
@@ -131,14 +124,19 @@ export const useWalkMeStore = create<{
         },
       });
       return true;
+    } else if (currentTour) {
+      set({
+        isOpen: true,
+      });
+      return true;
     } else {
+      // try to use history to restore
       const historyTours = restoreToursFromHistory(history);
       const currentTour = historyTours[historyTours.length - 1];
       // with same tourName(pathName)
       if (currentTour.tours === tours) {
         set({
           isOpen: true,
-          history,
           currentTour,
         });
         return true;

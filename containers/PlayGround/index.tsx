@@ -81,7 +81,7 @@ const PlayGroundContent = () => {
 export const PlayGround = () => {
   const { isOpen, onClose } = usePlayGround();
   return (
-    <Modal size="full" isOpen={isOpen} scrollBehavior="inside" onClose={onClose}>
+    <Modal size="full" isOpen={isOpen} scrollBehavior="inside" onClose={onClose} preserveScrollBarGap>
       <ModalOverlay />
       <ModalContent>
         <ModalBody id="modal-scroll-box" paddingTop="0">

@@ -113,7 +113,7 @@ export const useTourTargetSize = (target: string, highlightSelectors: string[], 
           });
         }
       } else {
-        setSizes(INITIAL_RECT);
+        setSizes({ ...INITIAL_RECT });
       }
     };
     update(updateCountRef.current);

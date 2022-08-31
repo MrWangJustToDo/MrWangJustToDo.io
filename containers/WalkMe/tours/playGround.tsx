@@ -1,38 +1,31 @@
 import { Flex } from "@chakra-ui/react";
 
-import { clickDom } from "../utils/click";
-import { TRIGGER, trigger } from "../utils/trigger";
-
 import type { WalkMeTour } from "../types";
 
-export const button: WalkMeTour = {
-  tourName: "button",
+export const playGround: WalkMeTour = {
+  tourName: "playGround",
   tourSteps: [
     {
-      selector: ".tour_playground",
-      highlightedSelectors: [".tour_playground"],
+      selector: ".tour_placeholder",
       _title: <Flex>👀</Flex>,
-      _content: <Flex>PlayGround</Flex>,
+      _content: <Flex>Welcome PlayGround page!</Flex>,
     },
     {
       selector: ".tour_playGround_editor",
       highlightedSelectors: [".tour_playGround_editor"],
-      mutationObservables: [`.${TRIGGER}`],
-      action: () => {
-        clickDom(".tour_playground")();
-        trigger(300);
-      },
+      mutationObservables: [".tour_playGround_editor"],
       _title: <Flex>👀</Flex>,
       _content: <Flex>Editor</Flex>,
     },
     {
       selector: ".tour_playGround_preview",
       highlightedSelectors: [".tour_playGround_preview"],
+      mutationObservables: [".tour_playGround_preview"],
       _title: <Flex>👀</Flex>,
       _content: <Flex>Preview</Flex>,
-      _beforeNext: () => {
-        clickDom(".tour_close")();
-        return null;
+      _redirect: {
+        nextPath: "/",
+        nextTour: "home",
       },
     },
   ],

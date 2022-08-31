@@ -2,12 +2,14 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import shallow from "zustand/shallow";
 
+import { useEffectOnce } from "hooks/useEffectOnce";
+
 import { getTours } from "../configs";
 
 import { useWalkMeStore } from "./useWalkMeStore";
 
 export const useSyncToursWithPathName = () => {
-  const { pathname } = useRouter();
+  const { asPath } = useRouter();
 
   const { setTours } = useWalkMeStore(
     (state) => ({
@@ -16,9 +18,9 @@ export const useSyncToursWithPathName = () => {
     shallow
   );
 
-  useEffect(() => {
-    setTours(getTours(pathname));
-  }, [pathname, setTours]);
+  useEffectOnce(() => {
+    setTours(getTours(asPath));
+  });
 };
 
 export const useOpenTourAfterRedirect = () => {
@@ -30,9 +32,20 @@ export const useOpenTourAfterRedirect = () => {
     }),
     shallow
   );
+
   useEffect(() => {
     if (!isOpen && history[history.length - 1]?.redirectFrom) {
       open();
     }
   }, [history, isOpen, open]);
+};
+
+export const useOpenTourByInit = () => {
+  const open = useWalkMeStore((state) => state.open);
+
+  useEffectOnce(() => {
+    if (localStorage.getItem("__enable_tour__")) {
+      open();
+    }
+  });
 };

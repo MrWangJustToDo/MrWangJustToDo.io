@@ -55,9 +55,8 @@ export const Monaco = () => {
         </WrapItem>
         <Divider marginY="2" />
       </Wrap>
-      <Box height={`calc(100% - ${height}px - 2px)`} width="100%">
+      <Box height={`calc(100% - ${height}px - 2px)`} width="100%" className="tour_playGround_editor">
         <Editor
-          className="tour_playGround_editor"
           theme={theme}
           path={currentFile.name}
           defaultValue={currentFile.content}

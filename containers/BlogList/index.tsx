@@ -129,7 +129,7 @@ const _BlogListWithInfinityScroll = () => {
 
   return (
     <Flex flexDirection="column" height="100%">
-      <Box ref={ref} overflow="auto" paddingRight="4" onScroll={onThrottleScroll}>
+      <Box ref={ref} overflow="auto" paddingRight="4" onScroll={onThrottleScroll} className="tour_blogList">
         <BlogGrid data={data.repository.issues.nodes} disableGridLayout={disableGridLayout || isMobileWidth} />
         {loading && data.repository.issues.nodes.length && (
           <Center>
@@ -138,11 +138,11 @@ const _BlogListWithInfinityScroll = () => {
         )}
       </Box>
       <Portal>
-        <ButtonGroup variant="solid" position="fixed" bottom="4" right="4">
+        <ButtonGroup variant="solid" position="fixed" bottom="4" right="4" className="tour_buttons">
           <Button color="purple.500" textTransform="capitalize" onClick={() => refetch()} size={{ base: "sm", lg: "md" }}>
             refresh
           </Button>
-          <Button color="red.500" textTransform="capitalize" className="tour_playground" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
+          <Button color="red.500" textTransform="capitalize" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
             playGround
           </Button>
           <Button color="purple.500" textTransform="capitalize" display={{ base: "none", lg: "block" }} onClick={() => setDisableGridLayout((last) => !last)}>
