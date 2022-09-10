@@ -1,5 +1,3 @@
-# import * from '../schema.graphql'
-
 query getViewer($first: Int = 10) {
   viewer {
     id
