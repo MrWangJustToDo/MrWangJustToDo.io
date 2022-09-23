@@ -16,7 +16,6 @@ const _BlogModal = () => {
   useEffect(() => {
     if (isModalOpen && blogId !== undefined) {
       open({
-        id: blogId as string,
         head: <DetailModalHeader id={blogId as string} />,
         body: <DetailModalBody id={blogId as string} />,
         closeComplete: () =>

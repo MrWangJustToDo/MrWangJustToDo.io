@@ -19,6 +19,7 @@ export interface OverlayProps {
   body: JSX.Element;
   foot?: React.ReactNode;
   height?: number;
+  isFirst?: boolean;
   className?: string;
   showState?: boolean;
   applyOverlay?: (id: string, isOpen?: boolean) => void;
@@ -27,7 +28,7 @@ export interface OverlayProps {
 }
 
 interface UseOverlayOpenType {
-  (props: Omit<OverlayProps, "key">): void;
+  (props: Omit<OverlayProps, "key" | "id">): void;
 }
 
 let count = 0;
@@ -46,20 +47,20 @@ export const useOverlaysProps = () => {
   const overlaysRef = useRef(overlays);
   const forceUpdate = useUpdate();
   overlaysRef.current = overlays;
-  const applyOverlayStyle = useCallback((key: string, isOpen) => {
+  const applyOverlayStyle = useCallback((id: string, isOpen) => {
     delay(
       0,
       () => {
         const newAllOverlays = overlaysRef.current;
         const stillShow = newAllOverlays.filter((n) => {
           if (isOpen) {
-            return n.showState || n.key === key;
+            return n.showState || n.id === id;
           } else {
-            return n.showState && n.key !== key;
+            return n.showState && n.id !== id;
           }
         });
         if (stillShow.length) {
-          const allIds = stillShow.map((n) => n.key);
+          const allIds = stillShow.map((n) => n.id);
           const needReApplyIds = allIds.slice(0, -1);
           const needClearId = allIds[allIds.length - 1];
           applyOverlaysStyles([ROOT_BODY, ...needReApplyIds]);
@@ -77,7 +78,9 @@ export const useOverlaysProps = () => {
       const allOverlay = overlaysRef.current;
       const lastOpen = findLast(allOverlay, (n) => n.showState);
       overlayProps.key = `__overlay_${count++}`;
-      overlayProps.height = lastOpen ? lastOpen.height - 4 : 90;
+      overlayProps.id = `__overlay_${count++}`;
+      overlayProps.height = lastOpen ? lastOpen.height - 6 : 92;
+      overlayProps.isFirst = lastOpen ? false : true;
       overlayProps.showState = true;
       const closeHandler = overlayProps.closeHandler;
       const closeComplete = overlayProps.closeComplete;
@@ -90,6 +93,17 @@ export const useOverlaysProps = () => {
         closeComplete && closeComplete();
         setOverlays((last) => {
           const newAllOverlays = last.filter((n) => n !== overlayProps);
+          if (newAllOverlays.length) {
+            newAllOverlays.reduce((p, c) => {
+              if (p.showState) {
+                c.isFirst = false;
+                return c;
+              } else if (c.showState) {
+                c.isFirst = true;
+                return c;
+              }
+            });
+          }
           return newAllOverlays;
         });
       };
