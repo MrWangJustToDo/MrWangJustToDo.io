@@ -84,7 +84,7 @@ export const PlayGround = () => {
     <Modal size="full" isOpen={isOpen} scrollBehavior="inside" onClose={onClose} preserveScrollBarGap>
       <ModalOverlay />
       <ModalContent>
-        <ModalBody id="modal-scroll-box" paddingTop="0">
+        <ModalBody id="modal-scroll-box" paddingTop="0" paddingX={{ base: 0, sm: 2, md: 4, lg: 6 }}>
           <PlayGroundContent />
         </ModalBody>
       </ModalContent>

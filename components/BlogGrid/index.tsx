@@ -11,7 +11,7 @@ import { Item } from "./Item";
 
 import type { GetBlogListQuery } from "graphql/generated";
 
-const BLOG_GRID_COLS = { lg: 3, md: 2, sm: 1, xs: 1, xxs: 1 };
+const BLOG_GRID_COLS = { lg: 3, md: 3, sm: 2, xs: 1, xxs: 1 };
 
 const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"]["issues"]["nodes"] }) => {
   const layouts = useGetResponseListLayout(data);
@@ -40,7 +40,7 @@ const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"
 const _BlogGrid = ({ data, disableGridLayout = true }: { data: GetBlogListQuery["repository"]["issues"]["nodes"]; disableGridLayout?: boolean }) => {
   if (disableGridLayout) {
     return (
-      <SimpleGrid width="100%" padding="2" columns={{ base: 1, md: 2, lg: 3 }} spacing={3}>
+      <SimpleGrid width="100%" padding="2" columns={{ base: 1, lg: 2, xl: 3 }} spacing={3}>
         {data.map((p, index) => (
           <Card key={p.id + index} maxHeight="96">
             <Item {...p} />

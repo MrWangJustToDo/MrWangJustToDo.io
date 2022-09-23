@@ -12,6 +12,7 @@ const _generateFunction =
       x: Math.floor(index % width),
       y: Math.floor(index / width),
       w: 1,
+      maxW: width,
       h: BLOG_GRID_HEIGHT + Math.floor(dataLength / 60),
       minH: BLOG_GRID_HEIGHT,
     };
@@ -28,8 +29,8 @@ export const useGetResponseListLayout = (items: { id: string; bodyText: string }
     const lg = items.map(({ id, bodyText }, i) => lgGenerate(i, id, bodyText.length));
     return {
       lg,
-      md,
-      sm,
+      md: lg,
+      sm: md,
       xs: sm,
       xxs: sm,
     };
