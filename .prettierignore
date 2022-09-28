@@ -1,0 +1,10 @@
+
+pnpm-lock.yaml
+**/dist
+**/.cache
+**/.github
+**/.changeset
+**/.husky
+**/.vscode
+**/.next
+**/node_modules
