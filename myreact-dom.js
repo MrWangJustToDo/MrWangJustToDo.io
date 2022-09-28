@@ -346,7 +346,7 @@
           parent: parentFiber,
           prevFiber: prevFiberChild,
         },
-        newChild
+        newChild,
       );
     } else {
       if (assignPrevFiberChild) {
@@ -363,7 +363,7 @@
           parent: parentFiber,
           type: "position",
         },
-        newChild
+        newChild,
       );
     }
   };
@@ -961,8 +961,8 @@
       throw new Error(
         logHook$1(
           __spreadArray(__spreadArray([], array, true), [currentHook.hookType], false),
-          __spreadArray(__spreadArray([], array, true), [hookType], false)
-        )
+          __spreadArray(__spreadArray([], array, true), [hookType], false),
+        ),
       );
     }
     currentHook.setOwner(fiber);
@@ -1121,7 +1121,7 @@
           return p;
         }
       },
-      { newState: __assign({}, baseState), isForce: false, callback: [] }
+      { newState: __assign({}, baseState), isForce: false, callback: [] },
     );
     fiber.updateQueue = __spreadArray(__spreadArray([], lastQueue, true), fiber.updateQueue, true);
   };
@@ -2206,7 +2206,7 @@
               .concat(positionLeft, "px;\n          top: ")
               .concat(
                 positionTop,
-                "px;\n          pointer-events: none;\n          box-shadow: 0.0625rem 0.0625rem 0.0625rem red, -0.0625rem -0.0625rem 0.0625rem red;\n          "
+                "px;\n          pointer-events: none;\n          box-shadow: 0.0625rem 0.0625rem 0.0625rem red, -0.0625rem -0.0625rem 0.0625rem red;\n          ",
               );
           });
           setTimeout(function () {
@@ -2809,7 +2809,7 @@
             .reduce(function (p, c) {
               return p + c;
             }, ""),
-          '"'
+          '"',
         );
       }
       return "";
@@ -2865,7 +2865,7 @@
                 .reduce(function (p, c) {
                   return p + c;
                 }, ""),
-              "</"
+              "</",
             )
             .concat(this.type, ">");
         } else {

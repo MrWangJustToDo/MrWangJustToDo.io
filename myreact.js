@@ -318,7 +318,7 @@
       "".concat(typeof message === "string" ? message : message.stack || message.message),
       "\n-----------------------------------------\n",
       "Render Tree:",
-      tree
+      tree,
     );
   };
   var safeCall = function (action) {
@@ -716,7 +716,7 @@
       function (v) {
         return v !== undefined && v !== null;
       },
-      action
+      action,
     );
   };
   var toArray = function (arrayLike) {
@@ -732,7 +732,7 @@
       function (v) {
         return v !== undefined && v !== null;
       },
-      action
+      action,
     );
   };
   var count = function (arrayLike) {

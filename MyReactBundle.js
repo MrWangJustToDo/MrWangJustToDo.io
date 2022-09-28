@@ -21,17 +21,12 @@
           r,
           e,
           n,
-          t
+          t,
         );
       }
       return n[i].exports;
     }
-    for (
-      var u = "function" == typeof require && require, i = 0;
-      i < t.length;
-      i++
-    )
-      o(t[i]);
+    for (var u = "function" == typeof require && require, i = 0; i < t.length; i++) o(t[i]);
     return o;
   }
   return r;
@@ -44,23 +39,13 @@
         Object.defineProperty(exports, "__esModule", {
           value: true,
         });
-        exports.toArray =
-          exports.only =
-          exports.mapByJudgeFunction =
-          exports.map =
-          exports.forEach =
-          exports.count =
-            void 0;
+        exports.toArray = exports.only = exports.mapByJudgeFunction = exports.map = exports.forEach = exports.count = void 0;
 
         var _tool = require("./tool.js");
 
         var _index = require("./vdom/index.js");
 
-        var mapByJudgeFunction = function mapByJudgeFunction(
-          arrayLike,
-          judge,
-          action
-        ) {
+        var mapByJudgeFunction = function mapByJudgeFunction(arrayLike, judge, action) {
           var arrayChildren = (0, _tool.flattenChildren)(arrayLike);
           return arrayChildren.map(function (v, index, thisArgs) {
             if (judge(v)) {
@@ -79,7 +64,7 @@
             function (v) {
               return v !== undefined;
             },
-            action
+            action,
           );
         };
 
@@ -88,10 +73,7 @@
         var toArray = function toArray(arrayLike) {
           return map(arrayLike, function (vdom, index) {
             return (0, _index.cloneElement)(vdom, {
-              key:
-                vdom.key !== undefined
-                  ? ".$".concat(vdom.key)
-                  : ".".concat(index),
+              key: vdom.key !== undefined ? ".$".concat(vdom.key) : ".".concat(index),
             });
           });
         };
@@ -104,7 +86,7 @@
             function (v) {
               return v !== undefined;
             },
-            action
+            action,
           );
         };
 
@@ -127,9 +109,7 @@
             return child;
           }
 
-          throw new Error(
-            "Children.only expected to receive a single MyReact element child."
-          );
+          throw new Error("Children.only expected to receive a single MyReact element child.");
         };
 
         exports.only = only;
@@ -162,12 +142,7 @@
                     return typeof obj;
                   }
                 : function (obj) {
-                    return obj &&
-                      "function" == typeof Symbol &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? "symbol"
-                      : typeof obj;
+                    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
                   }),
             _typeof(obj)
           );
@@ -177,123 +152,95 @@
          *
          * @param {MyReactFiberNode} fiber
          */
-        var processComponentStateFromProps =
-          function processComponentStateFromProps(fiber) {
-            var Component = fiber.__isDynamicNode__
-              ? fiber.__vdom__.type
-              : fiber.__vdom__.type.render;
-            var newState = null;
+        var processComponentStateFromProps = function processComponentStateFromProps(fiber) {
+          var Component = fiber.__isDynamicNode__ ? fiber.__vdom__.type : fiber.__vdom__.type.render;
+          var newState = null;
 
-            if (typeof Component.getDerivedStateFromProps === "function") {
-              newState = Component.getDerivedStateFromProps(
-                fiber.__vdom__.props,
-                fiber.instance.state
-              );
+          if (typeof Component.getDerivedStateFromProps === "function") {
+            newState = Component.getDerivedStateFromProps(fiber.__vdom__.props, fiber.instance.state);
+          }
+
+          return newState;
+        };
+        /**
+         *
+         * @param {MyReactFiberNode} fiber
+         */
+
+        var processComponentStateFromPropsOnMountAndUpdate = function processComponentStateFromPropsOnMountAndUpdate(fiber) {
+          var newState = processComponentStateFromProps(fiber);
+          fiber.instance.__nextState__ = Object.assign({}, fiber.instance.state, fiber.instance.__nextState__, newState);
+          return fiber.instance.__nextState__;
+        };
+        /**
+         *
+         * @param {MyReactFiberNode} fiber
+         */
+
+        var processComponentInstanceRefOnMountAndUpdate = function processComponentInstanceRefOnMountAndUpdate(fiber) {
+          if (fiber.__vdom__.ref) {
+            if (typeof fiber.__vdom__.ref === "function") {
+              fiber.__vdom__.ref(fiber.instance);
+            } else if (_typeof(fiber.__vdom__.ref) === "object") {
+              fiber.__vdom__.ref.current = fiber.instance;
             }
-
-            return newState;
-          };
+          }
+        };
         /**
          *
          * @param {MyReactFiberNode} fiber
          */
 
-        var processComponentStateFromPropsOnMountAndUpdate =
-          function processComponentStateFromPropsOnMountAndUpdate(fiber) {
-            var newState = processComponentStateFromProps(fiber);
-            fiber.instance.__nextState__ = Object.assign(
-              {},
-              fiber.instance.state,
-              fiber.instance.__nextState__,
-              newState
-            );
-            return fiber.instance.__nextState__;
-          };
+        var processComponentInstanceOnMount = function processComponentInstanceOnMount(fiber) {
+          var _Component$contextTyp;
+
+          var Component = fiber.__isDynamicNode__ ? fiber.__vdom__.type : fiber.__vdom__.type.render;
+          var providerFiber = (0, _index2.getContextFiber)(fiber, Component.contextType);
+          var context = providerFiber
+            ? providerFiber.__vdom__.props.value
+            : (_Component$contextTyp = Component.contextType) === null || _Component$contextTyp === void 0
+            ? void 0
+            : _Component$contextTyp.Provider.value;
+          var contextValue = _typeof(context) === "object" && context !== null ? Object.assign({}, context) : context;
+          var instance = new Component(fiber.__vdom__.props, contextValue);
+          instance.props = Object.assign({}, fiber.__vdom__.props); // fix context value
+
+          instance.context = contextValue;
+          fiber.installInstance(instance);
+          fiber.checkInstance(instance);
+          fiber.instance.setFiber(fiber);
+          fiber.instance.setContext(providerFiber);
+        };
         /**
          *
          * @param {MyReactFiberNode} fiber
          */
 
-        var processComponentInstanceRefOnMountAndUpdate =
-          function processComponentInstanceRefOnMountAndUpdate(fiber) {
-            if (fiber.__vdom__.ref) {
-              if (typeof fiber.__vdom__.ref === "function") {
-                fiber.__vdom__.ref(fiber.instance);
-              } else if (_typeof(fiber.__vdom__.ref) === "object") {
-                fiber.__vdom__.ref.current = fiber.instance;
-              }
-            }
-          };
+        var processComponentRenderOnMountAndUpdate = function processComponentRenderOnMountAndUpdate(fiber) {
+          var children = fiber.instance.render();
+          fiber.__vdom__.__dynamicChildren__ = children;
+          fiber.__renderDynamic__ = true;
+          return (0, _index.nextWorkCommon)(fiber);
+        };
         /**
          *
          * @param {MyReactFiberNode} fiber
          */
 
-        var processComponentInstanceOnMount =
-          function processComponentInstanceOnMount(fiber) {
-            var _Component$contextTyp;
-
-            var Component = fiber.__isDynamicNode__
-              ? fiber.__vdom__.type
-              : fiber.__vdom__.type.render;
-            var providerFiber = (0, _index2.getContextFiber)(
-              fiber,
-              Component.contextType
-            );
-            var context = providerFiber
-              ? providerFiber.__vdom__.props.value
-              : (_Component$contextTyp = Component.contextType) === null ||
-                _Component$contextTyp === void 0
-              ? void 0
-              : _Component$contextTyp.Provider.value;
-            var contextValue =
-              _typeof(context) === "object" && context !== null
-                ? Object.assign({}, context)
-                : context;
-            var instance = new Component(fiber.__vdom__.props, contextValue);
-            instance.props = Object.assign({}, fiber.__vdom__.props); // fix context value
-
-            instance.context = contextValue;
-            fiber.installInstance(instance);
-            fiber.checkInstance(instance);
-            fiber.instance.setFiber(fiber);
-            fiber.instance.setContext(providerFiber);
-          };
-        /**
-         *
-         * @param {MyReactFiberNode} fiber
-         */
-
-        var processComponentRenderOnMountAndUpdate =
-          function processComponentRenderOnMountAndUpdate(fiber) {
-            var children = fiber.instance.render();
-            fiber.__vdom__.__dynamicChildren__ = children;
-            fiber.__renderDynamic__ = true;
-            return (0, _index.nextWorkCommon)(fiber);
-          };
-        /**
-         *
-         * @param {MyReactFiberNode} fiber
-         */
-
-        var processComponentDidMountOnMount =
-          function processComponentDidMountOnMount(fiber) {
-            if (
-              !fiber.instance.__pendingEffect__ &&
-              fiber.instance.componentDidMount
-            ) {
-              fiber.instance.__pendingEffect__ = true;
-              (0, _effect.pushLayoutEffect)(fiber, function () {
-                (0, _debug.safeCallWithFiber)({
-                  action: function action() {
-                    return fiber.instance.componentDidMount();
-                  },
-                  fiber: fiber,
-                });
-                fiber.instance.__pendingEffect__ = false;
+        var processComponentDidMountOnMount = function processComponentDidMountOnMount(fiber) {
+          if (!fiber.instance.__pendingEffect__ && fiber.instance.componentDidMount) {
+            fiber.instance.__pendingEffect__ = true;
+            (0, _effect.pushLayoutEffect)(fiber, function () {
+              (0, _debug.safeCallWithFiber)({
+                action: function action() {
+                  return fiber.instance.componentDidMount();
+                },
+                fiber: fiber,
               });
-            }
-          };
+              fiber.instance.__pendingEffect__ = false;
+            });
+          }
+        };
         /**
          *
          * @param {MyReactFiberNode} fiber
@@ -317,99 +264,74 @@
 
         exports.classComponentMount = classComponentMount;
 
-        var processComponentContextOnUpdate =
-          function processComponentContextOnUpdate(fiber) {
-            var Component = fiber.__isDynamicNode__
-              ? fiber.__vdom__.type
-              : fiber.__vdom__.type.render;
+        var processComponentContextOnUpdate = function processComponentContextOnUpdate(fiber) {
+          var Component = fiber.__isDynamicNode__ ? fiber.__vdom__.type : fiber.__vdom__.type.render;
 
-            if (
-              !fiber.instance.__context__ ||
-              !fiber.instance.__context__.mount
-            ) {
-              var _Component$contextTyp2;
+          if (!fiber.instance.__context__ || !fiber.instance.__context__.mount) {
+            var _Component$contextTyp2;
 
-              var providerFiber = (0, _index2.getContextFiber)(
-                fiber,
-                Component.contextType
-              );
-              var context = providerFiber
-                ? providerFiber.__vdom__.props.value
-                : (_Component$contextTyp2 = Component.contextType) === null ||
-                  _Component$contextTyp2 === void 0
-                ? void 0
-                : _Component$contextTyp2.Provider.value;
-              fiber.instance.setContext(providerFiber);
-              return _typeof(context) === "object" && context !== null
-                ? Object.assign({}, context)
-                : context;
-            }
+            var providerFiber = (0, _index2.getContextFiber)(fiber, Component.contextType);
+            var context = providerFiber
+              ? providerFiber.__vdom__.props.value
+              : (_Component$contextTyp2 = Component.contextType) === null || _Component$contextTyp2 === void 0
+              ? void 0
+              : _Component$contextTyp2.Provider.value;
+            fiber.instance.setContext(providerFiber);
+            return _typeof(context) === "object" && context !== null ? Object.assign({}, context) : context;
+          }
 
-            return fiber.instance.context;
-          };
+          return fiber.instance.context;
+        };
         /**
          *
          * @param {MyReactFiberNode} fiber
          */
 
-        var processComponentShouldUpdateOnUpdate =
-          function processComponentShouldUpdateOnUpdate(fiber) {
-            if (fiber.instance.__isForce__) {
-              fiber.instance.__isForce__ = false;
-              return true;
-            }
-
-            if (fiber.instance.shouldComponentUpdate) {
-              return fiber.instance.shouldComponentUpdate(
-                fiber.instance.__nextProps__,
-                fiber.instance.__nextState__,
-                fiber.instance.__nextContext__
-              );
-            }
-
+        var processComponentShouldUpdateOnUpdate = function processComponentShouldUpdateOnUpdate(fiber) {
+          if (fiber.instance.__isForce__) {
+            fiber.instance.__isForce__ = false;
             return true;
-          };
+          }
+
+          if (fiber.instance.shouldComponentUpdate) {
+            return fiber.instance.shouldComponentUpdate(fiber.instance.__nextProps__, fiber.instance.__nextState__, fiber.instance.__nextContext__);
+          }
+
+          return true;
+        };
         /**
          *
          * @param {MyReactFiberNode} fiber
          */
 
-        var processComponentDidUpdateOnUpdate =
-          function processComponentDidUpdateOnUpdate(fiber) {
-            var hasEffect =
-              fiber.instance.__pendingCallback__.length ||
-              fiber.instance.componentDidUpdate;
+        var processComponentDidUpdateOnUpdate = function processComponentDidUpdateOnUpdate(fiber) {
+          var hasEffect = fiber.instance.__pendingCallback__.length || fiber.instance.componentDidUpdate;
 
-            if (!fiber.instance.__pendingEffect__ && hasEffect) {
-              fiber.instance.__pendingEffect__ = true;
-              (0, _effect.pushLayoutEffect)(fiber, function () {
-                (0, _debug.safeCallWithFiber)({
-                  action: function action() {
-                    var allCallback =
-                      fiber.instance.__pendingCallback__.slice(0);
+          if (!fiber.instance.__pendingEffect__ && hasEffect) {
+            fiber.instance.__pendingEffect__ = true;
+            (0, _effect.pushLayoutEffect)(fiber, function () {
+              (0, _debug.safeCallWithFiber)({
+                action: function action() {
+                  var allCallback = fiber.instance.__pendingCallback__.slice(0);
 
-                    fiber.instance.__pendingCallback__ = [];
-                    allCallback.forEach(function (c) {
-                      return typeof c === "function" && c();
-                    });
+                  fiber.instance.__pendingCallback__ = [];
+                  allCallback.forEach(function (c) {
+                    return typeof c === "function" && c();
+                  });
 
-                    if (fiber.instance.componentDidUpdate) {
-                      fiber.instance.componentDidUpdate(
-                        fiber.instance.__prevProps__,
-                        fiber.instance.__prevState__,
-                        fiber.instance.__prevContext__
-                      );
-                    }
-                  },
-                  fiber: fiber,
-                });
-                fiber.instance.resetPrevInstanceState();
-                fiber.instance.__pendingEffect__ = false;
+                  if (fiber.instance.componentDidUpdate) {
+                    fiber.instance.componentDidUpdate(fiber.instance.__prevProps__, fiber.instance.__prevState__, fiber.instance.__prevContext__);
+                  }
+                },
+                fiber: fiber,
               });
-            } else {
               fiber.instance.resetPrevInstanceState();
-            }
-          };
+              fiber.instance.__pendingEffect__ = false;
+            });
+          } else {
+            fiber.instance.resetPrevInstanceState();
+          }
+        };
         /**
          *
          * @param {MyReactFiberNode} fiber
@@ -423,8 +345,7 @@
           fiber.instance.__nextState__ = nextState;
           fiber.instance.__nextProps__ = nextProps;
           fiber.instance.__nextContext__ = nextContext;
-          var shouldComponentUpdate =
-            processComponentShouldUpdateOnUpdate(fiber);
+          var shouldComponentUpdate = processComponentShouldUpdateOnUpdate(fiber);
           fiber.instance.updateInstance(nextState, nextProps, nextContext);
 
           if (shouldComponentUpdate) {
@@ -500,12 +421,7 @@
                     return typeof obj;
                   }
                 : function (obj) {
-                    return obj &&
-                      "function" == typeof Symbol &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? "symbol"
-                      : typeof obj;
+                    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
                   }),
             _typeof(obj)
           );
@@ -545,20 +461,15 @@
 
         function _inherits(subClass, superClass) {
           if (typeof superClass !== "function" && superClass !== null) {
-            throw new TypeError(
-              "Super expression must either be null or a function"
-            );
+            throw new TypeError("Super expression must either be null or a function");
           }
-          subClass.prototype = Object.create(
-            superClass && superClass.prototype,
-            {
-              constructor: {
-                value: subClass,
-                writable: true,
-                configurable: true,
-              },
-            }
-          );
+          subClass.prototype = Object.create(superClass && superClass.prototype, {
+            constructor: {
+              value: subClass,
+              writable: true,
+              configurable: true,
+            },
+          });
           Object.defineProperty(subClass, "prototype", { writable: false });
           if (superClass) _setPrototypeOf(subClass, superClass);
         }
@@ -589,37 +500,27 @@
         }
 
         function _possibleConstructorReturn(self, call) {
-          if (
-            call &&
-            (_typeof(call) === "object" || typeof call === "function")
-          ) {
+          if (call && (_typeof(call) === "object" || typeof call === "function")) {
             return call;
           } else if (call !== void 0) {
-            throw new TypeError(
-              "Derived constructors may only return object or undefined"
-            );
+            throw new TypeError("Derived constructors may only return object or undefined");
           }
           return _assertThisInitialized(self);
         }
 
         function _assertThisInitialized(self) {
           if (self === void 0) {
-            throw new ReferenceError(
-              "this hasn't been initialised - super() hasn't been called"
-            );
+            throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
           }
           return self;
         }
 
         function _isNativeReflectConstruct() {
-          if (typeof Reflect === "undefined" || !Reflect.construct)
-            return false;
+          if (typeof Reflect === "undefined" || !Reflect.construct) return false;
           if (Reflect.construct.sham) return false;
           if (typeof Proxy === "function") return true;
           try {
-            Boolean.prototype.valueOf.call(
-              Reflect.construct(Boolean, [], function () {})
-            );
+            Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
             return true;
           } catch (e) {
             return false;
@@ -667,101 +568,53 @@
 
             _defineProperty(_assertThisInitialized(_this), "context", void 0);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__isForce__",
-              false
-            );
+            _defineProperty(_assertThisInitialized(_this), "__isForce__", false);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__prevProps__",
-              null
-            );
+            _defineProperty(_assertThisInitialized(_this), "__prevProps__", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__nextProps__",
-              null
-            );
+            _defineProperty(_assertThisInitialized(_this), "__nextProps__", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__prevContext__",
-              null
-            );
+            _defineProperty(_assertThisInitialized(_this), "__prevContext__", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__nextContext__",
-              null
-            );
+            _defineProperty(_assertThisInitialized(_this), "__nextContext__", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__prevState__",
-              null
-            );
+            _defineProperty(_assertThisInitialized(_this), "__prevState__", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__nextState__",
-              null
-            );
+            _defineProperty(_assertThisInitialized(_this), "__nextState__", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__pendingEffect__",
-              false
-            );
+            _defineProperty(_assertThisInitialized(_this), "__pendingEffect__", false);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__pendingCallback__",
-              []
-            );
+            _defineProperty(_assertThisInitialized(_this), "__pendingCallback__", []);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "setState",
-              function (newValue, callback) {
-                var newState = newValue;
+            _defineProperty(_assertThisInitialized(_this), "setState", function (newValue, callback) {
+              var newState = newValue;
 
-                if (typeof newValue === "function") {
-                  newState = newValue(_this.state, _this.props);
-                }
-
-                _this.__nextState__ = Object.assign(
-                  {},
-                  _this.__nextState__,
-                  newState
-                );
-                callback && _this.__pendingCallback__.push(callback);
-
-                try {
-                  _this.updateTimeStep();
-                } catch (e) {
-                  _this.error = true;
-                }
-
-                Promise.resolve().then(function () {
-                  if (!_this.error) {
-                    _this.__fiber__.update();
-                  }
-                });
+              if (typeof newValue === "function") {
+                newState = newValue(_this.state, _this.props);
               }
-            );
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "forceUpdate",
-              function () {
-                _this.__isForce__ = true;
-                Promise.resolve().then(function () {
-                  return _this.__fiber__.update();
-                });
+              _this.__nextState__ = Object.assign({}, _this.__nextState__, newState);
+              callback && _this.__pendingCallback__.push(callback);
+
+              try {
+                _this.updateTimeStep();
+              } catch (e) {
+                _this.error = true;
               }
-            );
+
+              Promise.resolve().then(function () {
+                if (!_this.error) {
+                  _this.__fiber__.update();
+                }
+              });
+            });
+
+            _defineProperty(_assertThisInitialized(_this), "forceUpdate", function () {
+              _this.__isForce__ = true;
+              Promise.resolve().then(function () {
+                return _this.__fiber__.update();
+              });
+            });
 
             _this.props = props;
             _this.context = context;
@@ -834,11 +687,7 @@
           _createClass(MyReactPureComponent, [
             {
               key: "shouldComponentUpdate",
-              value: function shouldComponentUpdate(
-                nextProps,
-                nextState,
-                nextContext
-              ) {
+              value: function shouldComponentUpdate(nextProps, nextState, nextContext) {
                 return (
                   !(0, _tool.isNormalEqual)(this.props, nextProps) ||
                   !(0, _tool.isNormalEqual)(this.state, nextState) ||
@@ -862,10 +711,7 @@
         Object.defineProperty(exports, "__esModule", {
           value: true,
         });
-        exports.nextWorkCommon =
-          exports.nextWorkAsync =
-          exports.nextWork =
-            void 0;
+        exports.nextWorkCommon = exports.nextWorkAsync = exports.nextWork = void 0;
 
         var _index = require("../component/index.js");
 
@@ -881,15 +727,9 @@
          */
         var nextWorkCommon = function nextWorkCommon(fiber) {
           if (fiber.__renderDynamic__) {
-            return (0, _tool.transformChildrenFiber)(
-              fiber,
-              fiber.__vdom__.__dynamicChildren__
-            );
+            return (0, _tool.transformChildrenFiber)(fiber, fiber.__vdom__.__dynamicChildren__);
           } else {
-            return (0, _tool.transformChildrenFiber)(
-              fiber,
-              fiber.__vdom__.children
-            );
+            return (0, _tool.transformChildrenFiber)(fiber, fiber.__vdom__.children);
           }
         };
         /**
@@ -911,9 +751,7 @@
          * @param {MyReactFiberNode} fiber
          */
 
-        var nextWorkFunctionComponent = function nextWorkFunctionComponent(
-          fiber
-        ) {
+        var nextWorkFunctionComponent = function nextWorkFunctionComponent(fiber) {
           _env.currentHookDeepIndex.current = 0;
           _env.currentFunctionFiber.current = fiber;
 
@@ -952,23 +790,17 @@
 
             var _fiber$__vdom__$type = fiber.__vdom__.type,
               _render = _fiber$__vdom__$type.render,
-              isMyReactForwardRefRender =
-                _fiber$__vdom__$type.isMyReactForwardRefRender;
+              isMyReactForwardRefRender = _fiber$__vdom__$type.isMyReactForwardRefRender;
             var render = isMyReactForwardRefRender ? _render.render : _render;
             var isClassComponent =
-              (_render$prototype = render.prototype) === null ||
-              _render$prototype === void 0
-                ? void 0
-                : _render$prototype.isMyReactComponent;
+              (_render$prototype = render.prototype) === null || _render$prototype === void 0 ? void 0 : _render$prototype.isMyReactComponent;
 
             if (isClassComponent) {
               return nextWorkClassComponent(fiber);
             } else {
               _env.currentHookDeepIndex.current = 0;
               _env.currentFunctionFiber.current = fiber;
-              var children = isMyReactForwardRefRender
-                ? render(fiber.__vdom__.props, fiber.__vdom__.ref)
-                : render(fiber.__vdom__.props);
+              var children = isMyReactForwardRefRender ? render(fiber.__vdom__.props, fiber.__vdom__.ref) : render(fiber.__vdom__.props);
               _env.currentHookDeepIndex.current = 0;
               _env.currentFunctionFiber.current = null;
               fiber.__vdom__.__dynamicChildren__ = children;
@@ -1029,26 +861,15 @@
           fiber.instance.setFiber(fiber);
           var Component = fiber.__vdom__.type;
 
-          if (
-            !fiber.instance.__context__ ||
-            !fiber.instance.__context__.mount
-          ) {
-            var providerFiber = (0, _index2.getContextFiber)(
-              fiber,
-              Component.Context
-            );
+          if (!fiber.instance.__context__ || !fiber.instance.__context__.mount) {
+            var providerFiber = (0, _index2.getContextFiber)(fiber, Component.Context);
             var context =
-              (providerFiber === null || providerFiber === void 0
-                ? void 0
-                : providerFiber.__vdom__.props.value) ||
-              Component.Context.Provider.value;
+              (providerFiber === null || providerFiber === void 0 ? void 0 : providerFiber.__vdom__.props.value) || Component.Context.Provider.value;
             fiber.instance.context = context;
             fiber.instance.setContext(providerFiber);
           }
 
-          fiber.__vdom__.__dynamicChildren__ = fiber.__vdom__.children(
-            fiber.instance.context
-          );
+          fiber.__vdom__.__dynamicChildren__ = fiber.__vdom__.children(fiber.instance.context);
           fiber.__renderDynamic__ = true;
           return nextWorkCommon(fiber);
         };
@@ -1107,10 +928,7 @@
 
           var nextFiber = fiber; // should not transform current loop top level fiber
 
-          while (
-            nextFiber &&
-            nextFiber !== _env.pendingAsyncModifyTopLevelFiber.current
-          ) {
+          while (nextFiber && nextFiber !== _env.pendingAsyncModifyTopLevelFiber.current) {
             if (nextFiber.fiberSibling) {
               return nextFiber.fiberSibling;
             }
@@ -1186,12 +1004,7 @@
                     return typeof obj;
                   }
                 : function (obj) {
-                    return obj &&
-                      "function" == typeof Symbol &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? "symbol"
-                      : typeof obj;
+                    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
                   }),
             _typeof(obj)
           );
@@ -1202,30 +1015,20 @@
          * @param {MyReactVDom | MyReactVDom[]} newVDom
          * @param {MyReactFiberNode | MyReactFiberNode[]} previousRenderChild
          */
-        var isSameTypeNode = function isSameTypeNode(
-          newVDom,
-          previousRenderChild
-        ) {
+        var isSameTypeNode = function isSameTypeNode(newVDom, previousRenderChild) {
           if (!_env.isMounted.current) return false;
           var newVDomIsArray = Array.isArray(newVDom);
           var previousRenderChildIsArray = Array.isArray(previousRenderChild);
           if (newVDomIsArray && previousRenderChildIsArray) return true;
           if (newVDomIsArray) return false;
           if (previousRenderChildIsArray) return false;
-          var previousRenderChildVDom =
-            previousRenderChild === null || previousRenderChild === void 0
-              ? void 0
-              : previousRenderChild.__vdom__;
+          var previousRenderChildVDom = previousRenderChild === null || previousRenderChild === void 0 ? void 0 : previousRenderChild.__vdom__;
           var newVDomIsVDomInstance = newVDom instanceof _index.MyReactVDom;
-          var previousRenderChildVDomIsVDomInstance =
-            previousRenderChildVDom instanceof _index.MyReactVDom;
+          var previousRenderChildVDomIsVDomInstance = previousRenderChildVDom instanceof _index.MyReactVDom;
 
           if (newVDomIsVDomInstance && previousRenderChildVDomIsVDomInstance) {
             // key different
-            if (
-              _env.enableKeyDiff.current &&
-              newVDom.key !== previousRenderChildVDom.key
-            ) {
+            if (_env.enableKeyDiff.current && newVDom.key !== previousRenderChildVDom.key) {
               return false;
             }
 
@@ -1235,8 +1038,7 @@
           if (newVDomIsVDomInstance) return false;
           if (previousRenderChildVDomIsVDomInstance) return false; // fallback node
 
-          if (newVDom === null || newVDom === false)
-            return previousRenderChildVDom === ""; // text node
+          if (newVDom === null || newVDom === false) return previousRenderChildVDom === ""; // text node
 
           if (_typeof(newVDom) !== "object") {
             return previousRenderChild && previousRenderChild.__isTextNode__;
@@ -1250,39 +1052,24 @@
          * @param {MyReactFiberNode[]} previousRenderChildren
          */
 
-        var getMatchedRenderChildren = function getMatchedRenderChildren(
-          newChildren,
-          previousRenderChildren
-        ) {
+        var getMatchedRenderChildren = function getMatchedRenderChildren(newChildren, previousRenderChildren) {
           if (!_env.isMounted.current) return previousRenderChildren;
           if (_env.isServerRender.current) return previousRenderChildren;
           if (_env.isHydrateRender.current) return previousRenderChildren;
           if (!_env.enableKeyDiff.current) return previousRenderChildren;
           if (!previousRenderChildren) return previousRenderChildren;
-          if (previousRenderChildren.length === 0)
-            return previousRenderChildren;
+          if (previousRenderChildren.length === 0) return previousRenderChildren;
           var tempRenderChildren = previousRenderChildren.slice(0);
-          var assignPreviousRenderChildren = Array(
-            tempRenderChildren.length
-          ).fill(null);
+          var assignPreviousRenderChildren = Array(tempRenderChildren.length).fill(null);
           newChildren.forEach(function (vDom, index) {
             if (tempRenderChildren.length) {
-              if (
-                vDom instanceof _index.MyReactVDom &&
-                vDom.key !== undefined
-              ) {
-                var targetIndex = tempRenderChildren.findIndex(function (
-                  fiber
-                ) {
-                  return (
-                    fiber instanceof _index2.MyReactFiberNode &&
-                    fiber.key === vDom.key
-                  );
+              if (vDom instanceof _index.MyReactVDom && vDom.key !== undefined) {
+                var targetIndex = tempRenderChildren.findIndex(function (fiber) {
+                  return fiber instanceof _index2.MyReactFiberNode && fiber.key === vDom.key;
                 });
 
                 if (targetIndex !== -1) {
-                  assignPreviousRenderChildren[index] =
-                    tempRenderChildren[targetIndex];
+                  assignPreviousRenderChildren[index] = tempRenderChildren[targetIndex];
                   tempRenderChildren.splice(targetIndex, 1);
                 }
               }
@@ -1299,10 +1086,7 @@
          * @param {MyReactFiberNode} parentFiber
          */
 
-        var getNewFiberWithInitial = function getNewFiberWithInitial(
-          newVDom,
-          parentFiber
-        ) {
+        var getNewFiberWithInitial = function getNewFiberWithInitial(newVDom, parentFiber) {
           if (Array.isArray(newVDom)) {
             return newVDom.map(function (v) {
               return getNewFiberWithInitial(v, parentFiber);
@@ -1316,7 +1100,7 @@
               deepIndex: parentFiber.deepIndex + 1,
               effect: "PLACEMENT",
             },
-            newVDom === false || newVDom === null ? "" : newVDom
+            newVDom === false || newVDom === null ? "" : newVDom,
           );
         };
         /**
@@ -1328,95 +1112,43 @@
          * @returns
          */
 
-        var getNewFiberWithUpdate = function getNewFiberWithUpdate(
-          newVDom,
-          parentFiber,
-          previousRenderChild,
-          matchedPreviousRenderChild
-        ) {
+        var getNewFiberWithUpdate = function getNewFiberWithUpdate(newVDom, parentFiber, previousRenderChild, matchedPreviousRenderChild) {
           var isSameType = isSameTypeNode(newVDom, matchedPreviousRenderChild);
 
           if (isSameType) {
             if (Array.isArray(newVDom)) {
-              matchedPreviousRenderChild = getMatchedRenderChildren(
-                newVDom,
-                matchedPreviousRenderChild
-              );
+              matchedPreviousRenderChild = getMatchedRenderChildren(newVDom, matchedPreviousRenderChild);
 
               if (newVDom.length < matchedPreviousRenderChild.length) {
                 // console.log(newVDom, matchedPreviousRenderChild);
-                (0, _unmount.pushUnmount)(
-                  matchedPreviousRenderChild.slice(newVDom.length)
-                );
+                (0, _unmount.pushUnmount)(matchedPreviousRenderChild.slice(newVDom.length));
               }
 
               return newVDom.map(function (v, index) {
-                return getNewFiberWithUpdate(
-                  v,
-                  parentFiber,
-                  previousRenderChild[index],
-                  matchedPreviousRenderChild[index]
-                );
+                return getNewFiberWithUpdate(v, parentFiber, previousRenderChild[index], matchedPreviousRenderChild[index]);
               });
             }
 
             if (matchedPreviousRenderChild === null) return null;
             var currentMatchedPreviousRenderChild = matchedPreviousRenderChild;
 
-            if (
-              Object.is(currentMatchedPreviousRenderChild.__vdom__, newVDom)
-            ) {
-              return (0, _index2.updateFiberNodeWithPosition)(
-                currentMatchedPreviousRenderChild,
-                parentFiber,
-                newVDom,
-                previousRenderChild
-              );
+            if (Object.is(currentMatchedPreviousRenderChild.__vdom__, newVDom)) {
+              return (0, _index2.updateFiberNodeWithPosition)(currentMatchedPreviousRenderChild, parentFiber, newVDom, previousRenderChild);
             }
 
-            if (
-              currentMatchedPreviousRenderChild.__isPlainNode__ &&
-              (0, _tool.isEqual)(
-                currentMatchedPreviousRenderChild.__vdom__.props,
-                newVDom.props
-              )
-            ) {
-              return (0, _index2.updateFiberNodeWithPosition)(
-                currentMatchedPreviousRenderChild,
-                parentFiber,
-                newVDom,
-                previousRenderChild
-              );
+            if (currentMatchedPreviousRenderChild.__isPlainNode__ && (0, _tool.isEqual)(currentMatchedPreviousRenderChild.__vdom__.props, newVDom.props)) {
+              return (0, _index2.updateFiberNodeWithPosition)(currentMatchedPreviousRenderChild, parentFiber, newVDom, previousRenderChild);
             }
 
-            if (
-              currentMatchedPreviousRenderChild.__isMemo__ &&
-              (0, _tool.isNormalEqual)(
-                currentMatchedPreviousRenderChild.__vdom__.props,
-                newVDom.props
-              )
-            ) {
-              return (0, _index2.updateFiberNodeWithPosition)(
-                currentMatchedPreviousRenderChild,
-                parentFiber,
-                newVDom,
-                previousRenderChild
-              );
+            if (currentMatchedPreviousRenderChild.__isMemo__ && (0, _tool.isNormalEqual)(currentMatchedPreviousRenderChild.__vdom__.props, newVDom.props)) {
+              return (0, _index2.updateFiberNodeWithPosition)(currentMatchedPreviousRenderChild, parentFiber, newVDom, previousRenderChild);
             }
 
             if (
               currentMatchedPreviousRenderChild.__isContextProvider__ &&
-              (0, _tool.isNormalEqual)(
-                currentMatchedPreviousRenderChild.__vdom__.props.value,
-                newVDom.props.value
-              )
+              (0, _tool.isNormalEqual)(currentMatchedPreviousRenderChild.__vdom__.props.value, newVDom.props.value)
             ) {
-              return (0, _index2.updateFiberNodeWithPosition)(
-                currentMatchedPreviousRenderChild,
-                parentFiber,
-                newVDom,
-                previousRenderChild
-              );
+              return (0, _index2.updateFiberNodeWithPosition)(currentMatchedPreviousRenderChild, parentFiber, newVDom, previousRenderChild);
             }
 
             return (0, _index2.createUpdatedFiberNodeWithUpdateAndPosition)(
@@ -1424,14 +1156,10 @@
                 deepIndex: parentFiber.deepIndex + 1,
                 fiberParent: parentFiber,
                 fiberAlternate: currentMatchedPreviousRenderChild,
-                effect:
-                  currentMatchedPreviousRenderChild.__isTextNode__ ||
-                  currentMatchedPreviousRenderChild.__isPlainNode__
-                    ? "UPDATE"
-                    : null,
+                effect: currentMatchedPreviousRenderChild.__isTextNode__ || currentMatchedPreviousRenderChild.__isPlainNode__ ? "UPDATE" : null,
               },
               newVDom === false || newVDom === null ? "" : newVDom,
-              previousRenderChild
+              previousRenderChild,
             );
           }
 
@@ -1454,7 +1182,7 @@
               effect: "POSITION",
             },
             newVDom === false || newVDom === null ? "" : newVDom,
-            previousRenderChild
+            previousRenderChild,
           );
         };
         /**
@@ -1463,37 +1191,21 @@
          * @param {MyReactVDom | MyReactVDom[]} children
          */
 
-        var transformChildrenFiber = function transformChildrenFiber(
-          parentFiber,
-          children
-        ) {
+        var transformChildrenFiber = function transformChildrenFiber(parentFiber, children) {
           var index = 0;
           var isNewChildren = Boolean(!parentFiber.__updateRender__);
           var vdomChildren = Array.isArray(children) ? children : [children];
-          var previousRenderChildren = isNewChildren
-            ? []
-            : parentFiber.__renderedChildren__;
-          var assignPreviousRenderChildren = getMatchedRenderChildren(
-            vdomChildren,
-            previousRenderChildren
-          );
+          var previousRenderChildren = isNewChildren ? [] : parentFiber.__renderedChildren__;
+          var assignPreviousRenderChildren = getMatchedRenderChildren(vdomChildren, previousRenderChildren);
           parentFiber.beforeTransform();
 
-          while (
-            index < vdomChildren.length ||
-            index < previousRenderChildren.length
-          ) {
+          while (index < vdomChildren.length || index < previousRenderChildren.length) {
             var newChild = vdomChildren[index];
             var previousRenderChild = previousRenderChildren[index];
             var assignPreviousRenderChild = assignPreviousRenderChildren[index];
             var newFiber = isNewChildren
               ? getNewFiberWithInitial(newChild, parentFiber)
-              : getNewFiberWithUpdate(
-                  newChild,
-                  parentFiber,
-                  previousRenderChild,
-                  assignPreviousRenderChild
-                );
+              : getNewFiberWithUpdate(newChild, parentFiber, previousRenderChild, assignPreviousRenderChild);
 
             parentFiber.__renderedChildren__.push(newFiber);
 
@@ -1542,35 +1254,18 @@
         var trackDevLog = function trackDevLog(fiber) {
           var _vdom$props, _vdom$type;
 
-          var showDisplayName =
-            arguments.length > 1 && arguments[1] !== undefined
-              ? arguments[1]
-              : true;
+          var showDisplayName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
           var vdom = fiber.__vdom__;
           var source =
-            vdom === null || vdom === void 0
-              ? void 0
-              : (_vdom$props = vdom.props) === null || _vdom$props === void 0
-              ? void 0
-              : _vdom$props.__source;
+            vdom === null || vdom === void 0 ? void 0 : (_vdom$props = vdom.props) === null || _vdom$props === void 0 ? void 0 : _vdom$props.__source;
           var displayName =
-            (vdom === null || vdom === void 0
-              ? void 0
-              : (_vdom$type = vdom.type) === null || _vdom$type === void 0
-              ? void 0
-              : _vdom$type.displayName) || "";
-          var preString =
-            showDisplayName && displayName
-              ? " - ".concat(displayName, " ")
-              : "";
+            (vdom === null || vdom === void 0 ? void 0 : (_vdom$type = vdom.type) === null || _vdom$type === void 0 ? void 0 : _vdom$type.displayName) || "";
+          var preString = showDisplayName && displayName ? " - ".concat(displayName, " ") : "";
 
           if (source) {
             var fileName = source.fileName,
               lineNumber = source.lineNumber;
-            return ""
-              .concat(preString, " (")
-              .concat(fileName, ":")
-              .concat(lineNumber, ")");
+            return "".concat(preString, " (").concat(fileName, ":").concat(lineNumber, ")");
           } else {
             return "".concat(preString);
           }
@@ -1583,35 +1278,16 @@
         var getFiberNodeName = function getFiberNodeName(fiber) {
           if (fiber.__root__) return "<Root />".concat(trackDevLog(fiber));
           if (fiber.__isMemo__) return "<Memo />".concat(trackDevLog(fiber));
-          if (fiber.__isPortal__)
-            return "<Portal />".concat(trackDevLog(fiber));
-          if (fiber.__isEmptyNode__)
-            return "<Empty />".concat(trackDevLog(fiber));
-          if (fiber.__isForwardRef__)
-            return "<ForwardRef />".concat(trackDevLog(fiber));
-          if (fiber.__isFragmentNode__)
-            return "<Fragment />".concat(trackDevLog(fiber));
-          if (fiber.__isContextProvider__)
-            return "<Provider />".concat(trackDevLog(fiber));
-          if (fiber.__isContextConsumer__)
-            return "<Consumer />".concat(trackDevLog(fiber));
-          if (fiber.__isPlainNode__)
-            return "<"
-              .concat(fiber.__vdom__.type, " />")
-              .concat(trackDevLog(fiber));
-          if (fiber.__isTextNode__)
-            return "<text - ("
-              .concat(fiber.__vdom__, ") />")
-              .concat(trackDevLog(fiber));
+          if (fiber.__isPortal__) return "<Portal />".concat(trackDevLog(fiber));
+          if (fiber.__isEmptyNode__) return "<Empty />".concat(trackDevLog(fiber));
+          if (fiber.__isForwardRef__) return "<ForwardRef />".concat(trackDevLog(fiber));
+          if (fiber.__isFragmentNode__) return "<Fragment />".concat(trackDevLog(fiber));
+          if (fiber.__isContextProvider__) return "<Provider />".concat(trackDevLog(fiber));
+          if (fiber.__isContextConsumer__) return "<Consumer />".concat(trackDevLog(fiber));
+          if (fiber.__isPlainNode__) return "<".concat(fiber.__vdom__.type, " />").concat(trackDevLog(fiber));
+          if (fiber.__isTextNode__) return "<text - (".concat(fiber.__vdom__, ") />").concat(trackDevLog(fiber));
           if (fiber.__isDynamicNode__)
-            return "<"
-              .concat(
-                fiber.__vdom__.type.displayName ||
-                  fiber.__vdom__.type.name ||
-                  "Unknown",
-                " */> "
-              )
-              .concat(trackDevLog(fiber, false));
+            return "<".concat(fiber.__vdom__.type.displayName || fiber.__vdom__.type.name || "Unknown", " */> ").concat(trackDevLog(fiber, false));
           return "<Undefined />".concat(trackDevLog(fiber));
         };
 
@@ -1661,7 +1337,7 @@
             "".concat(message),
             "\n-----------------------------------------\n",
             "component tree:",
-            tree
+            tree,
           );
         };
         /**
@@ -1680,7 +1356,7 @@
             "".concat(message),
             "\n-----------------------------------------\n",
             "component tree:",
-            getFiberTree(fiber || _env.currentRunningFiber.current)
+            getFiberTree(fiber || _env.currentRunningFiber.current),
           );
           throw new Error(message);
         };
@@ -1695,31 +1371,18 @@
         var getHookTree = function getHookTree(hookNode, newHookType) {
           var fiber = hookNode.__fiber__;
           var currentHook = fiber.hookHead;
-          var re =
-            "\n" +
-            "".padEnd(6) +
-            "Prev render:".padEnd(20) +
-            "Next render:".padEnd(10) +
-            "\n";
+          var re = "\n" + "".padEnd(6) + "Prev render:".padEnd(20) + "Next render:".padEnd(10) + "\n";
 
           while (currentHook !== hookNode) {
             if (currentHook) {
-              re +=
-                (currentHook.hookIndex + 1).toString().padEnd(6) +
-                currentHook.hookType.padEnd(20) +
-                currentHook.hookType.padEnd(10) +
-                "\n";
+              re += (currentHook.hookIndex + 1).toString().padEnd(6) + currentHook.hookType.padEnd(20) + currentHook.hookType.padEnd(10) + "\n";
               currentHook = currentHook.hookNext;
             } else {
               break;
             }
           }
 
-          re +=
-            (hookNode.hookIndex + 1).toString().padEnd(6) +
-            hookNode.hookType.padEnd(20) +
-            newHookType.padEnd(10) +
-            "\n";
+          re += (hookNode.hookIndex + 1).toString().padEnd(6) + hookNode.hookType.padEnd(20) + newHookType.padEnd(10) + "\n";
           re += "".padEnd(6) + "^".repeat(30) + "\n";
           return re;
         };
@@ -1728,21 +1391,14 @@
 
         var safeCall = function safeCall(action) {
           try {
-            for (
-              var _len = arguments.length,
-                args = new Array(_len > 1 ? _len - 1 : 0),
-                _key = 1;
-              _key < _len;
-              _key++
-            ) {
+            for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
               args[_key - 1] = arguments[_key];
             }
 
             return action.call.apply(action, [null].concat(args));
           } catch (e) {
             error({
-              message:
-                e !== null && e !== void 0 && e.stack ? e.stack : e.message,
+              message: e !== null && e !== void 0 && e.stack ? e.stack : e.message,
             });
           }
         };
@@ -1754,23 +1410,14 @@
             fiber = _ref3.fiber;
 
           try {
-            for (
-              var _len2 = arguments.length,
-                args = new Array(_len2 > 1 ? _len2 - 1 : 0),
-                _key2 = 1;
-              _key2 < _len2;
-              _key2++
-            ) {
+            for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
               args[_key2 - 1] = arguments[_key2];
             }
 
             return action.call.apply(action, [null].concat(args));
           } catch (e) {
             error({
-              message:
-                e !== null && e !== void 0 && e.stack
-                  ? e.message + "\n" + e.stack
-                  : e.message,
+              message: e !== null && e !== void 0 && e.stack ? e.message + "\n" + e.stack : e.message,
               fiber: fiber,
             });
           }
@@ -1820,12 +1467,7 @@
             ? document.createElementNS(fiber.nameSpace, fiber.__vdom__.type)
             : document.createElement(fiber.__vdom__.type);
           fiber.dom = dom;
-          (0, _tool.updateDom)(
-            dom,
-            _share.EMPTY_OBJECT,
-            fiber.__isTextNode__ ? _share.EMPTY_OBJECT : fiber.__vdom__.props,
-            fiber
-          );
+          (0, _tool.updateDom)(dom, _share.EMPTY_OBJECT, fiber.__isTextNode__ ? _share.EMPTY_OBJECT : fiber.__vdom__.props, fiber);
           return dom;
         };
         /**
@@ -1858,12 +1500,7 @@
         Object.defineProperty(exports, "__esModule", {
           value: true,
         });
-        exports.unmountComponentAtNode =
-          exports.renderToString =
-          exports.render =
-          exports.hydrate =
-          exports.findDOMNode =
-            void 0;
+        exports.unmountComponentAtNode = exports.renderToString = exports.render = exports.hydrate = exports.findDOMNode = void 0;
 
         var _server = require("./server.js");
 
@@ -1903,9 +1540,7 @@
             Array.from(container.children).forEach(function (n) {
               var _n$remove;
 
-              return (_n$remove = n.remove) === null || _n$remove === void 0
-                ? void 0
-                : _n$remove.call(n);
+              return (_n$remove = n.remove) === null || _n$remove === void 0 ? void 0 : _n$remove.call(n);
             });
             var rootElement = element;
             var fiber = (0, _index3.createNewFiberNode)(
@@ -1913,13 +1548,12 @@
                 deepIndex: 0,
                 dom: container,
               },
-              rootElement
+              rootElement,
             );
             fiber.__root__ = true;
             _env.rootFiber.current = fiber;
             _env.rootContainer.current = container;
-            (_container$setAttribu = container.setAttribute) === null ||
-            _container$setAttribu === void 0
+            (_container$setAttribu = container.setAttribute) === null || _container$setAttribu === void 0
               ? void 0
               : _container$setAttribu.call(container, "render", "MyReact");
             container.__fiber__ = fiber;
@@ -1939,13 +1573,12 @@
               deepIndex: 0,
               dom: container,
             },
-            rootElement
+            rootElement,
           );
           fiber.__root__ = true;
           _env.rootFiber.current = fiber;
           _env.rootContainer.current = container;
-          (_container$setAttribu2 = container.setAttribute) === null ||
-          _container$setAttribu2 === void 0
+          (_container$setAttribu2 = container.setAttribute) === null || _container$setAttribu2 === void 0
             ? void 0
             : _container$setAttribu2.call(container, "hydrate", "MyReact");
           container.__fiber__ = fiber;
@@ -1971,24 +1604,18 @@
               deepIndex: 0,
               dom: container,
             },
-            rootElement
+            rootElement,
           );
           fiber.__root__ = true;
           _env.rootFiber.current = fiber;
           _env.rootContainer.current = container;
           (0, _index2.startRender)(fiber);
           _env.isServerRender.current = false;
-          (_container$children$ = container.children[0]) === null ||
-          _container$children$ === void 0
+          (_container$children$ = container.children[0]) === null || _container$children$ === void 0
             ? void 0
-            : (_container$children$$ = _container$children$.setAttribute) ===
-                null || _container$children$$ === void 0
+            : (_container$children$$ = _container$children$.setAttribute) === null || _container$children$$ === void 0
             ? void 0
-            : _container$children$$.call(
-                _container$children$,
-                "root",
-                "MyReact"
-              );
+            : _container$children$$.call(_container$children$, "root", "MyReact");
           return container.toString();
         };
         /**
@@ -2000,9 +1627,7 @@
 
         var findDOMNode = function findDOMNode(instance) {
           if (instance instanceof _index4.MyReactComponent) {
-            return (0, _tool.findLatestDomFromComponentFiber)(
-              instance.__fiber__
-            );
+            return (0, _tool.findLatestDomFromComponentFiber)(instance.__fiber__);
           } else {
             return null;
           }
@@ -2010,16 +1635,10 @@
 
         exports.findDOMNode = findDOMNode;
 
-        var unmountComponentAtNode = function unmountComponentAtNode(
-          container
-        ) {
+        var unmountComponentAtNode = function unmountComponentAtNode(container) {
           var containerFiber = container.__fiber__;
 
-          if (
-            containerFiber !== null &&
-            containerFiber !== void 0 &&
-            containerFiber.mount
-          ) {
+          if (containerFiber !== null && containerFiber !== void 0 && containerFiber.mount) {
             (0, _unmount.unmountFiberNode)(containerFiber);
           }
         };
@@ -2156,31 +1775,24 @@
                   var wrapperDom = _this.getHighLight();
 
                   allWrapper.push(wrapperDom);
-                  f.__isTextNode__
-                    ? _this.range.selectNodeContents(f.dom)
-                    : _this.range.selectNode(f.dom);
+                  f.__isTextNode__ ? _this.range.selectNodeContents(f.dom) : _this.range.selectNode(f.dom);
 
                   var rect = _this.range.getBoundingClientRect();
 
-                  var left =
-                    parseInt(rect.left) +
-                    parseInt(document.scrollingElement.scrollLeft);
-                  var top =
-                    parseInt(rect.top) +
-                    parseInt(document.scrollingElement.scrollTop);
+                  var left = parseInt(rect.left) + parseInt(document.scrollingElement.scrollLeft);
+                  var top = parseInt(rect.top) + parseInt(document.scrollingElement.scrollTop);
                   var width = parseInt(rect.width) + 4;
                   var height = parseInt(rect.height) + 4;
                   var positionLeft = left - 2;
                   var positionTop = top - 2;
-                  wrapperDom.style.cssText =
-                    "\n          position: absolute;\n          width: "
-                      .concat(width, "px;\n          height: ")
-                      .concat(height, "px;\n          left: ")
-                      .concat(positionLeft, "px;\n          top: ")
-                      .concat(
-                        positionTop,
-                        "px;\n          pointer-events: none;\n          box-shadow: 0.0625rem 0.0625rem 0.0625rem red, -0.0625rem -0.0625rem 0.0625rem red;\n          "
-                      );
+                  wrapperDom.style.cssText = "\n          position: absolute;\n          width: "
+                    .concat(width, "px;\n          height: ")
+                    .concat(height, "px;\n          left: ")
+                    .concat(positionLeft, "px;\n          top: ")
+                    .concat(
+                      positionTop,
+                      "px;\n          pointer-events: none;\n          box-shadow: 0.0625rem 0.0625rem 0.0625rem red, -0.0625rem -0.0625rem 0.0625rem red;\n          ",
+                    );
                 });
                 setTimeout(function () {
                   allWrapper.forEach(function (wrapperDom) {
@@ -2199,7 +1811,7 @@
             this.container.style.cssText =
               "\n      position: absolute;\n      z-index: 999999;\n      width: 100%;\n      left: 0;\n      top: 0;\n      pointer-events: none;\n      ";
             document.body.append(this.container);
-          }
+          },
         );
 
         exports.HighLight = HighLight;
@@ -2245,20 +1857,12 @@
           Object.keys(props)
             .filter(_prop.isProperty)
             .forEach(function (key) {
-              if (
-                props[key] === null ||
-                props[key] === undefined ||
-                props[key] === false
-              )
-                return;
+              if (props[key] === null || props[key] === undefined || props[key] === false) return;
 
               if (!fiber.nameSpace && key === "className") {
                 if (dom[key] !== props[key]) {
                   (0, _debug.warning)({
-                    message:
-                      "hydrate warning, dom class not match from server, server: "
-                        .concat(dom[key], ", client: ")
-                        .concat(props[key]),
+                    message: "hydrate warning, dom class not match from server, server: ".concat(dom[key], ", client: ").concat(props[key]),
                     fiber: fiber,
                   });
                   dom[key] = props[key];
@@ -2270,10 +1874,7 @@
               if (fiber.nameSpace && key === "className") {
                 if (dom.getAttribute("class") !== props[key].toString()) {
                   (0, _debug.warning)({
-                    message:
-                      "hydrate warning, dom class not match from server, server: "
-                        .concat(dom.getAttribute("class"), ", client: ")
-                        .concat(props[key]),
+                    message: "hydrate warning, dom class not match from server, server: ".concat(dom.getAttribute("class"), ", client: ").concat(props[key]),
                     fiber: fiber,
                   });
                   dom.setAttribute("class", props[key]);
@@ -2287,16 +1888,9 @@
                 return;
               }
 
-              if (
-                props[key] !== null &&
-                props[key] !== undefined &&
-                dom.getAttribute(key) !== props[key].toString()
-              ) {
+              if (props[key] !== null && props[key] !== undefined && dom.getAttribute(key) !== props[key].toString()) {
                 (0, _debug.warning)({
-                  message:
-                    "hydrate warning, dom attrs not match from server, server: "
-                      .concat(dom.getAttribute(key), ", client: ")
-                      .concat(props[key]),
+                  message: "hydrate warning, dom attrs not match from server, server: ".concat(dom.getAttribute(key), ", client: ").concat(props[key]),
                   fiber: fiber,
                 });
                 dom.setAttribute(key, props[key]);
@@ -2315,10 +1909,7 @@
           Object.keys(props)
             .filter(_prop.isEvent)
             .forEach(function (key) {
-              var _getNativeEventName = (0, _tool.getNativeEventName)(
-                  key.slice(2),
-                  fiber.__vdom__
-                ),
+              var _getNativeEventName = (0, _tool.getNativeEventName)(key.slice(2), fiber.__vdom__),
                 eventName = _getNativeEventName.eventName,
                 isCapture = _getNativeEventName.isCapture;
 
@@ -2337,21 +1928,16 @@
           Object.keys(props)
             .filter(_prop.isStyle)
             .forEach(function (styleKey) {
-              Object.keys(props[styleKey] || _share.EMPTY_OBJECT).forEach(
-                function (styleName) {
-                  if (!_share.IS_UNIT_LESS_NUMBER[styleName]) {
-                    if (typeof props[styleKey][styleName] === "number") {
-                      dom.style[styleName] = "".concat(
-                        props[styleKey][styleName],
-                        "px"
-                      );
-                      return;
-                    }
+              Object.keys(props[styleKey] || _share.EMPTY_OBJECT).forEach(function (styleName) {
+                if (!_share.IS_UNIT_LESS_NUMBER[styleName]) {
+                  if (typeof props[styleKey][styleName] === "number") {
+                    dom.style[styleName] = "".concat(props[styleKey][styleName], "px");
+                    return;
                   }
-
-                  dom.style[styleName] = props[styleKey][styleName];
                 }
-              );
+
+                dom.style[styleName] = props[styleKey][styleName];
+              });
             });
         };
         /**
@@ -2367,26 +1953,17 @@
           domPropsHydrate(
             fiber,
             dom,
-            ((_fiber$__vdom__ = fiber.__vdom__) === null ||
-            _fiber$__vdom__ === void 0
-              ? void 0
-              : _fiber$__vdom__.props) || _share.EMPTY_OBJECT
+            ((_fiber$__vdom__ = fiber.__vdom__) === null || _fiber$__vdom__ === void 0 ? void 0 : _fiber$__vdom__.props) || _share.EMPTY_OBJECT,
           );
           domEventHydrate(
             fiber,
             dom,
-            ((_fiber$__vdom__2 = fiber.__vdom__) === null ||
-            _fiber$__vdom__2 === void 0
-              ? void 0
-              : _fiber$__vdom__2.props) || _share.EMPTY_OBJECT
+            ((_fiber$__vdom__2 = fiber.__vdom__) === null || _fiber$__vdom__2 === void 0 ? void 0 : _fiber$__vdom__2.props) || _share.EMPTY_OBJECT,
           );
           domStyleHydrate(
             fiber,
             dom,
-            ((_fiber$__vdom__3 = fiber.__vdom__) === null ||
-            _fiber$__vdom__3 === void 0
-              ? void 0
-              : _fiber$__vdom__3.props) || _share.EMPTY_OBJECT
+            ((_fiber$__vdom__3 = fiber.__vdom__) === null || _fiber$__vdom__3 === void 0 ? void 0 : _fiber$__vdom__3.props) || _share.EMPTY_OBJECT,
           );
           return dom;
         };
@@ -2408,10 +1985,9 @@
           if (fiber.__isTextNode__) {
             if (dom.nodeType !== Node.TEXT_NODE) {
               (0, _debug.warning)({
-                message:
-                  "hydrate warning, dom type not match from server, server: "
-                    .concat(dom.nodeName.toString().toLowerCase(), ", client: ")
-                    .concat(fiber.__vdom__),
+                message: "hydrate warning, dom type not match from server, server: "
+                  .concat(dom.nodeName.toString().toLowerCase(), ", client: ")
+                  .concat(fiber.__vdom__),
                 fiber: fiber,
               });
               return false;
@@ -2423,10 +1999,7 @@
                 return true;
               } else {
                 (0, _debug.warning)({
-                  message:
-                    "hydrate warning, dom content not match from server, server: "
-                      .concat(dom.textContent, ", client: ")
-                      .concat(fiber.__vdom__),
+                  message: "hydrate warning, dom content not match from server, server: ".concat(dom.textContent, ", client: ").concat(fiber.__vdom__),
                   fiber: fiber,
                 });
                 return false;
@@ -2437,23 +2010,19 @@
           if (fiber.__isPlainNode__) {
             if (dom.nodeType !== Node.ELEMENT_NODE) {
               (0, _debug.warning)({
-                message:
-                  "hydrate warning, dom type not match from server, server: "
-                    .concat(dom.nodeName.toString().toLowerCase(), ", client: ")
-                    .concat(fiber.__vdom__.type),
+                message: "hydrate warning, dom type not match from server, server: "
+                  .concat(dom.nodeName.toString().toLowerCase(), ", client: ")
+                  .concat(fiber.__vdom__.type),
                 fiber: fiber,
               });
               return false;
             }
 
-            if (
-              fiber.__vdom__.type.toLowerCase() !== dom.nodeName.toLowerCase()
-            ) {
+            if (fiber.__vdom__.type.toLowerCase() !== dom.nodeName.toLowerCase()) {
               (0, _debug.warning)({
-                message:
-                  "hydrate warning, dom name not match from server, server: "
-                    .concat(dom.nodeName.toString().toLowerCase(), ", client: ")
-                    .concat(fiber.__vdom__.type),
+                message: "hydrate warning, dom name not match from server, server: "
+                  .concat(dom.nodeName.toString().toLowerCase(), ", client: ")
+                  .concat(fiber.__vdom__.type),
                 fiber: fiber,
               });
               return false;
@@ -2606,14 +2175,7 @@
         Object.defineProperty(exports, "__esModule", {
           value: true,
         });
-        exports.isStyle =
-          exports.isProperty =
-          exports.isNew =
-          exports.isInternal =
-          exports.isGone =
-          exports.isEvent =
-          exports.isChildren =
-            void 0;
+        exports.isStyle = exports.isProperty = exports.isNew = exports.isInternal = exports.isGone = exports.isEvent = exports.isChildren = void 0;
 
         var isInternal = function isInternal(key) {
           return key.startsWith("__");
@@ -2640,12 +2202,7 @@
         exports.isStyle = isStyle;
 
         var isProperty = function isProperty(key) {
-          return (
-            !isChildren(key) &&
-            !isEvent(key) &&
-            !isStyle(key) &&
-            !isInternal(key)
-          );
+          return !isChildren(key) && !isEvent(key) && !isStyle(key) && !isInternal(key);
         };
 
         exports.isProperty = isProperty;
@@ -2784,10 +2341,7 @@
               value: function append() {
                 var _this$children;
 
-                (_this$children = this.children).push.apply(
-                  _this$children,
-                  arguments
-                );
+                (_this$children = this.children).push.apply(_this$children, arguments);
               },
             },
             {
@@ -2812,14 +2366,12 @@
                   return 'style="'.concat(
                     styleKeys
                       .map(function (key) {
-                        return ""
-                          .concat(key, ": ")
-                          .concat(_this.style[key].toString(), ";");
+                        return "".concat(key, ": ").concat(_this.style[key].toString(), ";");
                       })
                       .reduce(function (p, c) {
                         return p + c;
                       }, ""),
-                    '"'
+                    '"',
                   );
                 }
 
@@ -2836,15 +2388,10 @@
                 if (attrsKeys.length) {
                   return attrsKeys
                     .map(function (key) {
-                      if (
-                        _this2.attrs[key] === null ||
-                        _this2.attrs[key] === undefined
-                      ) {
+                      if (_this2.attrs[key] === null || _this2.attrs[key] === undefined) {
                         return "";
                       } else {
-                        return ""
-                          .concat(key, "='")
-                          .concat(_this2.attrs[key].toString(), "'");
+                        return "".concat(key, "='").concat(_this2.attrs[key].toString(), "'");
                       }
                     })
                     .reduce(function (p, c) {
@@ -2869,15 +2416,8 @@
               key: "toString",
               value: function toString() {
                 if (_share.IS_SINGLE_ELEMENT[this.type]) {
-                  if (this.children.length)
-                    throw new Error(
-                      "can not add child to ".concat(this.type, " element")
-                    );
-                  return "<"
-                    .concat(this.type, " ")
-                    .concat(this.serializeProps(), " ")
-                    .concat(this.serializeStyle(), " ")
-                    .concat(this.serializeAttrs(), " />");
+                  if (this.children.length) throw new Error("can not add child to ".concat(this.type, " element"));
+                  return "<".concat(this.type, " ").concat(this.serializeProps(), " ").concat(this.serializeStyle(), " ").concat(this.serializeAttrs(), " />");
                 } else {
                   if (this.type) {
                     return "<"
@@ -2888,11 +2428,7 @@
                       .concat(
                         this.children
                           .reduce(function (p, c) {
-                            if (
-                              p.length &&
-                              c instanceof TextElement &&
-                              p[p.length - 1] instanceof TextElement
-                            ) {
+                            if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
                               p.push("<!-- -->");
                               p.push(c);
                             } else {
@@ -2907,7 +2443,7 @@
                           .reduce(function (p, c) {
                             return p + c;
                           }, ""),
-                        "</"
+                        "</",
                       )
                       .concat(this.type, ">");
                   } else {
@@ -2934,16 +2470,9 @@
         exports.Element = Element;
 
         var createServerDom = function createServerDom(fiber) {
-          var dom = fiber.__isTextNode__
-            ? new TextElement(fiber.__vdom__)
-            : new Element(fiber.__vdom__.type);
+          var dom = fiber.__isTextNode__ ? new TextElement(fiber.__vdom__) : new Element(fiber.__vdom__.type);
           fiber.dom = dom;
-          (0, _tool.updateDom)(
-            dom,
-            _share.EMPTY_OBJECT,
-            fiber.__isTextNode__ ? _share.EMPTY_OBJECT : fiber.__vdom__.props,
-            fiber
-          );
+          (0, _tool.updateDom)(dom, _share.EMPTY_OBJECT, fiber.__isTextNode__ ? _share.EMPTY_OBJECT : fiber.__vdom__.props, fiber);
           return dom;
         };
         /**
@@ -2973,11 +2502,7 @@
         Object.defineProperty(exports, "__esModule", {
           value: true,
         });
-        exports.updateDom =
-          exports.getNativeEventName =
-          exports.getDom =
-          exports.findLatestDomFromComponentFiber =
-            void 0;
+        exports.updateDom = exports.getNativeEventName = exports.getDom = exports.findLatestDomFromComponentFiber = void 0;
 
         var _env = require("../env.js");
 
@@ -2992,17 +2517,12 @@
         var _prop = require("./prop.js");
 
         function _toConsumableArray(arr) {
-          return (
-            _arrayWithoutHoles(arr) ||
-            _iterableToArray(arr) ||
-            _unsupportedIterableToArray(arr) ||
-            _nonIterableSpread()
-          );
+          return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
         }
 
         function _nonIterableSpread() {
           throw new TypeError(
-            "Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."
+            "Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.",
           );
         }
 
@@ -3012,19 +2532,11 @@
           var n = Object.prototype.toString.call(o).slice(8, -1);
           if (n === "Object" && o.constructor) n = o.constructor.name;
           if (n === "Map" || n === "Set") return Array.from(o);
-          if (
-            n === "Arguments" ||
-            /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)
-          )
-            return _arrayLikeToArray(o, minLen);
+          if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
         }
 
         function _iterableToArray(iter) {
-          if (
-            (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null) ||
-            iter["@@iterator"] != null
-          )
-            return Array.from(iter);
+          if ((typeof Symbol !== "undefined" && iter[Symbol.iterator] != null) || iter["@@iterator"] != null) return Array.from(iter);
         }
 
         function _arrayWithoutHoles(arr) {
@@ -3050,10 +2562,7 @@
             var _fiber = currentLoopFiberArray.shift();
 
             if (_fiber.dom) return _fiber.dom;
-            currentLoopFiberArray.push.apply(
-              currentLoopFiberArray,
-              _toConsumableArray(_fiber.children)
-            );
+            currentLoopFiberArray.push.apply(currentLoopFiberArray, _toConsumableArray(_fiber.children));
           }
         };
         /**
@@ -3061,17 +2570,16 @@
          * @param {MyReactFiberNode} fiber
          */
 
-        var findLatestDomFromComponentFiber =
-          function findLatestDomFromComponentFiber(fiber) {
-            if (fiber) {
-              if (fiber.dom) return fiber.dom;
+        var findLatestDomFromComponentFiber = function findLatestDomFromComponentFiber(fiber) {
+          if (fiber) {
+            if (fiber.dom) return fiber.dom;
 
-              for (var i = 0; i < fiber.children.length; i++) {
-                var dom = findLatestDomFromFiber(fiber.children[i]);
-                if (dom) return dom;
-              }
+            for (var i = 0; i < fiber.children.length; i++) {
+              var dom = findLatestDomFromFiber(fiber.children[i]);
+              if (dom) return dom;
             }
-          };
+          }
+        };
         /**
          *
          * @param {string} eventName
@@ -3079,8 +2587,7 @@
          * @returns
          */
 
-        exports.findLatestDomFromComponentFiber =
-          findLatestDomFromComponentFiber;
+        exports.findLatestDomFromComponentFiber = findLatestDomFromComponentFiber;
 
         var getNativeEventName = function getNativeEventName(eventName, vdom) {
           var isCapture = false;
@@ -3097,12 +2604,8 @@
               var _vdom$props, _vdom$props2;
 
               if (
-                ((_vdom$props = vdom.props) === null || _vdom$props === void 0
-                  ? void 0
-                  : _vdom$props.type) === "radio" ||
-                ((_vdom$props2 = vdom.props) === null || _vdom$props2 === void 0
-                  ? void 0
-                  : _vdom$props2.type) === "checkbox"
+                ((_vdom$props = vdom.props) === null || _vdom$props === void 0 ? void 0 : _vdom$props.type) === "radio" ||
+                ((_vdom$props2 = vdom.props) === null || _vdom$props2 === void 0 ? void 0 : _vdom$props2.type) === "checkbox"
               ) {
                 eventName = "click";
               } else {
@@ -3139,16 +2642,10 @@
             Object.keys(oldProps)
               .filter(_prop.isEvent)
               .filter(function (key) {
-                return (
-                  (0, _prop.isGone)(newProps)(key) ||
-                  (0, _prop.isNew)(oldProps, newProps)(key)
-                );
+                return (0, _prop.isGone)(newProps)(key) || (0, _prop.isNew)(oldProps, newProps)(key);
               })
               .forEach(function (key) {
-                var _getNativeEventName = getNativeEventName(
-                    key.slice(2),
-                    fiber.__preRenderVdom__
-                  ),
+                var _getNativeEventName = getNativeEventName(key.slice(2), fiber.__preRenderVdom__),
                   isCapture = _getNativeEventName.isCapture,
                   eventName = _getNativeEventName.eventName;
 
@@ -3183,10 +2680,7 @@
               .filter(_prop.isEvent)
               .filter((0, _prop.isNew)(oldProps, newProps))
               .forEach(function (key) {
-                var _getNativeEventName2 = getNativeEventName(
-                    key.slice(2),
-                    fiber.__vdom__
-                  ),
+                var _getNativeEventName2 = getNativeEventName(key.slice(2), fiber.__vdom__),
                   eventName = _getNativeEventName2.eventName,
                   isCapture = _getNativeEventName2.isCapture;
 
@@ -3212,11 +2706,7 @@
                 } else if (key === "value") {
                   element[key] = newProps[key];
                 } else {
-                  if (
-                    newProps[key] !== null &&
-                    newProps[key] !== undefined &&
-                    newProps[key] !== false
-                  ) {
+                  if (newProps[key] !== null && newProps[key] !== undefined && newProps[key] !== false) {
                     element.setAttribute(key, newProps[key]);
                   } else {
                     element.removeAttribute(key);
@@ -3227,30 +2717,15 @@
               .filter(_prop.isStyle)
               .forEach(function (styleKey) {
                 Object.keys(newProps[styleKey] || {})
-                  .filter(
-                    (0, _prop.isNew)(
-                      oldProps[styleKey] || {},
-                      newProps[styleKey]
-                    )
-                  )
+                  .filter((0, _prop.isNew)(oldProps[styleKey] || {}, newProps[styleKey]))
                   .forEach(function (styleName) {
-                    if (
-                      !_share.IS_UNIT_LESS_NUMBER[styleName] &&
-                      typeof newProps[styleKey][styleName] === "number"
-                    ) {
-                      element[styleKey][styleName] = "".concat(
-                        newProps[styleKey][styleName],
-                        "px"
-                      );
+                    if (!_share.IS_UNIT_LESS_NUMBER[styleName] && typeof newProps[styleKey][styleName] === "number") {
+                      element[styleKey][styleName] = "".concat(newProps[styleKey][styleName], "px");
                       return;
                     }
 
-                    if (
-                      newProps[styleKey][styleName] !== null &&
-                      newProps[styleKey][styleName] !== undefined
-                    ) {
-                      element[styleKey][styleName] =
-                        newProps[styleKey][styleName];
+                    if (newProps[styleKey][styleName] !== null && newProps[styleKey][styleName] !== undefined) {
+                      element[styleKey][styleName] = newProps[styleKey][styleName];
                     } else {
                       element[styleKey][styleName] = "";
                     }
@@ -3302,20 +2777,13 @@
         Object.defineProperty(exports, "__esModule", {
           value: true,
         });
-        exports.runLayoutEffect =
-          exports.runEffect =
-          exports.pushLayoutEffect =
-          exports.pushEffect =
-            void 0;
+        exports.runLayoutEffect = exports.runEffect = exports.pushLayoutEffect = exports.pushEffect = void 0;
 
         var _index = require("./fiber/index.js");
 
         var _env = require("./env.js");
 
-        var prepareEffectArray = function prepareEffectArray(
-          effectArray,
-          index
-        ) {
+        var prepareEffectArray = function prepareEffectArray(effectArray, index) {
           effectArray[index] = effectArray[index] || [];
           return effectArray[index];
         };
@@ -3327,10 +2795,7 @@
 
         var pushLayoutEffect = function pushLayoutEffect(fiber, effect) {
           if (_env.isServerRender.current) return;
-          prepareEffectArray(
-            _env.pendingLayoutEffectArray.current,
-            fiber.deepIndex
-          ).push(effect);
+          prepareEffectArray(_env.pendingLayoutEffectArray.current, fiber.deepIndex).push(effect);
         };
         /**
          *
@@ -3342,17 +2807,13 @@
 
         var pushEffect = function pushEffect(fiber, effect) {
           if (_env.isServerRender.current) return;
-          prepareEffectArray(
-            _env.pendingEffectArray.current,
-            fiber.deepIndex
-          ).push(effect);
+          prepareEffectArray(_env.pendingEffectArray.current, fiber.deepIndex).push(effect);
         };
 
         exports.pushEffect = pushEffect;
 
         var runLayoutEffect = function runLayoutEffect() {
-          var allLayoutEffectArray =
-            _env.pendingLayoutEffectArray.current.slice(0);
+          var allLayoutEffectArray = _env.pendingLayoutEffectArray.current.slice(0);
 
           for (var i = allLayoutEffectArray.length - 1; i >= 0; i--) {
             var effectArray = allLayoutEffectArray[i];
@@ -3430,12 +2891,7 @@
                     return typeof obj;
                   }
                 : function (obj) {
-                    return obj &&
-                      "function" == typeof Symbol &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? "symbol"
-                      : typeof obj;
+                    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
                   }),
             _typeof(obj)
           );
@@ -3449,7 +2905,7 @@
             {
               container: container,
             },
-            element
+            element,
           );
         }
 
@@ -3508,10 +2964,7 @@
           });
           Object.defineProperty(MemoObject, "isMyReactForwardRefRender", {
             get: function get() {
-              return (
-                _typeof(MemoRender) === "object" &&
-                MemoRender.type === _symbol.ForwardRef
-              );
+              return _typeof(MemoRender) === "object" && MemoRender.type === _symbol.ForwardRef;
             },
             enumerable: false,
             configurable: false,
@@ -3611,13 +3064,10 @@
         exports.pendingLayoutEffectArray = pendingLayoutEffectArray;
         var pendingSyncModifyFiberArray = (0, _share.createRef)([]);
         exports.pendingSyncModifyFiberArray = pendingSyncModifyFiberArray;
-        var pendingAsyncModifyFiberArray = (0, _share.createRef)(
-          _share.SORT_BY_DEEP_HEAP
-        );
+        var pendingAsyncModifyFiberArray = (0, _share.createRef)(_share.SORT_BY_DEEP_HEAP);
         exports.pendingAsyncModifyFiberArray = pendingAsyncModifyFiberArray;
         var pendingAsyncModifyTopLevelFiber = (0, _share.createRef)(null);
-        exports.pendingAsyncModifyTopLevelFiber =
-          pendingAsyncModifyTopLevelFiber;
+        exports.pendingAsyncModifyTopLevelFiber = pendingAsyncModifyTopLevelFiber;
         var pendingAsyncModifyFiber = (0, _share.createRef)(null);
         exports.pendingAsyncModifyFiber = pendingAsyncModifyFiber;
         var pendingMountFiberArray = (0, _share.createRef)([]);
@@ -3667,13 +3117,7 @@
             fiberParent = _ref.fiberParent,
             effect = _ref.effect,
             dom = _ref.dom;
-          var newFiber = new _instance.MyReactFiberNode(
-            key,
-            deepIndex,
-            fiberParent,
-            null,
-            effect
-          );
+          var newFiber = new _instance.MyReactFiberNode(key, deepIndex, fiberParent, null, effect);
           newFiber.dom = dom;
           newFiber.initialParent();
           newFiber.updateFromAlternate();
@@ -3693,10 +3137,7 @@
 
         exports.createNewFiberNode = createNewFiberNode;
 
-        var createNewFiberNodeWithMount = function createNewFiberNodeWithMount(
-          _ref2,
-          vdom
-        ) {
+        var createNewFiberNodeWithMount = function createNewFiberNodeWithMount(_ref2, vdom) {
           var key = _ref2.key,
             deepIndex = _ref2.deepIndex,
             fiberParent = _ref2.fiberParent,
@@ -3710,7 +3151,7 @@
               effect: effect,
               dom: dom,
             },
-            vdom
+            vdom,
           );
           (0, _index.pushMount)(newFiber);
           return newFiber;
@@ -3724,30 +3165,25 @@
 
         exports.createNewFiberNodeWithMount = createNewFiberNodeWithMount;
 
-        var createNewFiberNodeWithPosition =
-          function createNewFiberNodeWithPosition(
-            _ref3,
+        var createNewFiberNodeWithPosition = function createNewFiberNodeWithPosition(_ref3, vdom, previousRenderFiber) {
+          var key = _ref3.key,
+            deepIndex = _ref3.deepIndex,
+            fiberParent = _ref3.fiberParent,
+            effect = _ref3.effect,
+            dom = _ref3.dom;
+          var newFiber = createNewFiberNode(
+            {
+              key: key,
+              deepIndex: deepIndex,
+              fiberParent: fiberParent,
+              effect: effect,
+              dom: dom,
+            },
             vdom,
-            previousRenderFiber
-          ) {
-            var key = _ref3.key,
-              deepIndex = _ref3.deepIndex,
-              fiberParent = _ref3.fiberParent,
-              effect = _ref3.effect,
-              dom = _ref3.dom;
-            var newFiber = createNewFiberNode(
-              {
-                key: key,
-                deepIndex: deepIndex,
-                fiberParent: fiberParent,
-                effect: effect,
-                dom: dom,
-              },
-              vdom
-            );
-            (0, _position.pushPosition)(newFiber, previousRenderFiber);
-            return newFiber;
-          };
+          );
+          (0, _position.pushPosition)(newFiber, previousRenderFiber);
+          return newFiber;
+        };
         /**
          *
          * @param {{key: string, deepIndex: number, fiberParent: MyReactFiberNode, fiberAlternate: MyReactFiberNode, effect: 'PLACEMENT' | 'UPDATE' | 'POSITION'}} param
@@ -3756,22 +3192,13 @@
 
         exports.createNewFiberNodeWithPosition = createNewFiberNodeWithPosition;
 
-        var createUpdatedFiberNode = function createUpdatedFiberNode(
-          _ref4,
-          vdom
-        ) {
+        var createUpdatedFiberNode = function createUpdatedFiberNode(_ref4, vdom) {
           var key = _ref4.key,
             deepIndex = _ref4.deepIndex,
             fiberParent = _ref4.fiberParent,
             fiberAlternate = _ref4.fiberAlternate,
             effect = _ref4.effect;
-          var newFiber = new _instance.MyReactFiberNode(
-            key,
-            deepIndex,
-            fiberParent,
-            fiberAlternate,
-            effect
-          );
+          var newFiber = new _instance.MyReactFiberNode(key, deepIndex, fiberParent, fiberAlternate, effect);
           newFiber.initialParent();
           newFiber.updateFromAlternate();
           newFiber.installVDom(vdom);
@@ -3787,34 +3214,33 @@
 
         exports.createUpdatedFiberNode = createUpdatedFiberNode;
 
-        var createUpdatedFiberNodeWithUpdate =
-          function createUpdatedFiberNodeWithUpdate(_ref5, vdom) {
-            var key = _ref5.key,
-              deepIndex = _ref5.deepIndex,
-              fiberParent = _ref5.fiberParent,
-              fiberAlternate = _ref5.fiberAlternate,
-              effect = _ref5.effect;
-            var newFiber = createUpdatedFiberNode(
-              {
-                key: key,
-                deepIndex: deepIndex,
-                fiberParent: fiberParent,
-                fiberAlternate: fiberAlternate,
-                effect: effect,
-              },
-              vdom
-            );
+        var createUpdatedFiberNodeWithUpdate = function createUpdatedFiberNodeWithUpdate(_ref5, vdom) {
+          var key = _ref5.key,
+            deepIndex = _ref5.deepIndex,
+            fiberParent = _ref5.fiberParent,
+            fiberAlternate = _ref5.fiberAlternate,
+            effect = _ref5.effect;
+          var newFiber = createUpdatedFiberNode(
+            {
+              key: key,
+              deepIndex: deepIndex,
+              fiberParent: fiberParent,
+              fiberAlternate: fiberAlternate,
+              effect: effect,
+            },
+            vdom,
+          );
 
-            if (newFiber.__isTextNode__ || newFiber.__isPlainNode__) {
-              if (newFiber.dom) {
-                (0, _index3.pushUpdate)(newFiber);
-              } else {
-                console.error("error");
-              }
+          if (newFiber.__isTextNode__ || newFiber.__isPlainNode__) {
+            if (newFiber.dom) {
+              (0, _index3.pushUpdate)(newFiber);
+            } else {
+              console.error("error");
             }
+          }
 
-            return newFiber;
-          };
+          return newFiber;
+        };
         /**
          *
          * @param {{key: string, deepIndex: number, fiberParent: MyReactFiberNode, fiberAlternate: MyReactFiberNode, effect: 'PLACEMENT' | 'UPDATE' | 'POSITION'}} param
@@ -3822,40 +3248,33 @@
          * @param {MyReactFiberNode} previousRenderFiber
          */
 
-        exports.createUpdatedFiberNodeWithUpdate =
-          createUpdatedFiberNodeWithUpdate;
+        exports.createUpdatedFiberNodeWithUpdate = createUpdatedFiberNodeWithUpdate;
 
-        var createUpdatedFiberNodeWithUpdateAndPosition =
-          function createUpdatedFiberNodeWithUpdateAndPosition(
-            _ref6,
+        var createUpdatedFiberNodeWithUpdateAndPosition = function createUpdatedFiberNodeWithUpdateAndPosition(_ref6, vdom, previousRenderFiber) {
+          var key = _ref6.key,
+            deepIndex = _ref6.deepIndex,
+            fiberParent = _ref6.fiberParent,
+            fiberAlternate = _ref6.fiberAlternate,
+            effect = _ref6.effect;
+          var newFiber = createUpdatedFiberNodeWithUpdate(
+            {
+              key: key,
+              deepIndex: deepIndex,
+              fiberParent: fiberParent,
+              fiberAlternate: fiberAlternate,
+              effect: effect,
+            },
             vdom,
-            previousRenderFiber
-          ) {
-            var key = _ref6.key,
-              deepIndex = _ref6.deepIndex,
-              fiberParent = _ref6.fiberParent,
-              fiberAlternate = _ref6.fiberAlternate,
-              effect = _ref6.effect;
-            var newFiber = createUpdatedFiberNodeWithUpdate(
-              {
-                key: key,
-                deepIndex: deepIndex,
-                fiberParent: fiberParent,
-                fiberAlternate: fiberAlternate,
-                effect: effect,
-              },
-              vdom
-            );
+          );
 
-            if (fiberAlternate !== previousRenderFiber) {
-              (0, _position.pushPosition)(newFiber, previousRenderFiber);
-            }
+          if (fiberAlternate !== previousRenderFiber) {
+            (0, _position.pushPosition)(newFiber, previousRenderFiber);
+          }
 
-            return newFiber;
-          };
+          return newFiber;
+        };
 
-        exports.createUpdatedFiberNodeWithUpdateAndPosition =
-          createUpdatedFiberNodeWithUpdateAndPosition;
+        exports.createUpdatedFiberNodeWithUpdateAndPosition = createUpdatedFiberNodeWithUpdateAndPosition;
       },
       {
         "../mount/index.js": 30,
@@ -3902,16 +3321,12 @@
             return _create.createUpdatedFiberNodeWithUpdate;
           },
         });
-        Object.defineProperty(
-          exports,
-          "createUpdatedFiberNodeWithUpdateAndPosition",
-          {
-            enumerable: true,
-            get: function get() {
-              return _create.createUpdatedFiberNodeWithUpdateAndPosition;
-            },
-          }
-        );
+        Object.defineProperty(exports, "createUpdatedFiberNodeWithUpdateAndPosition", {
+          enumerable: true,
+          get: function get() {
+            return _create.createUpdatedFiberNodeWithUpdateAndPosition;
+          },
+        });
         Object.defineProperty(exports, "getContextFiber", {
           enumerable: true,
           get: function get() {
@@ -3972,12 +3387,7 @@
                     return typeof obj;
                   }
                 : function (obj) {
-                    return obj &&
-                      "function" == typeof Symbol &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? "symbol"
-                      : typeof obj;
+                    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
                   }),
             _typeof(obj)
           );
@@ -4008,20 +3418,15 @@
 
         function _inherits(subClass, superClass) {
           if (typeof superClass !== "function" && superClass !== null) {
-            throw new TypeError(
-              "Super expression must either be null or a function"
-            );
+            throw new TypeError("Super expression must either be null or a function");
           }
-          subClass.prototype = Object.create(
-            superClass && superClass.prototype,
-            {
-              constructor: {
-                value: subClass,
-                writable: true,
-                configurable: true,
-              },
-            }
-          );
+          subClass.prototype = Object.create(superClass && superClass.prototype, {
+            constructor: {
+              value: subClass,
+              writable: true,
+              configurable: true,
+            },
+          });
           Object.defineProperty(subClass, "prototype", { writable: false });
           if (superClass) _setPrototypeOf(subClass, superClass);
         }
@@ -4052,37 +3457,27 @@
         }
 
         function _possibleConstructorReturn(self, call) {
-          if (
-            call &&
-            (_typeof(call) === "object" || typeof call === "function")
-          ) {
+          if (call && (_typeof(call) === "object" || typeof call === "function")) {
             return call;
           } else if (call !== void 0) {
-            throw new TypeError(
-              "Derived constructors may only return object or undefined"
-            );
+            throw new TypeError("Derived constructors may only return object or undefined");
           }
           return _assertThisInitialized(self);
         }
 
         function _assertThisInitialized(self) {
           if (self === void 0) {
-            throw new ReferenceError(
-              "this hasn't been initialised - super() hasn't been called"
-            );
+            throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
           }
           return self;
         }
 
         function _isNativeReflectConstruct() {
-          if (typeof Reflect === "undefined" || !Reflect.construct)
-            return false;
+          if (typeof Reflect === "undefined" || !Reflect.construct) return false;
           if (Reflect.construct.sham) return false;
           if (typeof Proxy === "function") return true;
           try {
-            Boolean.prototype.valueOf.call(
-              Reflect.construct(Boolean, [], function () {})
-            );
+            Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
             return true;
           } catch (e) {
             return false;
@@ -4112,9 +3507,7 @@
           return obj;
         }
 
-        var MyReactFiberInternal = /*#__PURE__*/ (function (
-          _MyReactInternalType
-        ) {
+        var MyReactFiberInternal = /*#__PURE__*/ (function (_MyReactInternalType) {
           _inherits(MyReactFiberInternal, _MyReactInternalType);
 
           var _super = _createSuper(MyReactFiberInternal);
@@ -4124,74 +3517,52 @@
 
             _classCallCheck(this, MyReactFiberInternal);
 
-            for (
-              var _len = arguments.length, args = new Array(_len), _key = 0;
-              _key < _len;
-              _key++
-            ) {
+            for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
               args[_key] = arguments[_key];
             }
 
             _this = _super.call.apply(_super, [this].concat(args));
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__internal_node_diff__",
-              {
-                __diffMount__: false,
+            _defineProperty(_assertThisInitialized(_this), "__internal_node_diff__", {
+              __diffMount__: false,
 
-                /**
-                 * @type MyReactFiberNode
-                 */
-                __diffPrevRender__: null,
+              /**
+               * @type MyReactFiberNode
+               */
+              __diffPrevRender__: null,
 
-                /**
-                 * @type MyReactFiberNode[]
-                 */
-                __renderedChildren__: [],
-                __renderedCount__: 1,
-                __renderDynamic__: false,
-                __updateRender__: false,
-                __updateTimeStep__: Date.now(),
-                __lastUpdateTimeStep__: null,
-                __newestFiber__: (0, _share.createRef)(
-                  _assertThisInitialized(_this)
-                ),
-              }
-            );
+              /**
+               * @type MyReactFiberNode[]
+               */
+              __renderedChildren__: [],
+              __renderedCount__: 1,
+              __renderDynamic__: false,
+              __updateRender__: false,
+              __updateTimeStep__: Date.now(),
+              __lastUpdateTimeStep__: null,
+              __newestFiber__: (0, _share.createRef)(_assertThisInitialized(_this)),
+            });
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__internal_node_state__",
-              {
-                __pendingMount__: false,
-                __pendingUpdate__: false,
-                __pendingUnmount__: false,
-                __pendingPosition__: false,
-              }
-            );
+            _defineProperty(_assertThisInitialized(_this), "__internal_node_state__", {
+              __pendingMount__: false,
+              __pendingUpdate__: false,
+              __pendingUnmount__: false,
+              __pendingPosition__: false,
+            });
 
             _defineProperty(_assertThisInitialized(_this), "nameSpace", void 0);
 
             _defineProperty(_assertThisInitialized(_this), "dom", void 0);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__internal_event_state__",
-              {}
-            );
+            _defineProperty(_assertThisInitialized(_this), "__internal_event_state__", {});
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__internal_context_map__",
-              {
-                /**
-                 * @type MyReactInstance[]
-                 */
-                __dependence__: [],
-                __contextMap__: {},
-              }
-            );
+            _defineProperty(_assertThisInitialized(_this), "__internal_context_map__", {
+              /**
+               * @type MyReactInstance[]
+               */
+              __dependence__: [],
+              __contextMap__: {},
+            });
 
             return _this;
           }
@@ -4311,13 +3682,7 @@
                     this.__internal_event_state__[eventName].cb.push(cb);
                   } else {
                     var handler = function handler() {
-                      for (
-                        var _len2 = arguments.length,
-                          args = new Array(_len2),
-                          _key2 = 0;
-                        _key2 < _len2;
-                        _key2++
-                      ) {
+                      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
                         args[_key2] = arguments[_key2];
                       }
 
@@ -4326,10 +3691,7 @@
                       (0, _debug.safeCallWithFiber)({
                         action: function action() {
                           return handler.cb.forEach(function (cb) {
-                            return (
-                              typeof cb === "function" &&
-                              cb.call.apply(cb, [null].concat(args))
-                            );
+                            return typeof cb === "function" && cb.call.apply(cb, [null].concat(args));
                           });
                         },
                         fiber: _this2,
@@ -4337,18 +3699,10 @@
 
                       if (_env.enableControlComponent.current) {
                         // TODO more
-                        if (
-                          _this2.__vdom__.type === "input" &&
-                          event === "input"
-                        ) {
+                        if (_this2.__vdom__.type === "input" && event === "input") {
                           var _this2$memoProps;
 
-                          if (
-                            ((_this2$memoProps = _this2.memoProps) === null ||
-                            _this2$memoProps === void 0
-                              ? void 0
-                              : _this2$memoProps.value) !== undefined
-                          ) {
+                          if (((_this2$memoProps = _this2.memoProps) === null || _this2$memoProps === void 0 ? void 0 : _this2$memoProps.value) !== undefined) {
                             _this2.dom["value"] = _this2.memoProps.value;
                           }
                         }
@@ -4370,12 +3724,9 @@
                 if (_env.enableEventSystem.current) {
                   var eventName = "".concat(event, "_").concat(isCapture);
                   if (!this.__internal_event_state__[eventName]) return;
-                  this.__internal_event_state__[eventName].cb =
-                    this.__internal_event_state__[eventName].cb.filter(
-                      function (_cb) {
-                        return _cb !== cb || typeof _cb !== "function";
-                      }
-                    );
+                  this.__internal_event_state__[eventName].cb = this.__internal_event_state__[eventName].cb.filter(function (_cb) {
+                    return _cb !== cb || typeof _cb !== "function";
+                  });
                 } else {
                   this.dom.removeEventListener(event, cb, isCapture);
                 }
@@ -4500,13 +3851,7 @@
            * @type MyReactVDom
            */
           // used for update dom
-          function MyReactFiberNode(
-            key,
-            deepIndex,
-            fiberParent,
-            fiberAlternate,
-            effect
-          ) {
+          function MyReactFiberNode(key, deepIndex, fiberParent, fiberAlternate, effect) {
             var _this3;
 
             _classCallCheck(this, MyReactFiberNode);
@@ -4515,11 +3860,7 @@
 
             _defineProperty(_assertThisInitialized(_this3), "key", void 0);
 
-            _defineProperty(
-              _assertThisInitialized(_this3),
-              "deepIndex",
-              void 0
-            );
+            _defineProperty(_assertThisInitialized(_this3), "deepIndex", void 0);
 
             _defineProperty(_assertThisInitialized(_this3), "effect", void 0);
 
@@ -4535,35 +3876,15 @@
 
             _defineProperty(_assertThisInitialized(_this3), "child", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this3),
-              "fiberChildHead",
-              null
-            );
+            _defineProperty(_assertThisInitialized(_this3), "fiberChildHead", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this3),
-              "fiberChildFoot",
-              null
-            );
+            _defineProperty(_assertThisInitialized(_this3), "fiberChildFoot", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this3),
-              "fiberParent",
-              null
-            );
+            _defineProperty(_assertThisInitialized(_this3), "fiberParent", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this3),
-              "fiberSibling",
-              null
-            );
+            _defineProperty(_assertThisInitialized(_this3), "fiberSibling", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this3),
-              "fiberAlternate",
-              null
-            );
+            _defineProperty(_assertThisInitialized(_this3), "fiberAlternate", null);
 
             _defineProperty(_assertThisInitialized(_this3), "hookHead", void 0);
 
@@ -4575,17 +3896,9 @@
 
             _defineProperty(_assertThisInitialized(_this3), "__vdom__", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this3),
-              "__preRenderVdom__",
-              null
-            );
+            _defineProperty(_assertThisInitialized(_this3), "__preRenderVdom__", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this3),
-              "__needUpdate__",
-              false
-            );
+            _defineProperty(_assertThisInitialized(_this3), "__needUpdate__", false);
 
             _this3.key = key;
             _this3.deepIndex = deepIndex;
@@ -4642,11 +3955,7 @@
               value: function initialContext() {
                 if (this.fiberParent) {
                   // get ContextMap from parent fiber
-                  var contextMap = Object.assign(
-                    {},
-                    this.fiberParent.__contextMap__,
-                    this.__contextMap__
-                  ); // after vdom install
+                  var contextMap = Object.assign({}, this.fiberParent.__contextMap__, this.__contextMap__); // after vdom install
 
                   if (this.__isContextProvider__) {
                     // get context id;
@@ -4689,19 +3998,11 @@
                     this.instance = fiberAlternate.instance;
                     this.hookList = fiberAlternate.hookList.slice(0);
                     this.__preRenderVdom__ = fiberAlternate.__preRenderVdom__;
-                    this.__dependence__ =
-                      fiberAlternate.__dependence__.slice(0);
+                    this.__dependence__ = fiberAlternate.__dependence__.slice(0);
                     this.__newestFiber__ = fiberAlternate.__newestFiber__;
-                    this.__renderedChildren__ =
-                      fiberAlternate.__renderedChildren__.slice(0);
-                    this.__internal_node_type__ = Object.assign(
-                      {},
-                      fiberAlternate.__internal_node_type__
-                    );
-                    this.__internal_event_state__ = Object.assign(
-                      {},
-                      fiberAlternate.__internal_event_state__
-                    ); // update
+                    this.__renderedChildren__ = fiberAlternate.__renderedChildren__.slice(0);
+                    this.__internal_node_type__ = Object.assign({}, fiberAlternate.__internal_node_type__);
+                    this.__internal_event_state__ = Object.assign({}, fiberAlternate.__internal_event_state__); // update
                     // fiberAlternate.dom = null;
                     // fiberAlternate.hookList = [];
                     // fiberAlternate.hookHead = null;
@@ -4784,20 +4085,13 @@
                     hookNode.hookType === "useLayoutEffect"
                   ) {
                     if (typeof hookNode.value !== "function") {
-                      throw new Error(
-                        "".concat(this.hookType, " initial error")
-                      );
+                      throw new Error("".concat(this.hookType, " initial error"));
                     }
                   }
 
                   if (hookNode.hookType === "useContext") {
-                    if (
-                      _typeof(hookNode.value) !== "object" ||
-                      hookNode.value === null
-                    ) {
-                      throw new Error(
-                        "".concat(this.hookType, " initial error")
-                      );
+                    if (_typeof(hookNode.value) !== "object" || hookNode.value === null) {
+                      throw new Error("".concat(this.hookType, " initial error"));
                     }
                   }
                 }
@@ -4836,8 +4130,7 @@
                   this.children = fiberAlternate.children;
                   this.fiberChildHead = fiberAlternate.fiberChildHead;
                   this.fiberChildFoot = fiberAlternate.fiberChildFoot;
-                  this.__renderedChildren__ =
-                    fiberAlternate.__renderedChildren__;
+                  this.__renderedChildren__ = fiberAlternate.__renderedChildren__;
                   this.children.forEach(function (child) {
                     return (child.fiberParent = _this4);
                   });
@@ -4853,14 +4146,9 @@
               value: function installVDom(vdom) {
                 this.__vdom__ = vdom;
                 this.key = vdom === null || vdom === void 0 ? void 0 : vdom.key;
-                this.memoProps =
-                  vdom === null || vdom === void 0 ? void 0 : vdom.props; // TODO need improve
+                this.memoProps = vdom === null || vdom === void 0 ? void 0 : vdom.props; // TODO need improve
 
-                if (
-                  (vdom === null || vdom === void 0 ? void 0 : vdom.type) ===
-                  "svg"
-                )
-                  this.nameSpace = "http://www.w3.org/2000/svg";
+                if ((vdom === null || vdom === void 0 ? void 0 : vdom.type) === "svg") this.nameSpace = "http://www.w3.org/2000/svg";
               },
               /**
                *
@@ -4876,31 +4164,20 @@
                     if (!vdom.__validType__) {
                       if (this.__isContextConsumer__) {
                         if (typeof vdom.children !== "function") {
-                          throw new Error(
-                            "Consumer's children must as a function, got ".concat(
-                              vdom.children
-                            )
-                          );
+                          throw new Error("Consumer's children must as a function, got ".concat(vdom.children));
                         }
                       }
 
                       if (this.__isPortal__) {
                         if (!vdom.props.container) {
-                          throw new Error(
-                            "createPortal() need a dom container"
-                          );
+                          throw new Error("createPortal() need a dom container");
                         }
                       }
 
                       if (this.__isMemo__ || this.__isForwardRef__) {
                         if (typeof vdom.type.render !== "function") {
-                          if (
-                            _typeof(vdom.type.render) !== "object" ||
-                            !vdom.type.render.type
-                          ) {
-                            throw new Error(
-                              "invalid render type, ".concat(vdom.type)
-                            );
+                          if (_typeof(vdom.type.render) !== "object" || !vdom.type.render.type) {
+                            throw new Error("invalid render type, ".concat(vdom.type));
                           }
                         }
                       }
@@ -4910,22 +4187,16 @@
 
                         if (
                           typeof vdom.type.render === "function" &&
-                          (_vdom$type$render$pro =
-                            vdom.type.render.prototype) !== null &&
+                          (_vdom$type$render$pro = vdom.type.render.prototype) !== null &&
                           _vdom$type$render$pro !== void 0 &&
                           _vdom$type$render$pro.isMyReactComponent
                         ) {
-                          throw new Error(
-                            "forwardRef need a function component, but get a class component"
-                          );
+                          throw new Error("forwardRef need a function component, but get a class component");
                         }
                       }
 
                       if (vdom.ref) {
-                        if (
-                          _typeof(vdom.ref) !== "object" &&
-                          typeof vdom.ref !== "function"
-                        ) {
+                        if (_typeof(vdom.ref) !== "object" && typeof vdom.ref !== "function") {
                           throw new Error("unSupport ref usage");
                         }
                       }
@@ -4933,22 +4204,12 @@
                       if (_typeof(vdom.type) === "object") {
                         var _vdom$type;
 
-                        if (
-                          !(
-                            (_vdom$type = vdom.type) !== null &&
-                            _vdom$type !== void 0 &&
-                            _vdom$type.type
-                          )
-                        ) {
+                        if (!((_vdom$type = vdom.type) !== null && _vdom$type !== void 0 && _vdom$type.type)) {
                           throw new Error("invalid element type");
                         }
                       }
 
-                      if (
-                        vdom.key &&
-                        typeof vdom.key !== "string" &&
-                        typeof vdom.key !== "number"
-                      ) {
+                      if (vdom.key && typeof vdom.key !== "string" && typeof vdom.key !== "number") {
                         throw new Error("invalid key props");
                       }
 
@@ -5048,9 +4309,7 @@
             {
               key: "applyVDom",
               value: function applyVDom() {
-                this.__preRenderVdom__ = this.__isTextNode__
-                  ? this.__vdom__
-                  : Object.assign({}, this.__vdom__);
+                this.__preRenderVdom__ = this.__isTextNode__ ? this.__vdom__ : Object.assign({}, this.__vdom__);
               },
               /**
                *
@@ -5074,12 +4333,7 @@
                   // todo
                   _share.COMPONENT_METHOD.forEach(function (key) {
                     if (instance[key] && typeof instance[key] !== "function") {
-                      throw new Error(
-                        "current component method ".concat(
-                          key,
-                          " has wrong type"
-                        )
-                      );
+                      throw new Error("current component method ".concat(key, " has wrong type"));
                     }
                   });
                 }
@@ -5119,16 +4373,9 @@
          * @param {any} providerObject
          * @returns {MyReactFiberNode | null}
          */
-        var getProviderFiber = function getProviderFiber(
-          fiber,
-          providerObject
-        ) {
+        var getProviderFiber = function getProviderFiber(fiber, providerObject) {
           if (fiber && providerObject) {
-            if (
-              fiber.__isObjectNode__ &&
-              fiber.__isContextProvider__ &&
-              fiber.__vdom__.type === providerObject
-            ) {
+            if (fiber.__isObjectNode__ && fiber.__isContextProvider__ && fiber.__vdom__.type === providerObject) {
               return fiber;
             } else {
               return getProviderFiber(fiber.fiberParent, providerObject);
@@ -5146,10 +4393,7 @@
           if (contextObject) {
             var id = contextObject.id;
             var providerFiber = fiber.__contextMap__[id];
-            var newestProvider =
-              providerFiber === null || providerFiber === void 0
-                ? void 0
-                : providerFiber.__newestFiber__.current;
+            var newestProvider = providerFiber === null || providerFiber === void 0 ? void 0 : providerFiber.__newestFiber__.current;
 
             if (newestProvider) {
               fiber.__contextMap__[id] = newestProvider;
@@ -5184,11 +4428,7 @@
          * @param {MyReactFiberNode} fiberParent
          * @param {MyReactVDom} vdom
          */
-        var updateFiberNode = function updateFiberNode(
-          fiber,
-          fiberParent,
-          vdom
-        ) {
+        var updateFiberNode = function updateFiberNode(fiber, fiberParent, vdom) {
           fiber.fiberAlternate = fiber;
           fiber.installParent(fiberParent);
           fiber.updateFromAlternate();
@@ -5205,12 +4445,7 @@
          * @param {MyReactFiberNode} previousRenderFiber
          */
 
-        var updateFiberNodeWithPosition = function updateFiberNodeWithPosition(
-          fiber,
-          fiberParent,
-          vdom,
-          previousRenderFiber
-        ) {
+        var updateFiberNodeWithPosition = function updateFiberNodeWithPosition(fiber, fiberParent, vdom, previousRenderFiber) {
           var newFiber = updateFiberNode(fiber, fiberParent, vdom);
 
           if (newFiber !== previousRenderFiber) {
@@ -5257,13 +4492,7 @@
             reducer = _ref.reducer,
             depArray = _ref.depArray,
             hookType = _ref.hookType;
-          var newHookNode = new _instance.MyReactHookNode(
-            hookIndex,
-            value,
-            reducer || defaultReducer,
-            depArray,
-            hookType
-          );
+          var newHookNode = new _instance.MyReactHookNode(hookIndex, value, reducer || defaultReducer, depArray, hookType);
           newHookNode.setFiber(fiber);
           fiber.addHook(newHookNode);
           fiber.checkHook(newHookNode);
@@ -5279,14 +4508,7 @@
          * @param {string} hookType
          */
 
-        var getHookNode = function getHookNode(
-          fiber,
-          hookIndex,
-          value,
-          reducer,
-          depArray,
-          hookType
-        ) {
+        var getHookNode = function getHookNode(fiber, hookIndex, value, reducer, depArray, hookType) {
           if (!fiber) throw new Error("can not use hook out of component");
           var currentHook = null;
 
@@ -5308,7 +4530,7 @@
                 reducer: reducer,
                 value: value,
               },
-              fiber
+              fiber,
             );
           } else {
             var temp = {
@@ -5376,12 +4598,7 @@
                     return typeof obj;
                   }
                 : function (obj) {
-                    return obj &&
-                      "function" == typeof Symbol &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? "symbol"
-                      : typeof obj;
+                    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
                   }),
             _typeof(obj)
           );
@@ -5398,53 +4615,25 @@
                 },
             null,
             null,
-            "useState"
+            "useState",
           );
           return [currentHookNode.result, currentHookNode.dispatch];
         }
 
         function useEffect(action, depArray) {
-          (0, _create.getHookNode)(
-            _env.currentFunctionFiber.current,
-            _env.currentHookDeepIndex.current++,
-            action,
-            null,
-            depArray,
-            "useEffect"
-          );
+          (0, _create.getHookNode)(_env.currentFunctionFiber.current, _env.currentHookDeepIndex.current++, action, null, depArray, "useEffect");
         }
 
         function useLayoutEffect(action, depArray) {
-          (0, _create.getHookNode)(
-            _env.currentFunctionFiber.current,
-            _env.currentHookDeepIndex.current++,
-            action,
-            null,
-            depArray,
-            "useLayoutEffect"
-          );
+          (0, _create.getHookNode)(_env.currentFunctionFiber.current, _env.currentHookDeepIndex.current++, action, null, depArray, "useLayoutEffect");
         }
 
         function useCallback(action, depArray) {
-          return (0, _create.getHookNode)(
-            _env.currentFunctionFiber.current,
-            _env.currentHookDeepIndex.current++,
-            action,
-            null,
-            depArray,
-            "useCallback"
-          ).result;
+          return (0, _create.getHookNode)(_env.currentFunctionFiber.current, _env.currentHookDeepIndex.current++, action, null, depArray, "useCallback").result;
         }
 
         function useMemo(action, depArray) {
-          return (0, _create.getHookNode)(
-            _env.currentFunctionFiber.current,
-            _env.currentHookDeepIndex.current++,
-            action,
-            null,
-            depArray,
-            "useMemo"
-          ).result;
+          return (0, _create.getHookNode)(_env.currentFunctionFiber.current, _env.currentHookDeepIndex.current++, action, null, depArray, "useMemo").result;
         }
 
         function useRef(value) {
@@ -5454,19 +4643,12 @@
             (0, _share.createRef)(value),
             null,
             null,
-            "useRef"
+            "useRef",
           ).result;
         }
 
         function useContext(Context) {
-          return (0, _create.getHookNode)(
-            _env.currentFunctionFiber.current,
-            _env.currentHookDeepIndex.current++,
-            Context,
-            null,
-            null,
-            "useContext"
-          ).result;
+          return (0, _create.getHookNode)(_env.currentFunctionFiber.current, _env.currentHookDeepIndex.current++, Context, null, null, "useContext").result;
         }
 
         function useReducer(reducer, initialArg, init) {
@@ -5482,40 +4664,26 @@
                 },
             reducer,
             null,
-            "useReducer"
+            "useReducer",
           );
           return [currentHook.result, currentHook.dispatch];
         }
 
         function useImperativeHandle(ref, createHandle, deps) {
-          (0, _create.getHookNode)(
-            _env.currentFunctionFiber.current,
-            _env.currentHookDeepIndex.current++,
-            ref,
-            createHandle,
-            deps,
-            "useImperativeHandle"
-          );
+          (0, _create.getHookNode)(_env.currentFunctionFiber.current, _env.currentHookDeepIndex.current++, ref, createHandle, deps, "useImperativeHandle");
         }
 
         function useDebugValue() {
           if (_env.enableDebugLog.current) {
             var _console;
 
-            for (
-              var _len = arguments.length, args = new Array(_len), _key = 0;
-              _key < _len;
-              _key++
-            ) {
+            for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
               args[_key] = arguments[_key];
             }
 
             (_console = console).log.apply(
               _console,
-              ["[debug value]: \n"].concat(args, [
-                "\ncomponent tree:",
-                (0, _debug.getFiberTree)(_env.currentFunctionFiber.current),
-              ])
+              ["[debug value]: \n"].concat(args, ["\ncomponent tree:", (0, _debug.getFiberTree)(_env.currentFunctionFiber.current)]),
             );
           }
         }
@@ -5649,12 +4817,7 @@
                     return typeof obj;
                   }
                 : function (obj) {
-                    return obj &&
-                      "function" == typeof Symbol &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? "symbol"
-                      : typeof obj;
+                    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
                   }),
             _typeof(obj)
           );
@@ -5696,20 +4859,15 @@
 
         function _inherits(subClass, superClass) {
           if (typeof superClass !== "function" && superClass !== null) {
-            throw new TypeError(
-              "Super expression must either be null or a function"
-            );
+            throw new TypeError("Super expression must either be null or a function");
           }
-          subClass.prototype = Object.create(
-            superClass && superClass.prototype,
-            {
-              constructor: {
-                value: subClass,
-                writable: true,
-                configurable: true,
-              },
-            }
-          );
+          subClass.prototype = Object.create(superClass && superClass.prototype, {
+            constructor: {
+              value: subClass,
+              writable: true,
+              configurable: true,
+            },
+          });
           Object.defineProperty(subClass, "prototype", { writable: false });
           if (superClass) _setPrototypeOf(subClass, superClass);
         }
@@ -5740,37 +4898,27 @@
         }
 
         function _possibleConstructorReturn(self, call) {
-          if (
-            call &&
-            (_typeof(call) === "object" || typeof call === "function")
-          ) {
+          if (call && (_typeof(call) === "object" || typeof call === "function")) {
             return call;
           } else if (call !== void 0) {
-            throw new TypeError(
-              "Derived constructors may only return object or undefined"
-            );
+            throw new TypeError("Derived constructors may only return object or undefined");
           }
           return _assertThisInitialized(self);
         }
 
         function _assertThisInitialized(self) {
           if (self === void 0) {
-            throw new ReferenceError(
-              "this hasn't been initialised - super() hasn't been called"
-            );
+            throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
           }
           return self;
         }
 
         function _isNativeReflectConstruct() {
-          if (typeof Reflect === "undefined" || !Reflect.construct)
-            return false;
+          if (typeof Reflect === "undefined" || !Reflect.construct) return false;
           if (Reflect.construct.sham) return false;
           if (typeof Proxy === "function") return true;
           try {
-            Boolean.prototype.valueOf.call(
-              Reflect.construct(Boolean, [], function () {})
-            );
+            Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
             return true;
           } catch (e) {
             return false;
@@ -5836,13 +4984,7 @@
           /**
            * @type any[]
            */
-          function MyReactHookNode(
-            hookIndex,
-            value,
-            reducer,
-            depArray,
-            hookType
-          ) {
+          function MyReactHookNode(hookIndex, value, reducer, depArray, hookType) {
             var _this;
 
             _classCallCheck(this, MyReactHookNode);
@@ -5871,36 +5013,28 @@
 
             _defineProperty(_assertThisInitialized(_this), "prevResult", null);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "__pendingEffect",
-              false
-            );
+            _defineProperty(_assertThisInitialized(_this), "__pendingEffect", false);
 
-            _defineProperty(
-              _assertThisInitialized(_this),
-              "dispatch",
-              function (action) {
-                try {
-                  _this.updateTimeStep();
-                } catch (e) {
-                  _this.error = true;
-                }
-
-                _this.prevResult = _this.result;
-                _this.result = _this.reducer(_this.result, action);
-
-                if (!Object.is(_this.result, _this.prevResult)) {
-                  Promise.resolve().then(function () {
-                    if (!_this.error) {
-                      _this.__fiber__.update();
-                    } else {
-                      _this.cancel && _this.cancel();
-                    }
-                  });
-                }
+            _defineProperty(_assertThisInitialized(_this), "dispatch", function (action) {
+              try {
+                _this.updateTimeStep();
+              } catch (e) {
+                _this.error = true;
               }
-            );
+
+              _this.prevResult = _this.result;
+              _this.result = _this.reducer(_this.result, action);
+
+              if (!Object.is(_this.result, _this.prevResult)) {
+                Promise.resolve().then(function () {
+                  if (!_this.error) {
+                    _this.__fiber__.update();
+                  } else {
+                    _this.cancel && _this.cancel();
+                  }
+                });
+              }
+            });
 
             _this.hookIndex = hookIndex;
             _this.value = value;
@@ -5914,48 +5048,29 @@
             {
               key: "contextValue",
               value: function contextValue() {
-                var ProviderFiber = (0, _index.getContextFiber)(
-                  this.__fiber__,
-                  this.value
-                );
+                var ProviderFiber = (0, _index.getContextFiber)(this.__fiber__, this.value);
 
                 if (ProviderFiber) {
                   this.setContext(ProviderFiber);
                 }
 
-                return (
-                  (ProviderFiber === null || ProviderFiber === void 0
-                    ? void 0
-                    : ProviderFiber.__vdom__.props.value) ||
-                  this.value.Provider.value
-                );
+                return (ProviderFiber === null || ProviderFiber === void 0 ? void 0 : ProviderFiber.__vdom__.props.value) || this.value.Provider.value;
               },
             },
             {
               key: "initialResult",
               value: function initialResult() {
-                if (
-                  this.hookType === "useState" ||
-                  this.hookType === "useMemo" ||
-                  this.hookType === "useReducer"
-                ) {
+                if (this.hookType === "useState" || this.hookType === "useMemo" || this.hookType === "useReducer") {
                   this.result = this.value.call(null);
                   return;
                 }
 
-                if (
-                  this.hookType === "useEffect" ||
-                  this.hookType === "useLayoutEffect" ||
-                  this.hookType === "useImperativeHandle"
-                ) {
+                if (this.hookType === "useEffect" || this.hookType === "useLayoutEffect" || this.hookType === "useImperativeHandle") {
                   this.effect = true;
                   return;
                 }
 
-                if (
-                  this.hookType === "useCallback" ||
-                  this.hookType === "useRef"
-                ) {
+                if (this.hookType === "useCallback" || this.hookType === "useRef") {
                   this.result = this.value;
                   return;
                 }
@@ -5985,19 +5100,13 @@
                   }
                 }
 
-                if (
-                  this.hookType === "useEffect" ||
-                  this.hookType === "useLayoutEffect" ||
-                  this.hookType === "useImperativeHandle"
-                ) {
+                if (this.hookType === "useEffect" || this.hookType === "useLayoutEffect" || this.hookType === "useImperativeHandle") {
                   if (!newDepArray) {
                     this.value = newValue;
                     this.reducer = newReducer || this.reducer;
                     this.depArray = newDepArray;
                     this.effect = true;
-                  } else if (
-                    !(0, _tool.isNormalEqual)(this.depArray, newDepArray)
-                  ) {
+                  } else if (!(0, _tool.isNormalEqual)(this.depArray, newDepArray)) {
                     this.value = newValue;
                     this.reducer = newReducer || this.reducer;
                     this.depArray = newDepArray;
@@ -6024,11 +5133,7 @@
                 }
 
                 if (this.hookType === "useContext") {
-                  if (
-                    !this.__context__ ||
-                    !this.__context__.mount ||
-                    !Object.is(this.value, newValue)
-                  ) {
+                  if (!this.__context__ || !this.__context__.mount || !Object.is(this.value, newValue)) {
                     this.value = newValue;
                     this.prevResult = this.result;
                     this.result = this.contextValue();
@@ -6090,7 +5195,7 @@
                 fiber,
                 (0, _tool.getDom)(fiber.fiberParent, function (f) {
                   return f.fiberParent;
-                }) || _env.rootContainer.current
+                }) || _env.rootContainer.current,
               );
             }
           });
@@ -6288,40 +5393,29 @@
          * @param {MyReactFiberNode} fiber
          */
 
-        var getInsertBeforeDomFromSibling =
-          function getInsertBeforeDomFromSibling(fiber) {
-            if (!fiber) return null;
-            var sibling = fiber.fiberSibling;
+        var getInsertBeforeDomFromSibling = function getInsertBeforeDomFromSibling(fiber) {
+          if (!fiber) return null;
+          var sibling = fiber.fiberSibling;
 
-            if (sibling) {
-              return (
-                getPlainNodeDom(sibling) ||
-                getInsertBeforeDomFromSibling(sibling.fiberSibling)
-              );
-            } else {
-              return null;
-            }
-          };
+          if (sibling) {
+            return getPlainNodeDom(sibling) || getInsertBeforeDomFromSibling(sibling.fiberSibling);
+          } else {
+            return null;
+          }
+        };
         /**
          *
          * @param {MyReactFiberNode} fiber
          * @param {MyReactFiberNode} parentFiberWithDom
          */
 
-        var getInsertBeforeDomFromSiblingAndParent =
-          function getInsertBeforeDomFromSiblingAndParent(
-            fiber,
-            parentFiberWithDom
-          ) {
-            if (!fiber) return null;
-            if (fiber === parentFiberWithDom) return null;
-            var beforeDom = getInsertBeforeDomFromSibling(fiber);
-            if (beforeDom) return beforeDom;
-            return getInsertBeforeDomFromSiblingAndParent(
-              fiber.fiberParent,
-              parentFiberWithDom
-            );
-          };
+        var getInsertBeforeDomFromSiblingAndParent = function getInsertBeforeDomFromSiblingAndParent(fiber, parentFiberWithDom) {
+          if (!fiber) return null;
+          if (fiber === parentFiberWithDom) return null;
+          var beforeDom = getInsertBeforeDomFromSibling(fiber);
+          if (beforeDom) return beforeDom;
+          return getInsertBeforeDomFromSiblingAndParent(fiber.fiberParent, parentFiberWithDom);
+        };
         /**
          *
          * @param {MyReactFiberNode} fiber
@@ -6330,13 +5424,7 @@
 
         var getParentFiberWithDom = function getParentFiberWithDom(fiber) {
           if (!fiber) throw new Error("can not update position for root fiber");
-          if (
-            fiber.__isPortal__ ||
-            fiber.__isPlainNode__ ||
-            fiber.__isTextNode__ ||
-            fiber.__root__
-          )
-            return fiber;
+          if (fiber.__isPortal__ || fiber.__isPlainNode__ || fiber.__isTextNode__ || fiber.__root__) return fiber;
           return getParentFiberWithDom(fiber.fiberParent);
         };
         /**
@@ -6359,10 +5447,7 @@
 
               if (childFiber.__diffMount__) {
                 // can not create before dom
-                var beforeDom = getInsertBeforeDomFromSiblingAndParent(
-                  childFiber,
-                  parentFiberWithDom
-                );
+                var beforeDom = getInsertBeforeDomFromSiblingAndParent(childFiber, parentFiberWithDom);
 
                 if (beforeDom) {
                   insertBefore(childFiber, beforeDom, parentFiberWithDom.dom);
@@ -6378,8 +5463,7 @@
         };
 
         var runPosition = function runPosition() {
-          var allPositionArray =
-            _env.pendingPositionFiberArray.current.slice(0);
+          var allPositionArray = _env.pendingPositionFiberArray.current.slice(0);
 
           allPositionArray.forEach(function (fiber) {
             if (fiber.mount && fiber.__pendingPosition__) {
@@ -6640,16 +5724,9 @@
                   _defineProperty(target, key, source[key]);
                 })
               : Object.getOwnPropertyDescriptors
-              ? Object.defineProperties(
-                  target,
-                  Object.getOwnPropertyDescriptors(source)
-                )
+              ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source))
               : ownKeys(Object(source)).forEach(function (key) {
-                  Object.defineProperty(
-                    target,
-                    key,
-                    Object.getOwnPropertyDescriptor(source, key)
-                  );
+                  Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
                 });
           }
           return target;
@@ -6843,17 +5920,12 @@
         var _env = require("../env.js");
 
         function _toConsumableArray(arr) {
-          return (
-            _arrayWithoutHoles(arr) ||
-            _iterableToArray(arr) ||
-            _unsupportedIterableToArray(arr) ||
-            _nonIterableSpread()
-          );
+          return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
         }
 
         function _nonIterableSpread() {
           throw new TypeError(
-            "Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."
+            "Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.",
           );
         }
 
@@ -6863,19 +5935,11 @@
           var n = Object.prototype.toString.call(o).slice(8, -1);
           if (n === "Object" && o.constructor) n = o.constructor.name;
           if (n === "Map" || n === "Set") return Array.from(o);
-          if (
-            n === "Arguments" ||
-            /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)
-          )
-            return _arrayLikeToArray(o, minLen);
+          if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
         }
 
         function _iterableToArray(iter) {
-          if (
-            (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null) ||
-            iter["@@iterator"] != null
-          )
-            return Array.from(iter);
+          if ((typeof Symbol !== "undefined" && iter[Symbol.iterator] != null) || iter["@@iterator"] != null) return Array.from(iter);
         }
 
         function _arrayWithoutHoles(arr) {
@@ -6897,11 +5961,7 @@
         var transformStart = function transformStart(fiber) {
           var _currentTransformFibe;
 
-          (_currentTransformFibe =
-            _env.currentTransformFiberArray.current).push.apply(
-            _currentTransformFibe,
-            _toConsumableArray((0, _index2.nextWork)(fiber))
-          );
+          (_currentTransformFibe = _env.currentTransformFiberArray.current).push.apply(_currentTransformFibe, _toConsumableArray((0, _index2.nextWork)(fiber)));
         };
 
         var transformCurrent = function transformCurrent() {
@@ -6910,11 +5970,7 @@
 
             var fiber = _env.currentTransformFiberArray.current.shift();
 
-            (_nextTransformFiberAr =
-              _env.nextTransformFiberArray.current).push.apply(
-              _nextTransformFiberAr,
-              _toConsumableArray((0, _index2.nextWork)(fiber))
-            );
+            (_nextTransformFiberAr = _env.nextTransformFiberArray.current).push.apply(_nextTransformFiberAr, _toConsumableArray((0, _index2.nextWork)(fiber)));
           }
         };
 
@@ -6924,10 +5980,9 @@
 
             var fiber = _env.nextTransformFiberArray.current.shift();
 
-            (_currentTransformFibe2 =
-              _env.currentTransformFiberArray.current).push.apply(
+            (_currentTransformFibe2 = _env.currentTransformFiberArray.current).push.apply(
               _currentTransformFibe2,
-              _toConsumableArray((0, _index2.nextWork)(fiber))
+              _toConsumableArray((0, _index2.nextWork)(fiber)),
             );
           }
         };
@@ -6960,12 +6015,7 @@
 
         exports.renderLoopSync = renderLoopSync;
 
-        var renderLoopAsync = function renderLoopAsync(
-          pendingNext,
-          shouldYield,
-          cb,
-          _final
-        ) {
+        var renderLoopAsync = function renderLoopAsync(pendingNext, shouldYield, cb, _final) {
           var count = 0;
           var fiber = pendingNext.get();
 
@@ -6999,12 +6049,7 @@
                     return typeof obj;
                   }
                 : function (obj) {
-                    return obj &&
-                      "function" == typeof Symbol &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? "symbol"
-                      : typeof obj;
+                    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
                   }),
             _typeof(obj)
           );
@@ -7069,20 +6114,15 @@
 
         function _inherits(subClass, superClass) {
           if (typeof superClass !== "function" && superClass !== null) {
-            throw new TypeError(
-              "Super expression must either be null or a function"
-            );
+            throw new TypeError("Super expression must either be null or a function");
           }
-          subClass.prototype = Object.create(
-            superClass && superClass.prototype,
-            {
-              constructor: {
-                value: subClass,
-                writable: true,
-                configurable: true,
-              },
-            }
-          );
+          subClass.prototype = Object.create(superClass && superClass.prototype, {
+            constructor: {
+              value: subClass,
+              writable: true,
+              configurable: true,
+            },
+          });
           Object.defineProperty(subClass, "prototype", { writable: false });
           if (superClass) _setPrototypeOf(subClass, superClass);
         }
@@ -7103,24 +6143,17 @@
         }
 
         function _possibleConstructorReturn(self, call) {
-          if (
-            call &&
-            (_typeof(call) === "object" || typeof call === "function")
-          ) {
+          if (call && (_typeof(call) === "object" || typeof call === "function")) {
             return call;
           } else if (call !== void 0) {
-            throw new TypeError(
-              "Derived constructors may only return object or undefined"
-            );
+            throw new TypeError("Derived constructors may only return object or undefined");
           }
           return _assertThisInitialized(self);
         }
 
         function _assertThisInitialized(self) {
           if (self === void 0) {
-            throw new ReferenceError(
-              "this hasn't been initialised - super() hasn't been called"
-            );
+            throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
           }
           return self;
         }
@@ -7130,20 +6163,14 @@
           _wrapNativeSuper = function _wrapNativeSuper(Class) {
             if (Class === null || !_isNativeFunction(Class)) return Class;
             if (typeof Class !== "function") {
-              throw new TypeError(
-                "Super expression must either be null or a function"
-              );
+              throw new TypeError("Super expression must either be null or a function");
             }
             if (typeof _cache !== "undefined") {
               if (_cache.has(Class)) return _cache.get(Class);
               _cache.set(Class, Wrapper);
             }
             function Wrapper() {
-              return _construct(
-                Class,
-                arguments,
-                _getPrototypeOf(this).constructor
-              );
+              return _construct(Class, arguments, _getPrototypeOf(this).constructor);
             }
             Wrapper.prototype = Object.create(Class.prototype, {
               constructor: {
@@ -7175,14 +6202,11 @@
         }
 
         function _isNativeReflectConstruct() {
-          if (typeof Reflect === "undefined" || !Reflect.construct)
-            return false;
+          if (typeof Reflect === "undefined" || !Reflect.construct) return false;
           if (Reflect.construct.sham) return false;
           if (typeof Proxy === "function") return true;
           try {
-            Boolean.prototype.valueOf.call(
-              Reflect.construct(Boolean, [], function () {})
-            );
+            Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
             return true;
           } catch (e) {
             return false;
@@ -7228,12 +6252,7 @@
           "__isFunctionComponent__",
         ];
         exports.NODE_TYPE_KEY = NODE_TYPE_KEY;
-        var COMPONENT_METHOD = [
-          "shouldComponentUpdate",
-          "componentDidMount",
-          "componentDidUpdate",
-          "componentWillUnmount",
-        ];
+        var COMPONENT_METHOD = ["shouldComponentUpdate", "componentDidMount", "componentDidUpdate", "componentWillUnmount"];
         exports.COMPONENT_METHOD = COMPONENT_METHOD;
         var DEFAULT_NODE_TYPE = {
           __isTextNode__: false,
@@ -7824,13 +6843,7 @@
 
             _classCallCheck(this, CustomHeap);
 
-            for (
-              var _len = arguments.length,
-                args = new Array(_len > 2 ? _len - 2 : 0),
-                _key = 2;
-              _key < _len;
-              _key++
-            ) {
+            for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
               args[_key - 2] = arguments[_key];
             }
 
@@ -7863,13 +6876,7 @@
                 var current = this.length - 1;
                 var pre = ((current - 1) / 2) | 0;
 
-                while (
-                  pre >= 0 &&
-                  this.judgeFun(
-                    this.transferFun(this[pre]),
-                    this.transferFun(this[current])
-                  )
-                ) {
+                while (pre >= 0 && this.judgeFun(this.transferFun(this[pre]), this.transferFun(this[current]))) {
                   this._swap(pre, current);
 
                   current = pre;
@@ -7904,23 +6911,11 @@
                 var left = current * 2 + 1;
                 var right = current * 2 + 2;
 
-                if (
-                  left < this.length &&
-                  this.judgeFun(
-                    this.transferFun(this[max]),
-                    this.transferFun(this[left])
-                  )
-                ) {
+                if (left < this.length && this.judgeFun(this.transferFun(this[max]), this.transferFun(this[left]))) {
                   max = left;
                 }
 
-                if (
-                  right < this.length &&
-                  this.judgeFun(
-                    this.transferFun(this[max]),
-                    this.transferFun(this[right])
-                  )
-                ) {
+                if (right < this.length && this.judgeFun(this.transferFun(this[max]), this.transferFun(this[right]))) {
                   max = right;
                 }
 
@@ -7952,7 +6947,7 @@
           },
           function (fiber) {
             return fiber.deepIndex;
-          }
+          },
         );
         exports.SORT_BY_DEEP_HEAP = SORT_BY_DEEP_HEAP;
 
@@ -8143,10 +7138,7 @@
 
                   if (this.__context__) this.__context__.removeDependence(this);
                   this.__context__ = context;
-                  (_this$__context__ = this.__context__) === null ||
-                  _this$__context__ === void 0
-                    ? void 0
-                    : _this$__context__.addDependence(this);
+                  (_this$__context__ = this.__context__) === null || _this$__context__ === void 0 ? void 0 : _this$__context__.addDependence(this);
                 },
               /**
                *
@@ -8173,8 +7165,7 @@
 
                   if (this.__hecticCount__ > 40) {
                     (0, _debug.error)({
-                      message:
-                        "look like have a infinity loop on current component",
+                      message: "look like have a infinity loop on current component",
                       fiber: this.__fiber__,
                     });
                   }
@@ -8212,14 +7203,7 @@
         Object.defineProperty(exports, "__esModule", {
           value: true,
         });
-        exports.Provider =
-          exports.Portal =
-          exports.Memo =
-          exports.Fragment =
-          exports.ForwardRef =
-          exports.Context =
-          exports.Consumer =
-            void 0;
+        exports.Provider = exports.Portal = exports.Memo = exports.Fragment = exports.ForwardRef = exports.Context = exports.Consumer = void 0;
         var Memo = Symbol["for"]("Memo");
         exports.Memo = Memo;
         var ForwardRef = Symbol["for"]("ForwardRef");
@@ -8269,12 +7253,7 @@
                     return typeof obj;
                   }
                 : function (obj) {
-                    return obj &&
-                      "function" == typeof Symbol &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? "symbol"
-                      : typeof obj;
+                    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
                   }),
             _typeof(obj)
           );
@@ -8291,11 +7270,7 @@
             if (run) return;
             run = true;
 
-            for (
-              var _len = arguments.length, args = new Array(_len), _key = 0;
-              _key < _len;
-              _key++
-            ) {
+            for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
               args[_key] = arguments[_key];
             }
 
@@ -8323,22 +7298,16 @@
             function (f) {
               return f instanceof _index.MyReactFiberNode;
             },
-            action
+            action,
           );
         };
 
         exports.mapFiber = mapFiber;
 
         var isEqual = function isEqual(src, target) {
-          if (
-            _typeof(src) === "object" &&
-            _typeof(target) === "object" &&
-            src !== null &&
-            target !== null
-          ) {
+          if (_typeof(src) === "object" && _typeof(target) === "object" && src !== null && target !== null) {
             var flag = true;
-            flag =
-              flag && Object.keys(src).length === Object.keys(target).length;
+            flag = flag && Object.keys(src).length === Object.keys(target).length;
 
             for (var key in src) {
               if (key !== "children" && !key.startsWith("__")) {
@@ -8355,15 +7324,9 @@
         exports.isEqual = isEqual;
 
         var isNormalEqual = function isNormalEqual(src, target) {
-          if (
-            _typeof(src) === "object" &&
-            _typeof(target) === "object" &&
-            src !== null &&
-            target !== null
-          ) {
+          if (_typeof(src) === "object" && _typeof(target) === "object" && src !== null && target !== null) {
             var flag = true;
-            flag =
-              flag && Object.keys(src).length === Object.keys(target).length;
+            flag = flag && Object.keys(src).length === Object.keys(target).length;
 
             for (var key in src) {
               if (!key.startsWith("__")) {
@@ -8394,9 +7357,7 @@
             updateAsyncTimeStep();
             return false;
           } else {
-            var result =
-              new Date().getTime() - _env.asyncUpdateTimeStep.current >
-              _env.asyncUpdateTimeLimit.current;
+            var result = new Date().getTime() - _env.asyncUpdateTimeStep.current > _env.asyncUpdateTimeLimit.current;
 
             if (result) _env.asyncUpdateTimeStep.current = null;
             return result;
@@ -8406,10 +7367,8 @@
         exports.shouldYieldAsyncUpdate = shouldYieldAsyncUpdate;
 
         var cannotUpdate = function cannotUpdate() {
-          if (_env.isServerRender.current)
-            throw new Error("can not update component during SSR");
-          if (_env.isHydrateRender.current)
-            throw new Error("can not update component during hydrate");
+          if (_env.isServerRender.current) throw new Error("can not update component during SSR");
+          if (_env.isHydrateRender.current) throw new Error("can not update component during hydrate");
           if (typeof window === "undefined") return false;
           return true;
         };
@@ -8425,10 +7384,7 @@
         Object.defineProperty(exports, "__esModule", {
           value: true,
         });
-        exports.unmountFiberNode =
-          exports.runUnmount =
-          exports.pushUnmount =
-            void 0;
+        exports.unmountFiberNode = exports.runUnmount = exports.pushUnmount = void 0;
 
         var _tool = require("./tool.js");
 
@@ -8459,10 +7415,7 @@
         var clearFiberNode = function clearFiberNode(fiber) {
           fiber.children.forEach(clearFiberNode);
           fiber.hookList.forEach(function (hook) {
-            if (
-              hook.hookType === "useEffect" ||
-              hook.hookType === "useLayoutEffect"
-            ) {
+            if (hook.hookType === "useEffect" || hook.hookType === "useLayoutEffect") {
               hook.effect = false;
               hook.cancel && hook.cancel();
             }
@@ -8500,10 +7453,7 @@
             if (!fiber.__isPortal__) {
               var _fiber$dom$remove, _fiber$dom;
 
-              (_fiber$dom$remove = (_fiber$dom = fiber.dom).remove) === null ||
-              _fiber$dom$remove === void 0
-                ? void 0
-                : _fiber$dom$remove.call(_fiber$dom);
+              (_fiber$dom$remove = (_fiber$dom = fiber.dom).remove) === null || _fiber$dom$remove === void 0 ? void 0 : _fiber$dom$remove.call(_fiber$dom);
             } else {
               fiber.children.forEach(clearFiberDom);
             }
@@ -8524,8 +7474,7 @@
         exports.unmountFiberNode = unmountFiberNode;
 
         var runUnmount = function runUnmount() {
-          var allUnmountFiberArray =
-            _env.pendingUnmountFiberArray.current.slice(0);
+          var allUnmountFiberArray = _env.pendingUnmountFiberArray.current.slice(0);
 
           allUnmountFiberArray.forEach(unmountFiberNode);
           _env.pendingUnmountFiberArray.current = [];
@@ -8584,7 +7533,7 @@
             },
             function () {
               _env.globalLoop.current = false;
-            }
+            },
           );
         };
 
@@ -8713,14 +7662,11 @@
               currentFiber.dom,
               currentFiber.__isTextNode__
                 ? _share.EMPTY_OBJECT
-                : ((_currentFiber$__preRe = currentFiber.__preRenderVdom__) ===
-                    null || _currentFiber$__preRe === void 0
+                : ((_currentFiber$__preRe = currentFiber.__preRenderVdom__) === null || _currentFiber$__preRe === void 0
                     ? void 0
                     : _currentFiber$__preRe.props) || _share.EMPTY_OBJECT,
-              currentFiber.__isTextNode__
-                ? _share.EMPTY_OBJECT
-                : currentFiber.__vdom__.props,
-              currentFiber
+              currentFiber.__isTextNode__ ? _share.EMPTY_OBJECT : currentFiber.__vdom__.props,
+              currentFiber,
             );
             (0, _debug.debugWithDom)(currentFiber);
             currentFiber.applyVDom();
@@ -8746,11 +7692,7 @@
         Object.defineProperty(exports, "__esModule", {
           value: true,
         });
-        exports.runUpdate =
-          exports.pushUpdate =
-          exports.getPendingModifyFiberNext =
-          exports.getPendingModifyFiberArray =
-            void 0;
+        exports.runUpdate = exports.pushUpdate = exports.getPendingModifyFiberNext = exports.getPendingModifyFiberArray = void 0;
 
         var _env = require("../env.js");
 
@@ -8761,11 +7703,9 @@
         var _debug = require("../debug.js");
 
         var getPendingModifyFiberArray = function getPendingModifyFiberArray() {
-          var pendingUpdate = _env.pendingSyncModifyFiberArray.current
-            .slice(0)
-            .filter(function (f) {
-              return f.__needUpdate__ && f.mount;
-            });
+          var pendingUpdate = _env.pendingSyncModifyFiberArray.current.slice(0).filter(function (f) {
+            return f.__needUpdate__ && f.mount;
+          });
 
           pendingUpdate.sort(function (f1, f2) {
             return f1.deepIndex - f2.deepIndex > 0 ? 1 : -1;
@@ -8816,8 +7756,7 @@
         exports.pushUpdate = pushUpdate;
 
         var runUpdate = function runUpdate() {
-          var allUpdateFiberArray =
-            _env.pendingUpdateFiberArray.current.slice(0);
+          var allUpdateFiberArray = _env.pendingUpdateFiberArray.current.slice(0);
 
           allUpdateFiberArray.forEach(function (f) {
             if (f.mount && f.__pendingUpdate__) {
@@ -8910,8 +7849,7 @@
             for (i = 0; i < sourceSymbolKeys.length; i++) {
               key = sourceSymbolKeys[i];
               if (excluded.indexOf(key) >= 0) continue;
-              if (!Object.prototype.propertyIsEnumerable.call(source, key))
-                continue;
+              if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
               target[key] = source[key];
             }
           }
@@ -8968,11 +7906,7 @@
           return obj;
         }
 
-        var MyReactVDom = /*#__PURE__*/ _createClass(function MyReactVDom(
-          type,
-          props,
-          children
-        ) {
+        var MyReactVDom = /*#__PURE__*/ _createClass(function MyReactVDom(type, props, children) {
           _classCallCheck(this, MyReactVDom);
 
           _defineProperty(this, "__dynamicChildren__", void 0);
@@ -8987,11 +7921,7 @@
           this.key = key;
           this.ref = ref;
           this.props = resProps;
-          this.children =
-            (dangerouslySetInnerHTML === null ||
-            dangerouslySetInnerHTML === void 0
-              ? void 0
-              : dangerouslySetInnerHTML.__html) || children;
+          this.children = (dangerouslySetInnerHTML === null || dangerouslySetInnerHTML === void 0 ? void 0 : dangerouslySetInnerHTML.__html) || children;
         });
 
         exports.MyReactVDom = MyReactVDom;
@@ -9010,10 +7940,7 @@
 
           if (type !== null && type !== void 0 && type.defaultProps) {
             Object.keys(type.defaultProps).forEach(function (propKey) {
-              props[propKey] =
-                props[propKey] === undefined
-                  ? type.defaultProps[propKey]
-                  : props[propKey];
+              props[propKey] = props[propKey] === undefined ? type.defaultProps[propKey] : props[propKey];
             });
           }
 
@@ -9024,10 +7951,7 @@
             (0, _tool.checkSingleChildrenKey)(children);
           }
 
-          if (
-            (Array.isArray(children) && children.length) ||
-            (children !== null && children !== undefined)
-          ) {
+          if ((Array.isArray(children) && children.length) || (children !== null && children !== undefined)) {
             props.children = children;
           }
 
@@ -9072,29 +7996,19 @@
                     return typeof obj;
                   }
                 : function (obj) {
-                    return obj &&
-                      "function" == typeof Symbol &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? "symbol"
-                      : typeof obj;
+                    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
                   }),
             _typeof(obj)
           );
         }
 
         function _toConsumableArray(arr) {
-          return (
-            _arrayWithoutHoles(arr) ||
-            _iterableToArray(arr) ||
-            _unsupportedIterableToArray(arr) ||
-            _nonIterableSpread()
-          );
+          return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
         }
 
         function _nonIterableSpread() {
           throw new TypeError(
-            "Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."
+            "Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.",
           );
         }
 
@@ -9104,19 +8018,11 @@
           var n = Object.prototype.toString.call(o).slice(8, -1);
           if (n === "Object" && o.constructor) n = o.constructor.name;
           if (n === "Map" || n === "Set") return Array.from(o);
-          if (
-            n === "Arguments" ||
-            /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)
-          )
-            return _arrayLikeToArray(o, minLen);
+          if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
         }
 
         function _iterableToArray(iter) {
-          if (
-            (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null) ||
-            iter["@@iterator"] != null
-          )
-            return Array.from(iter);
+          if ((typeof Symbol !== "undefined" && iter[Symbol.iterator] != null) || iter["@@iterator"] != null) return Array.from(iter);
         }
 
         function _arrayWithoutHoles(arr) {
@@ -9167,10 +8073,10 @@
                   {
                     ref: element.ref,
                   },
-                  props
+                  props,
                 ),
                 children,
-              ].concat(_toConsumableArray(Array.from(arguments).slice(3)))
+              ].concat(_toConsumableArray(Array.from(arguments).slice(3))),
             );
 
             if (_env.enableAllCheck.current) {
@@ -9293,11 +8199,7 @@
 
             nodeType.__isDynamicNode__ = true;
 
-            if (
-              (_rawType$prototype = rawType.prototype) !== null &&
-              _rawType$prototype !== void 0 &&
-              _rawType$prototype.isMyReactComponent
-            ) {
+            if ((_rawType$prototype = rawType.prototype) !== null && _rawType$prototype !== void 0 && _rawType$prototype.isMyReactComponent) {
               nodeType.__isClassComponent__ = true;
             } else {
               nodeType.__isFunctionComponent__ = true;
@@ -9324,5 +8226,5 @@
     ],
   },
   {},
-  [33]
+  [33],
 );
