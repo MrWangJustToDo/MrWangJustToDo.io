@@ -18,6 +18,7 @@
     PATCH_TYPE[(PATCH_TYPE["__pendingEffect__"] = 32)] = "__pendingEffect__";
     PATCH_TYPE[(PATCH_TYPE["__pendingLayoutEffect__"] = 64)] = "__pendingLayoutEffect__";
     PATCH_TYPE[(PATCH_TYPE["__pendingUnmount__"] = 128)] = "__pendingUnmount__";
+    PATCH_TYPE[(PATCH_TYPE["__pendingDeactivate__"] = 256)] = "__pendingDeactivate__";
   })(PATCH_TYPE || (PATCH_TYPE = {}));
 
   var NODE_TYPE;
@@ -42,6 +43,7 @@
     NODE_TYPE[(NODE_TYPE["__isPlainNode__"] = 4096)] = "__isPlainNode__";
     NODE_TYPE[(NODE_TYPE["__isStrictNode__"] = 8192)] = "__isStrictNode__";
     NODE_TYPE[(NODE_TYPE["__isFragmentNode__"] = 16384)] = "__isFragmentNode__";
+    NODE_TYPE[(NODE_TYPE["__isKeepLiveNode__"] = 32768)] = "__isKeepLiveNode__";
   })(NODE_TYPE || (NODE_TYPE = {}));
 
   var UPDATE_TYPE;
@@ -71,9 +73,11 @@
     Effect_TYPE[(Effect_TYPE["__pendingEffect__"] = 1)] = "__pendingEffect__";
   })(Effect_TYPE || (Effect_TYPE = {}));
 
-  var isNormalEquals = function (src, target, children) {
-    if (children === void 0) {
-      children = true;
+  var isNormalEquals = function (src, target, isSkipKey) {
+    if (isSkipKey === void 0) {
+      isSkipKey = function () {
+        return false;
+      };
     }
     if (typeof src === "object" && typeof target === "object" && src !== null && target !== null) {
       var srcKeys = Object.keys(src);
@@ -81,12 +85,8 @@
       if (srcKeys.length !== targetKeys.length) return false;
       var res = true;
       for (var key in src) {
-        if (key === "children") {
-          if (children) {
-            res = res && Object.is(src[key], target[key]);
-          } else {
-            continue;
-          }
+        if (isSkipKey(key)) {
+          continue;
         } else {
           res = res && Object.is(src[key], target[key]);
         }
@@ -243,17 +243,36 @@
   };
   var getElementName = function (fiber) {
     var _a;
-    if (fiber.type & NODE_TYPE.__isMemo__) return "<Memo />";
-    if (fiber.type & NODE_TYPE.__isLazy__) return "<Lazy />";
+    if (fiber.type & NODE_TYPE.__isMemo__) {
+      var typedElement = fiber.element;
+      var typedType = typedElement.type;
+      if (typedType.render.name) return "<Memo - (".concat(typedType.render.name, ") />");
+      if (typedType.render.displayName) return "<Memo -(".concat(typedType.render.displayName, ") />");
+      return "<Memo />";
+    }
+    if (fiber.type & NODE_TYPE.__isLazy__) {
+      var typedElement = fiber.element;
+      var typedType = typedElement.type;
+      if (typedType.render.name) return "<Lazy - (".concat(typedType.render.name, ") />");
+      if (typedType.render.displayName) return "<Lazy -(".concat(typedType.render.displayName, ") />");
+      return "<Lazy />";
+    }
     if (fiber.type & NODE_TYPE.__isPortal__) return "<Portal />";
     if (fiber.type & NODE_TYPE.__isNullNode__) return "<Null />";
     if (fiber.type & NODE_TYPE.__isEmptyNode__) return "<Empty />";
     if (fiber.type & NODE_TYPE.__isSuspense__) return "<Suspense />";
     if (fiber.type & NODE_TYPE.__isStrictNode__) return "<Strict />";
     if (fiber.type & NODE_TYPE.__isFragmentNode__) return "<Fragment />";
-    if (fiber.type & NODE_TYPE.__isForwardRef__) return "<ForwardRef />";
+    if (fiber.type & NODE_TYPE.__isKeepLiveNode__) return "<KeepAlive />";
     if (fiber.type & NODE_TYPE.__isContextProvider__) return "<Provider />";
     if (fiber.type & NODE_TYPE.__isContextConsumer__) return "<Consumer />";
+    if (fiber.type & NODE_TYPE.__isForwardRef__) {
+      var typedElement = fiber.element;
+      var typedType = typedElement.type;
+      if (typedType.render.name) return "<ForwardRef - (".concat(typedType.render.name, ") />");
+      if (typedType.render.displayName) return "<ForwardRef -(".concat(typedType.render.displayName, ") />");
+      return "<ForwardRef />";
+    }
     if (typeof fiber.element === "object" && fiber.element !== null) {
       if (typeof fiber.element.type === "string") {
         return "<".concat(fiber.element.type, " />");
@@ -365,7 +384,18 @@
   var My_React_KeepLive = Symbol.for("react.keep_live");
 
   function isValidElement(element) {
-    return typeof element === "object" && !Array.isArray(element) && (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element;
+    return (
+      typeof element === "object" &&
+      !Array.isArray(element) &&
+      ((element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element ||
+        (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Context ||
+        (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Consumer ||
+        (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Provider ||
+        (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_ForwardRef ||
+        (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Memo ||
+        (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Lazy ||
+        (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Portal)
+    );
   }
   function getTypeFromElement(element) {
     var _a;
@@ -405,6 +435,9 @@
         }
       } else if (typeof rawType === "symbol") {
         switch (rawType) {
+          case My_React_KeepLive:
+            nodeTypeSymbol |= NODE_TYPE.__isKeepLiveNode__;
+            break;
           case My_React_Fragment:
             nodeTypeSymbol |= NODE_TYPE.__isFragmentNode__;
             break;
@@ -431,7 +464,7 @@
           log({ message: "invalid object element type ".concat(JSON.stringify(element)), level: "warn", triggerOnce: true });
         }
         nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
-      } else if (element === null || element === undefined || element === false) {
+      } else if (element === null || element === undefined || typeof element === "boolean") {
         nodeTypeSymbol |= NODE_TYPE.__isNullNode__;
       } else {
         nodeTypeSymbol |= NODE_TYPE.__isTextNode__;
@@ -443,22 +476,27 @@
     var obj = {};
     var onceWarnDuplicate = once(log);
     var onceWarnUndefined = once(log);
-    children.forEach(function (c) {
-      if (isValidElement(c) && !c._store["validKey"]) {
-        if (typeof c.key === "string") {
-          if (obj[c.key]) {
-            onceWarnDuplicate({ message: "array child have duplicate key" });
-          }
-          obj[c.key] = true;
-        } else {
-          onceWarnUndefined({
-            message: "each array child must have a unique key props",
-            triggerOnce: true,
-          });
-        }
-        c._store["validKey"] = true;
-      }
+    var validElement = children.filter(function (c) {
+      return isValidElement(c);
     });
+    if (validElement.length > 1) {
+      validElement.forEach(function (c) {
+        if (!c._store["validKey"]) {
+          if (typeof c.key === "string") {
+            if (obj[c.key]) {
+              onceWarnDuplicate({ message: "array child have duplicate key" });
+            }
+            obj[c.key] = true;
+          } else {
+            onceWarnUndefined({
+              message: "each array child must have a unique key props",
+              triggerOnce: true,
+            });
+          }
+          c._store["validKey"] = true;
+        }
+      });
+    }
   };
   var checkArrayChildrenKey = function (children) {
     children.forEach(function (child) {
@@ -655,11 +693,12 @@
   })();
 
   var contextId = 0;
+  var defaultObject = { id: 0 };
   var createContext = function (value) {
     var _a, _b, _c;
     var ContextObject = ((_a = {}), (_a["$$typeof"] = My_React_Context), (_a.id = contextId++), (_a.Provider = {}), (_a.Consumer = {}), _a);
-    var Provider = ((_b = {}), (_b["$$typeof"] = My_React_Provider), (_b.value = value), (_b.Context = { id: 0 }), _b);
-    var Consumer = ((_c = {}), (_c["$$typeof"] = My_React_Consumer), (_c.Internal = MyReactInternalInstance), (_c.Context = { id: 0 }), _c);
+    var Provider = ((_b = {}), (_b["$$typeof"] = My_React_Provider), (_b.value = value), (_b.Context = defaultObject), _b);
+    var Consumer = ((_c = {}), (_c["$$typeof"] = My_React_Consumer), (_c.Internal = MyReactInternalInstance), (_c.Context = defaultObject), _c);
     Object.defineProperty(Provider, "Context", {
       get: function () {
         return ContextObject;
@@ -830,6 +869,7 @@
   var EmptyDispatch = /** @class */ (function () {
     function EmptyDispatch() {
       this.strictMap = {};
+      this.keepLiveMap = {};
       this.suspenseMap = {};
       this.effectMap = {};
       this.layoutEffectMap = {};
@@ -846,6 +886,13 @@
       return null;
     };
     EmptyDispatch.prototype.resolveStrictMap = function (_fiber) {};
+    EmptyDispatch.prototype.resolveKeepLiveMap = function (_fiber) {};
+    EmptyDispatch.prototype.resolveKeepLive = function (_fiber, _element) {
+      return null;
+    };
+    EmptyDispatch.prototype.resolveMemorizeProps = function (_fiber) {
+      return {};
+    };
     EmptyDispatch.prototype.resolveStrictValue = function (_fiber) {
       return false;
     };
@@ -882,6 +929,7 @@
     EmptyDispatch.prototype.pendingContext = function (_fiber) {};
     EmptyDispatch.prototype.pendingPosition = function (_fiber) {};
     EmptyDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {};
+    EmptyDispatch.prototype.pendingDeactivate = function (_fiber) {};
     EmptyDispatch.prototype.pendingLayoutEffect = function (_fiber, _layoutEffect) {};
     EmptyDispatch.prototype.pendingEffect = function (_fiber, _effect) {};
     EmptyDispatch.prototype.removeFiber = function (_fiber) {};
@@ -920,6 +968,9 @@
           if (fiber.type & NODE_TYPE.__isForwardRef__ && typeof typedType.render !== "function") {
             throw new Error("forwardRef() need a function component");
           }
+        }
+        if (fiber.type & NODE_TYPE.__isKeepLiveNode__) {
+          if (Array.isArray(element.props.children)) throw new Error("<KeepLive /> expected to receive a single MyReact element child");
         }
         if (typedElement.ref) {
           if (typeof typedElement.ref !== "object" && typeof typedElement.ref !== "function") {
@@ -967,7 +1018,8 @@
   var MyReactFiberNode = /** @class */ (function () {
     function MyReactFiberNode(fiberIndex, parent, element) {
       var _a;
-      this.mount = true;
+      this.mounted = true;
+      this.activated = true;
       this.invoked = false;
       this.node = null;
       this.children = [];
@@ -1012,11 +1064,11 @@
     MyReactFiberNode.prototype.initialParent = function () {
       if (this.parent) {
         this.parent.addChild(this);
-        var globalDispatch = this.root.dispatch;
-        globalDispatch.resolveSuspenseMap(this);
-        globalDispatch.resolveContextMap(this);
-        globalDispatch.resolveStrictMap(this);
       }
+      var globalDispatch = this.root.dispatch;
+      globalDispatch.resolveSuspenseMap(this);
+      globalDispatch.resolveContextMap(this);
+      globalDispatch.resolveStrictMap(this);
     };
     MyReactFiberNode.prototype.installParent = function (parent) {
       this.parent = parent;
@@ -1038,18 +1090,12 @@
     };
     MyReactFiberNode.prototype.addContext = function (fiber) {
       if (!fiber) return;
-      if (
-        this.context.every(function (f) {
-          return f !== fiber;
-        })
-      )
-        this.context.push(fiber);
+      this.context.push(fiber);
     };
     MyReactFiberNode.prototype.removeContext = function (fiber) {
       if (!fiber) return;
-      this.context = this.context.filter(function (f) {
-        return f !== fiber;
-      });
+      var index = this.context.indexOf(fiber);
+      if (index !== -1) this.context.splice(index, 1);
     };
     MyReactFiberNode.prototype.beforeUpdate = function () {
       this.child = null;
@@ -1145,7 +1191,16 @@
         return hook.unmount();
       });
       this.instance && this.instance.unmount();
-      this.mount = false;
+      this.mounted = false;
+      this.mode = UPDATE_TYPE.__initial__;
+      this.patch = PATCH_TYPE.__initial__;
+    };
+    MyReactFiberNode.prototype.deactivate = function () {
+      this.hookNodeArray.forEach(function (hook) {
+        return hook.unmount();
+      });
+      this.instance && this.instance.unmount();
+      this.activated = false;
       this.mode = UPDATE_TYPE.__initial__;
       this.patch = PATCH_TYPE.__initial__;
     };
@@ -1244,11 +1299,11 @@
     {
       fiber.checkElement();
     }
-    if (prevElement !== nextElement) {
+    if (prevElement !== nextElement || !fiber.activated) {
       if (fiber.type & NODE_TYPE.__isMemo__) {
         var typedPrevElement = prevElement;
         var typedNextElement = nextElement;
-        if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(typedPrevElement.props, typedNextElement.props)) {
+        if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(typedPrevElement.props, typedNextElement.props) && fiber.activated) {
           fiber.afterUpdate();
         } else {
           fiber.prepareUpdate();
@@ -1265,7 +1320,11 @@
         if (fiber.type & NODE_TYPE.__isPlainNode__) {
           var typedPrevElement = prevElement;
           var typedNextElement = nextElement;
-          if (!isNormalEquals(typedPrevElement.props, typedNextElement.props, false)) {
+          if (
+            !isNormalEquals(typedPrevElement.props, typedNextElement.props, function (key) {
+              return key === "children";
+            })
+          ) {
             globalDispatch.pendingUpdate(fiber);
           }
         }
@@ -1278,12 +1337,6 @@
       globalDispatch.pendingPosition(fiber);
     }
     return fiber;
-  };
-
-  var unmountFiberNode = function (fiber) {
-    fiber.children.forEach(unmountFiberNode);
-    fiber.unmount();
-    fiber.root.dispatch.removeFiber(fiber);
   };
 
   var MyReactHookNode = /** @class */ (function (_super) {
@@ -1506,7 +1559,9 @@
     __self: true,
     __source: true,
   };
+  // todo
   var jsx = function (type, config, maybeKey, source, self) {
+    var _a;
     var props = {};
     var key = null;
     var ref = null;
@@ -1532,15 +1587,24 @@
         props[key] = props[key] === undefined ? ((_a = typedType_1.defaultProps) === null || _a === void 0 ? void 0 : _a[key]) : props[key];
       });
     }
-    return createMyReactElement({
-      type: type,
-      key: key,
-      ref: ref,
-      props: props,
-      _self: self,
-      _source: source,
-      _owner: currentComponentFiber.current,
-    });
+    var element =
+      ((_a = {}),
+      (_a["$$typeof"] = My_React_Element),
+      (_a.type = type),
+      (_a.key = key),
+      (_a.ref = ref),
+      (_a.props = props),
+      (_a._jsx = true),
+      (_a._self = self),
+      (_a._source = source),
+      (_a._owner = currentComponentFiber.current),
+      (_a._store = {}),
+      _a);
+    if (typeof Object.freeze === "function") {
+      Object.freeze(element.props);
+      Object.freeze(element);
+    }
+    return element;
   };
   var jsxDEV = function (type, config, key, isStaticChildren, source, self) {
     var element = jsx(type, config, key, source, self);
@@ -1568,7 +1632,6 @@
     log: log,
     logHook: logHook,
     safeCall: safeCall,
-    unmountFiberNode: unmountFiberNode,
     createFiberNode: createFiberNode,
     updateFiberNode: updateFiberNode,
     initialFiberNode: initialFiberNode,
@@ -1597,6 +1660,38 @@
     toArray: toArray,
     forEach: forEach,
   };
+  var React = {
+    Component: Component,
+    PureComponent: PureComponent,
+    createElement: createElement,
+    cloneElement: cloneElement,
+    isValidElement: isValidElement,
+    lazy: lazy,
+    memo: memo,
+    createRef: createRef,
+    forwardRef: forwardRef,
+    createContext: createContext,
+    Portal: My_React_Portal,
+    Element: My_React_Element,
+    Provider: My_React_Provider,
+    Consumer: My_React_Consumer,
+    Fragment: My_React_Fragment,
+    Suspense: My_React_Suspense,
+    KeepLive: My_React_KeepLive,
+    StrictMode: My_React_Strict,
+    ForwardRef: My_React_ForwardRef,
+    useRef: useRef,
+    useMemo: useMemo,
+    useState: useState,
+    useEffect: useEffect,
+    useReducer: useReducer,
+    useContext: useContext,
+    useCallback: useCallback,
+    useDebugValue: useDebugValue,
+    useLayoutEffect: useLayoutEffect,
+    useImperativeHandle: useImperativeHandle,
+    Children: Children,
+  };
 
   exports.Children = Children;
   exports.Component = Component;
@@ -1616,6 +1711,7 @@
   exports.createContext = createContext;
   exports.createElement = createElement;
   exports.createRef = createRef;
+  exports["default"] = React;
   exports.forwardRef = forwardRef;
   exports.isValidElement = isValidElement;
   exports.jsx = jsx;

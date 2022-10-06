@@ -64,7 +64,6 @@ export const Page = () => {
         className="layout"
         cols={GRID_COLS}
         layouts={GRID_LAYOUTS}
-        measureBeforeMount
         rowHeight={GRID_ROW_HEIGHT}
         draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
         draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}

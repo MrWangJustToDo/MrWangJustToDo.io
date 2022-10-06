@@ -57,7 +57,7 @@ const _User = () => {
       <Divider marginY="2" />
       <HStack divider={<StackDivider />} spacing="2">
         <IconButton aria-label="github" variant="link" icon={<Icon as={AiOutlineGithub} fontSize="xl" />} as="a" href="https://github.com/MrWangJustToDo/" />
-        <IconButton aria-label="leetcode" variant="link" icon={<Icon as={SiLeetcode} fontSize="xl" />} as="a" href="https://leetcode.com/mrwang-justtodo" />
+        <IconButton aria-label="leetcode" variant="link" icon={<Icon as={SiLeetcode} fontSize="xl" />} as="a" href="https://leetcode.com/MrWangSay/" />
       </HStack>
       {/* <Text fontWeight="semibold">{data.viewer.login}</Text> */}
       <Box fontSize="sm" marginY="2">
