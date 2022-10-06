@@ -44,6 +44,7 @@
     PATCH_TYPE[(PATCH_TYPE["__pendingEffect__"] = 32)] = "__pendingEffect__";
     PATCH_TYPE[(PATCH_TYPE["__pendingLayoutEffect__"] = 64)] = "__pendingLayoutEffect__";
     PATCH_TYPE[(PATCH_TYPE["__pendingUnmount__"] = 128)] = "__pendingUnmount__";
+    PATCH_TYPE[(PATCH_TYPE["__pendingDeactivate__"] = 256)] = "__pendingDeactivate__";
   })(PATCH_TYPE || (PATCH_TYPE = {}));
 
   var NODE_TYPE;
@@ -68,6 +69,7 @@
     NODE_TYPE[(NODE_TYPE["__isPlainNode__"] = 4096)] = "__isPlainNode__";
     NODE_TYPE[(NODE_TYPE["__isStrictNode__"] = 8192)] = "__isStrictNode__";
     NODE_TYPE[(NODE_TYPE["__isFragmentNode__"] = 16384)] = "__isFragmentNode__";
+    NODE_TYPE[(NODE_TYPE["__isKeepLiveNode__"] = 32768)] = "__isKeepLiveNode__";
   })(NODE_TYPE || (NODE_TYPE = {}));
 
   var UPDATE_TYPE;
@@ -129,12 +131,12 @@
       this.scopeArray.push(scopeItem);
       this.scopeLength++;
     };
-    LinkTreeList.prototype.append = function (node, index) {
+    LinkTreeList.prototype.append = function (node, _index) {
       this.length++;
       this.rawArray.push(node);
       var listNode = new ListTreeNode(node);
       this.push(listNode);
-      this.scopePush({ index: index, value: listNode });
+      this.scopePush({ index: _index, value: listNode });
     };
     LinkTreeList.prototype.unshift = function (node) {
       if (!this.head) {
@@ -396,13 +398,39 @@
     parentFiber.afterUpdate();
     return parentFiber.children;
   };
+  var transformKeepLiveChildrenFiber = function (parentFiber, children) {
+    var isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
+    if (!isUpdate) return transformChildrenFiber(parentFiber, children);
+    var globalDispatch = parentFiber.root.dispatch;
+    var prevFiber = parentFiber.child;
+    var cachedFiber = globalDispatch.resolveKeepLive(parentFiber, children);
+    if (cachedFiber) {
+      parentFiber.beforeUpdate();
+      var newChildFiber = updateFiberNode({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
+      parentFiber.renderedChildren.push(newChildFiber);
+      parentFiber.afterUpdate();
+      // it is a cachedFiber, so should deactivate prevFiber
+      if (prevFiber !== cachedFiber) {
+        globalDispatch.pendingDeactivate(parentFiber);
+      }
+      return parentFiber.children;
+    } else {
+      // not have cachedFiber, maybe it is a first time to run
+      parentFiber.beforeUpdate();
+      var newChildFiber = createFiberNode({ fiberIndex: parentFiber.fiberIndex + 1, parent: parentFiber, type: "position" }, children);
+      parentFiber.renderedChildren.push(newChildFiber);
+      parentFiber.afterUpdate();
+      globalDispatch.pendingDeactivate(parentFiber);
+      return parentFiber.children;
+    }
+  };
 
   var DEFAULT_RESULT = {
     newState: null,
     isForce: false,
     callback: [],
   };
-  var processComponentStateFromProps = function (fiber) {
+  var processComponentStateFromProps = function (fiber, devInstance) {
     var typedElement = fiber.element;
     var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
     var typedComponent = Component;
@@ -415,10 +443,22 @@
         typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
       }
     }
+    if (devInstance) {
+      var typedDevInstance = devInstance;
+      var props_1 = Object.assign({}, typedElement.props);
+      var state_1 = Object.assign({}, typedInstance.state);
+      if (typeof typedComponent.getDerivedStateFromProps === "function") {
+        var payloadState = typedComponent.getDerivedStateFromProps(props_1, state_1);
+        if (payloadState) {
+          typedDevInstance.state = Object.assign({}, typedInstance.state, payloadState);
+        }
+      }
+    }
   };
   var processComponentInstanceOnMount = function (fiber) {
     var typedElement = fiber.element;
     var globalDispatch = fiber.root.dispatch;
+    var strictMod = globalDispatch.resolveStrictValue(fiber);
     var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
     var typedComponent = Component;
     var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
@@ -433,26 +473,43 @@
     }
     instance.setOwner(fiber);
     instance.setContext(ProviderFiber);
+    var devInstance = null;
+    if (strictMod) {
+      var props_2 = Object.assign({}, typedElement.props);
+      devInstance = new typedComponent(props_2, context);
+      devInstance.props = props_2;
+      devInstance.context = context;
+    }
+    return devInstance;
   };
   var processComponentFiberOnUpdate = function (fiber) {
     var typedInstance = fiber.instance;
     typedInstance.setOwner(fiber);
   };
-  var processComponentRenderOnMountAndUpdate = function (fiber) {
+  var processComponentRenderOnMountAndUpdate = function (fiber, devInstance) {
     var typedInstance = fiber.instance;
-    var children = typedInstance.render();
     var typeFiber = fiber;
-    {
+    if (devInstance) {
+      var cached = Object.assign({}, typedInstance);
+      var children = typedInstance.render();
       typeFiber._debugDynamicChildren = children;
+      // reset
+      Object.assign(typedInstance, cached);
+      typedInstance.render();
+      return children;
+    } else {
+      var children = typedInstance.render();
+      {
+        typeFiber._debugDynamicChildren = children;
+      }
+      return children;
     }
-    return children;
   };
-  var processComponentDidMountOnMount = function (fiber) {
+  var processComponentDidMountOnMount = function (fiber, devInstance) {
     var typedInstance = fiber.instance;
     var globalDispatch = fiber.root.dispatch;
-    var strictMod = globalDispatch.resolveStrictValue(fiber);
-    if (strictMod) {
-      if ((typedInstance.componentDidMount || typedInstance.componentWillUnmount) && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
+    if (devInstance) {
+      if (!(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
         typedInstance.mode = Effect_TYPE.__pendingEffect__;
         globalDispatch.pendingLayoutEffect(fiber, function () {
           var _a, _b, _c;
@@ -477,7 +534,7 @@
     var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
     var typedInstance = fiber.instance;
     var typedComponent = Component;
-    if (!(typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance._contextFiber) || !typedInstance._contextFiber.mount) {
+    if (!(typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance._contextFiber) || !typedInstance._contextFiber.mounted) {
       var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
       var context = globalDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
       typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance.setContext(ProviderFiber);
@@ -519,8 +576,13 @@
     }
   };
   var classComponentMount = function (fiber) {
-    processComponentInstanceOnMount(fiber);
-    processComponentStateFromProps(fiber);
+    var devInstance = processComponentInstanceOnMount(fiber);
+    processComponentStateFromProps(fiber, devInstance);
+    var children = processComponentRenderOnMountAndUpdate(fiber, devInstance);
+    processComponentDidMountOnMount(fiber, devInstance);
+    return children;
+  };
+  var classComponentActive = function (fiber) {
     var children = processComponentRenderOnMountAndUpdate(fiber);
     processComponentDidMountOnMount(fiber);
     return children;
@@ -583,6 +645,9 @@
   var nextWorkClassComponent = function (fiber) {
     if (!fiber.instance) {
       var children = classComponentMount(fiber);
+      return nextWorkCommon(fiber, children);
+    } else if (!fiber.activated) {
+      var children = classComponentActive(fiber);
       return nextWorkCommon(fiber, children);
     } else {
       var _a = classComponentUpdate(fiber),
@@ -720,7 +785,7 @@
     fiber.instance.setOwner(fiber);
     var Context = typedType.Context;
     currentComponentFiber.current = fiber;
-    if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.mount) {
+    if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.mounted) {
       var ProviderFiber = globalDispatch.resolveContextFiber(fiber, Context);
       var context = globalDispatch.resolveContextValue(ProviderFiber, Context);
       fiber.instance.context = context;
@@ -744,27 +809,38 @@
     if (fiber.type & NODE_TYPE.__isContextConsumer__) return nextWorkConsumer(fiber);
     throw new Error("unknown element ".concat(fiber.element));
   };
+  var nextWorkKeepLive = function (fiber) {
+    var globalDispatch = fiber.root.dispatch;
+    globalDispatch.resolveKeepLiveMap(fiber);
+    var typedElement = fiber.element;
+    var children = typedElement.props.children;
+    return transformKeepLiveChildrenFiber(fiber, children);
+  };
   var nextWorkSync = function (fiber) {
-    if (!fiber.mount) return [];
+    if (!fiber.mounted) return [];
     if (fiber.invoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__))) return [];
     currentRunningFiber.current = fiber;
     var children = [];
     if (fiber.type & NODE_TYPE.__isDynamicNode__) children = nextWorkComponent(fiber);
     else if (fiber.type & NODE_TYPE.__isObjectNode__) children = nextWorkObject(fiber);
+    else if (fiber.type & NODE_TYPE.__isKeepLiveNode__) children = nextWorkKeepLive(fiber);
     else children = nextWorkNormal(fiber);
     fiber.invoked = true;
+    fiber.activated = true;
     currentRunningFiber.current = null;
     return children;
   };
   var nextWorkAsync = function (fiber, topLevelFiber) {
-    if (!fiber.mount) return null;
+    if (!fiber.mounted) return null;
     if (!fiber.invoked || fiber.mode & UPDATE_TYPE.__update__ || fiber.mode & UPDATE_TYPE.__trigger__) {
       currentRunningFiber.current = fiber;
       if (fiber.type & NODE_TYPE.__isDynamicNode__) nextWorkComponent(fiber);
       else if (fiber.type & NODE_TYPE.__isObjectNode__) nextWorkObject(fiber);
+      else if (fiber.type & NODE_TYPE.__isKeepLiveNode__) nextWorkKeepLive(fiber);
       else nextWorkNormal(fiber);
-      currentRunningFiber.current = null;
       fiber.invoked = true;
+      fiber.activated = true;
+      currentRunningFiber.current = null;
       if (fiber.children.length) {
         return fiber.child;
       }
@@ -783,6 +859,24 @@
   var nRoundTransformFiberArray = react.createRef([]);
   var cRoundTransformFiberArray = react.createRef([]);
 
+  var defaultGenerateStrictMap = function (fiber, map) {
+    var parent = fiber.parent;
+    var element = fiber.element;
+    if (typeof element === "object" && fiber.type & NODE_TYPE.__isStrictNode__) {
+      map[fiber.uid] = true;
+    } else {
+      if (parent) {
+        map[fiber.uid] = Boolean(map[parent.uid]);
+      } else {
+        map[fiber.uid] = false;
+      }
+    }
+    {
+      var typedFiber = fiber;
+      typedFiber._debugStrict = map[fiber.uid];
+    }
+  };
+
   var isArrayEquals = function (src, target) {
     if (Array.isArray(src) && Array.isArray(target) && src.length === target.length) {
       var re = true;
@@ -793,6 +887,40 @@
       return re;
     }
     return false;
+  };
+
+  var defaultGenerateSuspenseMap = function (fiber, map) {
+    var parent = fiber.parent;
+    var element = fiber.element;
+    if (typeof element === "object" && fiber.type & NODE_TYPE.__isSuspense__) {
+      map[fiber.uid] = element === null || element === void 0 ? void 0 : element.props["fallback"];
+    } else {
+      if (parent) {
+        map[fiber.uid] = map[parent.uid];
+      } else {
+        map[fiber.uid] = null;
+      }
+    }
+    {
+      var typedFiber = fiber;
+      typedFiber._debugSuspense = map[fiber.uid];
+    }
+  };
+
+  var getNext = function (fiber, root) {
+    if (fiber.child) return fiber.child;
+    var nextFiber = fiber;
+    while (nextFiber && nextFiber !== root) {
+      if (nextFiber.sibling) return nextFiber.sibling;
+      nextFiber = nextFiber.parent;
+    }
+  };
+  var generateFiberToList = function (fiber) {
+    var listTree = new LinkTreeList();
+    var temp = fiber;
+    listTree.append(temp, temp.fiberIndex);
+    while ((temp = getNext(temp, fiber))) listTree.append(temp, temp.fiberIndex);
+    return listTree;
   };
 
   var loopStart = function (fiber) {
@@ -830,6 +958,44 @@
   };
   var mountLoopSync = function (fiber) {
     return loopAll(fiber);
+  };
+
+  var defaultGenerateKeepLiveMap = function (fiber, map) {
+    var cacheArray = map[fiber.uid] || [];
+    map[fiber.uid] = cacheArray;
+    {
+      var typedFiber = fiber;
+      typedFiber._debugKeepLiveCache = cacheArray;
+    }
+  };
+  var defaultGetKeepLiveFiber = function (fiber, map, element) {
+    var cacheArray = map[fiber.uid] || [];
+    // <KeepLive> component only have one child;
+    var currentChild = fiber.child;
+    // set cache map
+    map[fiber.uid] = cacheArray;
+    // just a normal update
+    if (currentChild.checkIsSameType(element)) {
+      return currentChild;
+    }
+    if (
+      cacheArray.every(function (f) {
+        return f.uid !== currentChild.uid;
+      })
+    ) {
+      cacheArray.push(currentChild);
+    }
+    var cachedFiber = cacheArray.find(function (f) {
+      return f.checkIsSameType(element);
+    });
+    map[fiber.uid] = cacheArray.filter(function (f) {
+      return f !== cachedFiber;
+    });
+    {
+      var typedFiber = fiber;
+      typedFiber._debugKeepLiveCache = map[fiber.uid];
+    }
+    return cachedFiber || null;
   };
 
   /******************************************************************************
@@ -907,7 +1073,7 @@
         var update_1 = function () {
           var _a;
           hookNode.cancel && hookNode.cancel();
-          if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.mount) hookNode.cancel = hookNode.value();
+          if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.mounted) hookNode.cancel = hookNode.value();
           hookNode.effect = false;
           hookNode.mode = Effect_TYPE.__initial__;
         };
@@ -924,7 +1090,7 @@
         var update_2 = function () {
           var _a;
           hookNode.cancel && hookNode.cancel();
-          if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.mount) hookNode.cancel = hookNode.value();
+          if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.mounted) hookNode.cancel = hookNode.value();
           hookNode.effect = false;
           hookNode.mode = Effect_TYPE.__initial__;
         };
@@ -1015,7 +1181,7 @@
       return currentHook;
     }
     if (currentHook.hookType === HOOK_TYPE.useContext) {
-      if (!currentHook._contextFiber || !currentHook._contextFiber.mount || !Object.is(currentHook.value, value)) {
+      if (!currentHook._contextFiber || !currentHook._contextFiber.mounted || !Object.is(currentHook.value, value)) {
         currentHook.value = value;
         var ProviderFiber = globalDispatch.resolveContextFiber(currentHook._ownerFiber, currentHook.value);
         var context = globalDispatch.resolveContextValue(ProviderFiber, currentHook.value);
@@ -1094,6 +1260,21 @@
     if (!loopController.doesPause()) {
       reconcileUpdate();
     }
+  };
+
+  var unmountFiberNode = function (fiber) {
+    if (!fiber) return;
+    // unmountFiberNode(fiber.child);
+    // fiber.unmount();
+    // fiber.root.dispatch.removeFiber(fiber);
+    // unmountFiberNode(fiber.sibling);
+    // loop
+    var dispatch = fiber.root.dispatch;
+    var listTree = generateFiberToList(fiber);
+    listTree.listToHead(function (f) {
+      f.unmount();
+      dispatch.removeFiber(f);
+    });
   };
 
   var processComponentUpdateQueue = function (fiber) {
@@ -1182,14 +1363,18 @@
   var enableControlComponent = react.createRef(true);
   var enableEventSystem = react.createRef(true);
   var enableHighlight = react.createRef(false);
-  // ==== todo ==== //
-  var enableFastLoop = react.createRef(false);
+  // TODO
+  react.createRef(false);
 
   var createDomNode = function (element) {
     return {
       memoizedProps: {},
       element: element,
     };
+  };
+  var getMemoizedProps = function (fiber) {
+    var element = fiber.node;
+    return element.memoizedProps;
   };
 
   var isInternal = function (key) {
@@ -1310,7 +1495,6 @@
     }
   };
 
-  var unmountFiberNode = react.__my_react_shared__.unmountFiberNode;
   var unmountFiber = function (fiber) {
     unmountFiberNode(fiber);
     clearFiberDom(fiber);
@@ -1346,40 +1530,6 @@
     _isSVG = Boolean(_isSVG);
     map[_fiber.uid] = _isSVG;
     return _isSVG;
-  };
-  var generateStrictMap = function (_fiber, map) {
-    var parent = _fiber.parent;
-    var element = _fiber.element;
-    if (typeof element === "object" && _fiber.type & NODE_TYPE.__isStrictNode__) {
-      map[_fiber.uid] = true;
-    } else {
-      if (parent) {
-        map[_fiber.uid] = Boolean(map[parent.uid]);
-      } else {
-        map[_fiber.uid] = false;
-      }
-    }
-    {
-      var typedFiber = _fiber;
-      typedFiber._debugStrict = map[_fiber.uid];
-    }
-  };
-  var generateSuspenseMap = function (_fiber, map) {
-    var parent = _fiber.parent;
-    var element = _fiber.element;
-    if (typeof element === "object" && _fiber.type & NODE_TYPE.__isSuspense__) {
-      map[_fiber.uid] = element === null || element === void 0 ? void 0 : element.props["fallback"];
-    } else {
-      if (parent) {
-        map[_fiber.uid] = map[parent.uid];
-      } else {
-        map[_fiber.uid] = null;
-      }
-    }
-    {
-      var typedFiber = _fiber;
-      typedFiber._debugSuspense = map[_fiber.uid];
-    }
   };
   var setRef = function (_fiber) {
     if (_fiber.type & NODE_TYPE.__isPlainNode__) {
@@ -1547,7 +1697,7 @@
         globalScope.modifyFiberRoot = null;
         while (globalScope.modifyFiberArray.length) {
           var newProgressFiber = globalScope.modifyFiberArray.shift();
-          if (newProgressFiber === null || newProgressFiber === void 0 ? void 0 : newProgressFiber.mount) {
+          if (newProgressFiber === null || newProgressFiber === void 0 ? void 0 : newProgressFiber.mounted) {
             globalDispatch.beginProgressList(globalScope);
             globalScope.modifyFiberRoot = newProgressFiber;
             return newProgressFiber;
@@ -1625,13 +1775,10 @@
     if (fiber.patch & PATCH_TYPE.__pendingContext__) {
       var allListeners_1 = fiber.dependence.slice(0);
       Promise.resolve().then(function () {
-        allListeners_1
-          .map(function (i) {
-            return i._ownerFiber;
-          })
-          .forEach(function (f) {
-            return (f === null || f === void 0 ? void 0 : f.mount) && f.update();
-          });
+        new Set(allListeners_1).forEach(function (i) {
+          var fiber = i._ownerFiber;
+          if (fiber === null || fiber === void 0 ? void 0 : fiber.mounted) fiber.update();
+        });
       });
       if (fiber.patch & PATCH_TYPE.__pendingContext__) fiber.patch ^= PATCH_TYPE.__pendingContext__;
     }
@@ -1777,6 +1924,27 @@
       return re;
     }
     return hydrate;
+  };
+
+  var deactivateFiber = function (fiber) {
+    var listTree = generateFiberToList(fiber);
+    clearFiberDom(fiber);
+    listTree.listToHead(function (f) {
+      f.deactivate();
+    });
+  };
+
+  var deactivate = function (fiber) {
+    if (fiber.patch & PATCH_TYPE.__pendingDeactivate__) {
+      var globalDispatch = fiber.root.dispatch;
+      var allDeactivateFibers = globalDispatch.keepLiveMap[fiber.uid];
+      allDeactivateFibers === null || allDeactivateFibers === void 0
+        ? void 0
+        : allDeactivateFibers.forEach(function (fiber) {
+            if (fiber.activated) deactivateFiber(fiber);
+          });
+      if (fiber.patch & PATCH_TYPE.__pendingDeactivate__) fiber.patch ^= PATCH_TYPE.__pendingDeactivate__;
+    }
   };
 
   var layoutEffect = function (fiber) {
@@ -1993,8 +2161,11 @@
             fiber: fiber,
           });
           if (enableControlComponent.current) {
-            if (controlElementTag[typedElement.type] && typeof typedElement.props["value"] !== "undefined") {
-              dom["value"] = typedElement.props["value"];
+            var pendingProps_1 = fiber.pendingProps;
+            if (controlElementTag[typedElement.type] && typeof pendingProps_1["value"] !== "undefined") {
+              var typedDom = dom;
+              typedDom.__isControlled__ = true;
+              typedDom["value"] = pendingProps_1["value"];
             }
           }
         };
@@ -2374,6 +2545,7 @@
   var ClientDispatch = /** @class */ (function () {
     function ClientDispatch() {
       this.strictMap = {};
+      this.keepLiveMap = {};
       this.effectMap = {};
       this.layoutEffectMap = {};
       this.suspenseMap = {};
@@ -2394,14 +2566,23 @@
     ClientDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
       return processHookNode(_fiber, _hookParams);
     };
+    ClientDispatch.prototype.resolveKeepLive = function (_fiber, _element) {
+      return defaultGetKeepLiveFiber(_fiber, this.keepLiveMap, _element);
+    };
+    ClientDispatch.prototype.resolveKeepLiveMap = function (_fiber) {
+      defaultGenerateKeepLiveMap(_fiber, this.keepLiveMap);
+    };
     ClientDispatch.prototype.resolveStrictMap = function (_fiber) {
-      generateStrictMap(_fiber, this.strictMap);
+      defaultGenerateStrictMap(_fiber, this.strictMap);
     };
     ClientDispatch.prototype.resolveStrictValue = function (_fiber) {
       return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
     };
+    ClientDispatch.prototype.resolveMemorizeProps = function (_fiber) {
+      return getMemoizedProps(_fiber);
+    };
     ClientDispatch.prototype.resolveSuspenseMap = function (_fiber) {
-      generateSuspenseMap(_fiber, this.suspenseMap);
+      defaultGenerateSuspenseMap(_fiber, this.suspenseMap);
     };
     ClientDispatch.prototype.resolveSuspenseElement = function (_fiber) {
       return react.cloneElement(this.suspenseMap[_fiber.uid]);
@@ -2449,7 +2630,8 @@
           _fiber.patch & PATCH_TYPE.__pendingUpdate__ ||
           _fiber.patch & PATCH_TYPE.__pendingAppend__ ||
           _fiber.patch & PATCH_TYPE.__pendingContext__ ||
-          _fiber.patch & PATCH_TYPE.__pendingPosition__
+          _fiber.patch & PATCH_TYPE.__pendingPosition__ ||
+          _fiber.patch & PATCH_TYPE.__pendingDeactivate__
         ) {
           _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
         } else if (
@@ -2511,111 +2693,70 @@
     };
     ClientDispatch.prototype.reconcileUpdate = function (_list) {
       var _this = this;
-      if (enableFastLoop.current) {
-        _list.listToHead(function (_fiber) {
-          if (_fiber.mount) {
-            safeCallWithFiber$1({
-              fiber: _fiber,
-              action: function () {
-                return position(_fiber);
-              },
-            });
-          }
-        });
-        _list.listToFoot(function (_fiber) {
-          if (_fiber.mount) {
-            var _isSVG_1 = isSVG(_fiber, _this.elementTypeMap);
-            safeCallWithFiber$1({
-              fiber: _fiber,
-              action: function () {
-                return create$1(_fiber, false, _fiber, _isSVG_1);
-              },
-            });
-            safeCallWithFiber$1({
-              fiber: _fiber,
-              action: function () {
-                return update$1(_fiber, false, _isSVG_1);
-              },
-            });
-            safeCallWithFiber$1({
-              fiber: _fiber,
-              action: function () {
-                return unmount(_fiber);
-              },
-            });
-            safeCallWithFiber$1({
-              fiber: _fiber,
-              action: function () {
-                return context(_fiber);
-              },
-            });
-            safeCallWithFiber$1({
-              fiber: _fiber,
-              action: function () {
-                return append$2(_fiber);
-              },
-            });
-          }
-        });
-      } else {
-        _list.listToFoot(function (_fiber) {
-          if (_fiber.mount) {
-            var _isSVG_2 = isSVG(_fiber, _this.elementTypeMap);
-            safeCallWithFiber$1({
-              fiber: _fiber,
-              action: function () {
-                return create$1(_fiber, false, _fiber, _isSVG_2);
-              },
-            });
-            safeCallWithFiber$1({
-              fiber: _fiber,
-              action: function () {
-                return update$1(_fiber, false, _isSVG_2);
-              },
-            });
-            safeCallWithFiber$1({
-              fiber: _fiber,
-              action: function () {
-                return unmount(_fiber);
-              },
-            });
-            safeCallWithFiber$1({
-              fiber: _fiber,
-              action: function () {
-                return context(_fiber);
-              },
-            });
-          }
-        });
-        _list.listToHead(function (_fiber) {
-          if (_fiber.mount) {
-            safeCallWithFiber$1({
-              fiber: _fiber,
-              action: function () {
-                return position(_fiber);
-              },
-            });
-          }
-        });
-        _list.listToFoot(function (_fiber) {
-          if (_fiber.mount) {
-            safeCallWithFiber$1({
-              fiber: _fiber,
-              action: function () {
-                return append$2(_fiber);
-              },
-            });
-          }
-        });
-      }
+      _list.listToFoot(function (_fiber) {
+        if (_fiber.mounted) {
+          var _isSVG_1 = isSVG(_fiber, _this.elementTypeMap);
+          safeCallWithFiber$1({
+            fiber: _fiber,
+            action: function () {
+              return create$1(_fiber, false, _fiber, _isSVG_1);
+            },
+          });
+          safeCallWithFiber$1({
+            fiber: _fiber,
+            action: function () {
+              return update$1(_fiber, false, _isSVG_1);
+            },
+          });
+          safeCallWithFiber$1({
+            fiber: _fiber,
+            action: function () {
+              return unmount(_fiber);
+            },
+          });
+          safeCallWithFiber$1({
+            fiber: _fiber,
+            action: function () {
+              return deactivate(_fiber);
+            },
+          });
+          safeCallWithFiber$1({
+            fiber: _fiber,
+            action: function () {
+              return context(_fiber);
+            },
+          });
+        }
+      });
+      _list.listToHead(function (_fiber) {
+        if (_fiber.mounted) {
+          safeCallWithFiber$1({
+            fiber: _fiber,
+            action: function () {
+              return position(_fiber);
+            },
+          });
+        }
+      });
+      _list.listToFoot(function (_fiber) {
+        if (_fiber.mounted) {
+          safeCallWithFiber$1({
+            fiber: _fiber,
+            action: function () {
+              return append$2(_fiber);
+            },
+          });
+        }
+      });
       _list.reconcile(function (_fiber) {
-        if (_fiber.mount) {
+        if (_fiber.mounted) {
           safeCallWithFiber$1({
             fiber: _fiber,
             action: function () {
               return layoutEffect(_fiber);
             },
           });
+          // requestAnimationFrame(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }))
           Promise.resolve().then(function () {
             return safeCallWithFiber$1({
               fiber: _fiber,
@@ -2648,6 +2789,9 @@
     ClientDispatch.prototype.pendingPosition = function (_fiber) {
       _fiber.patch |= PATCH_TYPE.__pendingPosition__;
     };
+    ClientDispatch.prototype.pendingDeactivate = function (_fiber) {
+      _fiber.patch |= PATCH_TYPE.__pendingDeactivate__;
+    };
     ClientDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {
       var exist = this.unmountMap[_fiber.uid] || [];
       this.unmountMap[_fiber.uid] = __spreadArray$1(__spreadArray$1([], exist, true), [_pendingUnmount], false);
@@ -2666,6 +2810,7 @@
       delete this.effectMap[_fiber.uid];
       delete this.contextMap[_fiber.uid];
       delete this.unmountMap[_fiber.uid];
+      delete this.keepLiveMap[_fiber.uid];
       delete this.suspenseMap[_fiber.uid];
       delete this.elementTypeMap[_fiber.uid];
       delete this.layoutEffectMap[_fiber.uid];
@@ -2741,6 +2886,815 @@
     }
   };
 
+  var commonjsGlobal =
+    typeof globalThis !== "undefined"
+      ? globalThis
+      : typeof window !== "undefined"
+      ? window
+      : typeof global !== "undefined"
+      ? global
+      : typeof self !== "undefined"
+      ? self
+      : {};
+
+  /**
+   * A specialized version of `_.reduce` for arrays without support for
+   * iteratee shorthands.
+   *
+   * @private
+   * @param {Array} [array] The array to iterate over.
+   * @param {Function} iteratee The function invoked per iteration.
+   * @param {*} [accumulator] The initial value.
+   * @param {boolean} [initAccum] Specify using the first element of `array` as
+   *  the initial value.
+   * @returns {*} Returns the accumulated value.
+   */
+
+  function arrayReduce$1(array, iteratee, accumulator, initAccum) {
+    var index = -1,
+      length = array == null ? 0 : array.length;
+
+    if (initAccum && length) {
+      accumulator = array[++index];
+    }
+    while (++index < length) {
+      accumulator = iteratee(accumulator, array[index], index, array);
+    }
+    return accumulator;
+  }
+
+  var _arrayReduce = arrayReduce$1;
+
+  /**
+   * The base implementation of `_.propertyOf` without support for deep paths.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @returns {Function} Returns the new accessor function.
+   */
+
+  function basePropertyOf$1(object) {
+    return function (key) {
+      return object == null ? undefined : object[key];
+    };
+  }
+
+  var _basePropertyOf = basePropertyOf$1;
+
+  var basePropertyOf = _basePropertyOf;
+
+  /** Used to map Latin Unicode letters to basic Latin letters. */
+  var deburredLetters = {
+    // Latin-1 Supplement block.
+    "\xc0": "A",
+    "\xc1": "A",
+    "\xc2": "A",
+    "\xc3": "A",
+    "\xc4": "A",
+    "\xc5": "A",
+    "\xe0": "a",
+    "\xe1": "a",
+    "\xe2": "a",
+    "\xe3": "a",
+    "\xe4": "a",
+    "\xe5": "a",
+    "\xc7": "C",
+    "\xe7": "c",
+    "\xd0": "D",
+    "\xf0": "d",
+    "\xc8": "E",
+    "\xc9": "E",
+    "\xca": "E",
+    "\xcb": "E",
+    "\xe8": "e",
+    "\xe9": "e",
+    "\xea": "e",
+    "\xeb": "e",
+    "\xcc": "I",
+    "\xcd": "I",
+    "\xce": "I",
+    "\xcf": "I",
+    "\xec": "i",
+    "\xed": "i",
+    "\xee": "i",
+    "\xef": "i",
+    "\xd1": "N",
+    "\xf1": "n",
+    "\xd2": "O",
+    "\xd3": "O",
+    "\xd4": "O",
+    "\xd5": "O",
+    "\xd6": "O",
+    "\xd8": "O",
+    "\xf2": "o",
+    "\xf3": "o",
+    "\xf4": "o",
+    "\xf5": "o",
+    "\xf6": "o",
+    "\xf8": "o",
+    "\xd9": "U",
+    "\xda": "U",
+    "\xdb": "U",
+    "\xdc": "U",
+    "\xf9": "u",
+    "\xfa": "u",
+    "\xfb": "u",
+    "\xfc": "u",
+    "\xdd": "Y",
+    "\xfd": "y",
+    "\xff": "y",
+    "\xc6": "Ae",
+    "\xe6": "ae",
+    "\xde": "Th",
+    "\xfe": "th",
+    "\xdf": "ss",
+    // Latin Extended-A block.
+    "\u0100": "A",
+    "\u0102": "A",
+    "\u0104": "A",
+    "\u0101": "a",
+    "\u0103": "a",
+    "\u0105": "a",
+    "\u0106": "C",
+    "\u0108": "C",
+    "\u010a": "C",
+    "\u010c": "C",
+    "\u0107": "c",
+    "\u0109": "c",
+    "\u010b": "c",
+    "\u010d": "c",
+    "\u010e": "D",
+    "\u0110": "D",
+    "\u010f": "d",
+    "\u0111": "d",
+    "\u0112": "E",
+    "\u0114": "E",
+    "\u0116": "E",
+    "\u0118": "E",
+    "\u011a": "E",
+    "\u0113": "e",
+    "\u0115": "e",
+    "\u0117": "e",
+    "\u0119": "e",
+    "\u011b": "e",
+    "\u011c": "G",
+    "\u011e": "G",
+    "\u0120": "G",
+    "\u0122": "G",
+    "\u011d": "g",
+    "\u011f": "g",
+    "\u0121": "g",
+    "\u0123": "g",
+    "\u0124": "H",
+    "\u0126": "H",
+    "\u0125": "h",
+    "\u0127": "h",
+    "\u0128": "I",
+    "\u012a": "I",
+    "\u012c": "I",
+    "\u012e": "I",
+    "\u0130": "I",
+    "\u0129": "i",
+    "\u012b": "i",
+    "\u012d": "i",
+    "\u012f": "i",
+    "\u0131": "i",
+    "\u0134": "J",
+    "\u0135": "j",
+    "\u0136": "K",
+    "\u0137": "k",
+    "\u0138": "k",
+    "\u0139": "L",
+    "\u013b": "L",
+    "\u013d": "L",
+    "\u013f": "L",
+    "\u0141": "L",
+    "\u013a": "l",
+    "\u013c": "l",
+    "\u013e": "l",
+    "\u0140": "l",
+    "\u0142": "l",
+    "\u0143": "N",
+    "\u0145": "N",
+    "\u0147": "N",
+    "\u014a": "N",
+    "\u0144": "n",
+    "\u0146": "n",
+    "\u0148": "n",
+    "\u014b": "n",
+    "\u014c": "O",
+    "\u014e": "O",
+    "\u0150": "O",
+    "\u014d": "o",
+    "\u014f": "o",
+    "\u0151": "o",
+    "\u0154": "R",
+    "\u0156": "R",
+    "\u0158": "R",
+    "\u0155": "r",
+    "\u0157": "r",
+    "\u0159": "r",
+    "\u015a": "S",
+    "\u015c": "S",
+    "\u015e": "S",
+    "\u0160": "S",
+    "\u015b": "s",
+    "\u015d": "s",
+    "\u015f": "s",
+    "\u0161": "s",
+    "\u0162": "T",
+    "\u0164": "T",
+    "\u0166": "T",
+    "\u0163": "t",
+    "\u0165": "t",
+    "\u0167": "t",
+    "\u0168": "U",
+    "\u016a": "U",
+    "\u016c": "U",
+    "\u016e": "U",
+    "\u0170": "U",
+    "\u0172": "U",
+    "\u0169": "u",
+    "\u016b": "u",
+    "\u016d": "u",
+    "\u016f": "u",
+    "\u0171": "u",
+    "\u0173": "u",
+    "\u0174": "W",
+    "\u0175": "w",
+    "\u0176": "Y",
+    "\u0177": "y",
+    "\u0178": "Y",
+    "\u0179": "Z",
+    "\u017b": "Z",
+    "\u017d": "Z",
+    "\u017a": "z",
+    "\u017c": "z",
+    "\u017e": "z",
+    "\u0132": "IJ",
+    "\u0133": "ij",
+    "\u0152": "Oe",
+    "\u0153": "oe",
+    "\u0149": "'n",
+    "\u017f": "s",
+  };
+
+  /**
+   * Used by `_.deburr` to convert Latin-1 Supplement and Latin Extended-A
+   * letters to basic Latin letters.
+   *
+   * @private
+   * @param {string} letter The matched letter to deburr.
+   * @returns {string} Returns the deburred letter.
+   */
+  var deburrLetter$1 = basePropertyOf(deburredLetters);
+
+  var _deburrLetter = deburrLetter$1;
+
+  /** Detect free variable `global` from Node.js. */
+
+  var freeGlobal$1 = typeof commonjsGlobal == "object" && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+
+  var _freeGlobal = freeGlobal$1;
+
+  var freeGlobal = _freeGlobal;
+
+  /** Detect free variable `self`. */
+  var freeSelf = typeof self == "object" && self && self.Object === Object && self;
+
+  /** Used as a reference to the global object. */
+  var root$1 = freeGlobal || freeSelf || Function("return this")();
+
+  var _root = root$1;
+
+  var root = _root;
+
+  /** Built-in value references. */
+  var Symbol$3 = root.Symbol;
+
+  var _Symbol = Symbol$3;
+
+  /**
+   * A specialized version of `_.map` for arrays without support for iteratee
+   * shorthands.
+   *
+   * @private
+   * @param {Array} [array] The array to iterate over.
+   * @param {Function} iteratee The function invoked per iteration.
+   * @returns {Array} Returns the new mapped array.
+   */
+
+  function arrayMap$1(array, iteratee) {
+    var index = -1,
+      length = array == null ? 0 : array.length,
+      result = Array(length);
+
+    while (++index < length) {
+      result[index] = iteratee(array[index], index, array);
+    }
+    return result;
+  }
+
+  var _arrayMap = arrayMap$1;
+
+  /**
+   * Checks if `value` is classified as an `Array` object.
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+   * @example
+   *
+   * _.isArray([1, 2, 3]);
+   * // => true
+   *
+   * _.isArray(document.body.children);
+   * // => false
+   *
+   * _.isArray('abc');
+   * // => false
+   *
+   * _.isArray(_.noop);
+   * // => false
+   */
+
+  var isArray$1 = Array.isArray;
+
+  var isArray_1 = isArray$1;
+
+  var Symbol$2 = _Symbol;
+
+  /** Used for built-in method references. */
+  var objectProto$1 = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty = objectProto$1.hasOwnProperty;
+
+  /**
+   * Used to resolve the
+   * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+   * of values.
+   */
+  var nativeObjectToString$1 = objectProto$1.toString;
+
+  /** Built-in value references. */
+  var symToStringTag$1 = Symbol$2 ? Symbol$2.toStringTag : undefined;
+
+  /**
+   * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
+   *
+   * @private
+   * @param {*} value The value to query.
+   * @returns {string} Returns the raw `toStringTag`.
+   */
+  function getRawTag$1(value) {
+    var isOwn = hasOwnProperty.call(value, symToStringTag$1),
+      tag = value[symToStringTag$1];
+
+    try {
+      value[symToStringTag$1] = undefined;
+      var unmasked = true;
+    } catch (e) {}
+
+    var result = nativeObjectToString$1.call(value);
+    if (unmasked) {
+      if (isOwn) {
+        value[symToStringTag$1] = tag;
+      } else {
+        delete value[symToStringTag$1];
+      }
+    }
+    return result;
+  }
+
+  var _getRawTag = getRawTag$1;
+
+  /** Used for built-in method references. */
+
+  var objectProto = Object.prototype;
+
+  /**
+   * Used to resolve the
+   * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+   * of values.
+   */
+  var nativeObjectToString = objectProto.toString;
+
+  /**
+   * Converts `value` to a string using `Object.prototype.toString`.
+   *
+   * @private
+   * @param {*} value The value to convert.
+   * @returns {string} Returns the converted string.
+   */
+  function objectToString$1(value) {
+    return nativeObjectToString.call(value);
+  }
+
+  var _objectToString = objectToString$1;
+
+  var Symbol$1 = _Symbol,
+    getRawTag = _getRawTag,
+    objectToString = _objectToString;
+
+  /** `Object#toString` result references. */
+  var nullTag = "[object Null]",
+    undefinedTag = "[object Undefined]";
+
+  /** Built-in value references. */
+  var symToStringTag = Symbol$1 ? Symbol$1.toStringTag : undefined;
+
+  /**
+   * The base implementation of `getTag` without fallbacks for buggy environments.
+   *
+   * @private
+   * @param {*} value The value to query.
+   * @returns {string} Returns the `toStringTag`.
+   */
+  function baseGetTag$1(value) {
+    if (value == null) {
+      return value === undefined ? undefinedTag : nullTag;
+    }
+    return symToStringTag && symToStringTag in Object(value) ? getRawTag(value) : objectToString(value);
+  }
+
+  var _baseGetTag = baseGetTag$1;
+
+  /**
+   * Checks if `value` is object-like. A value is object-like if it's not `null`
+   * and has a `typeof` result of "object".
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+   * @example
+   *
+   * _.isObjectLike({});
+   * // => true
+   *
+   * _.isObjectLike([1, 2, 3]);
+   * // => true
+   *
+   * _.isObjectLike(_.noop);
+   * // => false
+   *
+   * _.isObjectLike(null);
+   * // => false
+   */
+
+  function isObjectLike$1(value) {
+    return value != null && typeof value == "object";
+  }
+
+  var isObjectLike_1 = isObjectLike$1;
+
+  var baseGetTag = _baseGetTag,
+    isObjectLike = isObjectLike_1;
+
+  /** `Object#toString` result references. */
+  var symbolTag = "[object Symbol]";
+
+  /**
+   * Checks if `value` is classified as a `Symbol` primitive or object.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+   * @example
+   *
+   * _.isSymbol(Symbol.iterator);
+   * // => true
+   *
+   * _.isSymbol('abc');
+   * // => false
+   */
+  function isSymbol$1(value) {
+    return typeof value == "symbol" || (isObjectLike(value) && baseGetTag(value) == symbolTag);
+  }
+
+  var isSymbol_1 = isSymbol$1;
+
+  var Symbol = _Symbol,
+    arrayMap = _arrayMap,
+    isArray = isArray_1,
+    isSymbol = isSymbol_1;
+
+  /** Used as references for various `Number` constants. */
+  var INFINITY = 1 / 0;
+
+  /** Used to convert symbols to primitives and strings. */
+  var symbolProto = Symbol ? Symbol.prototype : undefined,
+    symbolToString = symbolProto ? symbolProto.toString : undefined;
+
+  /**
+   * The base implementation of `_.toString` which doesn't convert nullish
+   * values to empty strings.
+   *
+   * @private
+   * @param {*} value The value to process.
+   * @returns {string} Returns the string.
+   */
+  function baseToString$1(value) {
+    // Exit early for strings to avoid a performance hit in some environments.
+    if (typeof value == "string") {
+      return value;
+    }
+    if (isArray(value)) {
+      // Recursively convert values (susceptible to call stack limits).
+      return arrayMap(value, baseToString$1) + "";
+    }
+    if (isSymbol(value)) {
+      return symbolToString ? symbolToString.call(value) : "";
+    }
+    var result = value + "";
+    return result == "0" && 1 / value == -INFINITY ? "-0" : result;
+  }
+
+  var _baseToString = baseToString$1;
+
+  var baseToString = _baseToString;
+
+  /**
+   * Converts `value` to a string. An empty string is returned for `null`
+   * and `undefined` values. The sign of `-0` is preserved.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to convert.
+   * @returns {string} Returns the converted string.
+   * @example
+   *
+   * _.toString(null);
+   * // => ''
+   *
+   * _.toString(-0);
+   * // => '-0'
+   *
+   * _.toString([1, 2, 3]);
+   * // => '1,2,3'
+   */
+  function toString$2(value) {
+    return value == null ? "" : baseToString(value);
+  }
+
+  var toString_1 = toString$2;
+
+  var deburrLetter = _deburrLetter,
+    toString$1 = toString_1;
+
+  /** Used to match Latin Unicode letters (excluding mathematical operators). */
+  var reLatin = /[\xc0-\xd6\xd8-\xf6\xf8-\xff\u0100-\u017f]/g;
+
+  /** Used to compose unicode character classes. */
+  var rsComboMarksRange$1 = "\\u0300-\\u036f",
+    reComboHalfMarksRange$1 = "\\ufe20-\\ufe2f",
+    rsComboSymbolsRange$1 = "\\u20d0-\\u20ff",
+    rsComboRange$1 = rsComboMarksRange$1 + reComboHalfMarksRange$1 + rsComboSymbolsRange$1;
+
+  /** Used to compose unicode capture groups. */
+  var rsCombo$1 = "[" + rsComboRange$1 + "]";
+
+  /**
+   * Used to match [combining diacritical marks](https://en.wikipedia.org/wiki/Combining_Diacritical_Marks) and
+   * [combining diacritical marks for symbols](https://en.wikipedia.org/wiki/Combining_Diacritical_Marks_for_Symbols).
+   */
+  var reComboMark = RegExp(rsCombo$1, "g");
+
+  /**
+   * Deburrs `string` by converting
+   * [Latin-1 Supplement](https://en.wikipedia.org/wiki/Latin-1_Supplement_(Unicode_block)#Character_table)
+   * and [Latin Extended-A](https://en.wikipedia.org/wiki/Latin_Extended-A)
+   * letters to basic Latin letters and removing
+   * [combining diacritical marks](https://en.wikipedia.org/wiki/Combining_Diacritical_Marks).
+   *
+   * @static
+   * @memberOf _
+   * @since 3.0.0
+   * @category String
+   * @param {string} [string=''] The string to deburr.
+   * @returns {string} Returns the deburred string.
+   * @example
+   *
+   * _.deburr('déjà vu');
+   * // => 'deja vu'
+   */
+  function deburr$1(string) {
+    string = toString$1(string);
+    return string && string.replace(reLatin, deburrLetter).replace(reComboMark, "");
+  }
+
+  var deburr_1 = deburr$1;
+
+  /** Used to match words composed of alphanumeric characters. */
+
+  var reAsciiWord = /[^\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g;
+
+  /**
+   * Splits an ASCII `string` into an array of its words.
+   *
+   * @private
+   * @param {string} The string to inspect.
+   * @returns {Array} Returns the words of `string`.
+   */
+  function asciiWords$1(string) {
+    return string.match(reAsciiWord) || [];
+  }
+
+  var _asciiWords = asciiWords$1;
+
+  /** Used to detect strings that need a more robust regexp to match words. */
+
+  var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
+
+  /**
+   * Checks if `string` contains a word composed of Unicode symbols.
+   *
+   * @private
+   * @param {string} string The string to inspect.
+   * @returns {boolean} Returns `true` if a word is found, else `false`.
+   */
+  function hasUnicodeWord$1(string) {
+    return reHasUnicodeWord.test(string);
+  }
+
+  var _hasUnicodeWord = hasUnicodeWord$1;
+
+  /** Used to compose unicode character classes. */
+
+  var rsAstralRange = "\\ud800-\\udfff",
+    rsComboMarksRange = "\\u0300-\\u036f",
+    reComboHalfMarksRange = "\\ufe20-\\ufe2f",
+    rsComboSymbolsRange = "\\u20d0-\\u20ff",
+    rsComboRange = rsComboMarksRange + reComboHalfMarksRange + rsComboSymbolsRange,
+    rsDingbatRange = "\\u2700-\\u27bf",
+    rsLowerRange = "a-z\\xdf-\\xf6\\xf8-\\xff",
+    rsMathOpRange = "\\xac\\xb1\\xd7\\xf7",
+    rsNonCharRange = "\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf",
+    rsPunctuationRange = "\\u2000-\\u206f",
+    rsSpaceRange =
+      " \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000",
+    rsUpperRange = "A-Z\\xc0-\\xd6\\xd8-\\xde",
+    rsVarRange = "\\ufe0e\\ufe0f",
+    rsBreakRange = rsMathOpRange + rsNonCharRange + rsPunctuationRange + rsSpaceRange;
+
+  /** Used to compose unicode capture groups. */
+  var rsApos$1 = "['\u2019]",
+    rsBreak = "[" + rsBreakRange + "]",
+    rsCombo = "[" + rsComboRange + "]",
+    rsDigits = "\\d+",
+    rsDingbat = "[" + rsDingbatRange + "]",
+    rsLower = "[" + rsLowerRange + "]",
+    rsMisc = "[^" + rsAstralRange + rsBreakRange + rsDigits + rsDingbatRange + rsLowerRange + rsUpperRange + "]",
+    rsFitz = "\\ud83c[\\udffb-\\udfff]",
+    rsModifier = "(?:" + rsCombo + "|" + rsFitz + ")",
+    rsNonAstral = "[^" + rsAstralRange + "]",
+    rsRegional = "(?:\\ud83c[\\udde6-\\uddff]){2}",
+    rsSurrPair = "[\\ud800-\\udbff][\\udc00-\\udfff]",
+    rsUpper = "[" + rsUpperRange + "]",
+    rsZWJ = "\\u200d";
+
+  /** Used to compose unicode regexes. */
+  var rsMiscLower = "(?:" + rsLower + "|" + rsMisc + ")",
+    rsMiscUpper = "(?:" + rsUpper + "|" + rsMisc + ")",
+    rsOptContrLower = "(?:" + rsApos$1 + "(?:d|ll|m|re|s|t|ve))?",
+    rsOptContrUpper = "(?:" + rsApos$1 + "(?:D|LL|M|RE|S|T|VE))?",
+    reOptMod = rsModifier + "?",
+    rsOptVar = "[" + rsVarRange + "]?",
+    rsOptJoin = "(?:" + rsZWJ + "(?:" + [rsNonAstral, rsRegional, rsSurrPair].join("|") + ")" + rsOptVar + reOptMod + ")*",
+    rsOrdLower = "\\d*(?:1st|2nd|3rd|(?![123])\\dth)(?=\\b|[A-Z_])",
+    rsOrdUpper = "\\d*(?:1ST|2ND|3RD|(?![123])\\dTH)(?=\\b|[a-z_])",
+    rsSeq = rsOptVar + reOptMod + rsOptJoin,
+    rsEmoji = "(?:" + [rsDingbat, rsRegional, rsSurrPair].join("|") + ")" + rsSeq;
+
+  /** Used to match complex or compound words. */
+  var reUnicodeWord = RegExp(
+    [
+      rsUpper + "?" + rsLower + "+" + rsOptContrLower + "(?=" + [rsBreak, rsUpper, "$"].join("|") + ")",
+      rsMiscUpper + "+" + rsOptContrUpper + "(?=" + [rsBreak, rsUpper + rsMiscLower, "$"].join("|") + ")",
+      rsUpper + "?" + rsMiscLower + "+" + rsOptContrLower,
+      rsUpper + "+" + rsOptContrUpper,
+      rsOrdUpper,
+      rsOrdLower,
+      rsDigits,
+      rsEmoji,
+    ].join("|"),
+    "g",
+  );
+
+  /**
+   * Splits a Unicode `string` into an array of its words.
+   *
+   * @private
+   * @param {string} The string to inspect.
+   * @returns {Array} Returns the words of `string`.
+   */
+  function unicodeWords$1(string) {
+    return string.match(reUnicodeWord) || [];
+  }
+
+  var _unicodeWords = unicodeWords$1;
+
+  var asciiWords = _asciiWords,
+    hasUnicodeWord = _hasUnicodeWord,
+    toString = toString_1,
+    unicodeWords = _unicodeWords;
+
+  /**
+   * Splits `string` into an array of its words.
+   *
+   * @static
+   * @memberOf _
+   * @since 3.0.0
+   * @category String
+   * @param {string} [string=''] The string to inspect.
+   * @param {RegExp|string} [pattern] The pattern to match words.
+   * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
+   * @returns {Array} Returns the words of `string`.
+   * @example
+   *
+   * _.words('fred, barney, & pebbles');
+   * // => ['fred', 'barney', 'pebbles']
+   *
+   * _.words('fred, barney, & pebbles', /[^, ]+/g);
+   * // => ['fred', 'barney', '&', 'pebbles']
+   */
+  function words$1(string, pattern, guard) {
+    string = toString(string);
+    pattern = guard ? undefined : pattern;
+
+    if (pattern === undefined) {
+      return hasUnicodeWord(string) ? unicodeWords(string) : asciiWords(string);
+    }
+    return string.match(pattern) || [];
+  }
+
+  var words_1 = words$1;
+
+  var arrayReduce = _arrayReduce,
+    deburr = deburr_1,
+    words = words_1;
+
+  /** Used to compose unicode capture groups. */
+  var rsApos = "['\u2019]";
+
+  /** Used to match apostrophes. */
+  var reApos = RegExp(rsApos, "g");
+
+  /**
+   * Creates a function like `_.camelCase`.
+   *
+   * @private
+   * @param {Function} callback The function to combine each word.
+   * @returns {Function} Returns the new compounder function.
+   */
+  function createCompounder$1(callback) {
+    return function (string) {
+      return arrayReduce(words(deburr(string).replace(reApos, "")), callback, "");
+    };
+  }
+
+  var _createCompounder = createCompounder$1;
+
+  var createCompounder = _createCompounder;
+
+  /**
+   * Converts `string` to
+   * [kebab case](https://en.wikipedia.org/wiki/Letter_case#Special_case_styles).
+   *
+   * @static
+   * @memberOf _
+   * @since 3.0.0
+   * @category String
+   * @param {string} [string=''] The string to convert.
+   * @returns {string} Returns the kebab cased string.
+   * @example
+   *
+   * _.kebabCase('Foo Bar');
+   * // => 'foo-bar'
+   *
+   * _.kebabCase('fooBar');
+   * // => 'foo-bar'
+   *
+   * _.kebabCase('__FOO_BAR__');
+   * // => 'foo-bar'
+   */
+  var kebabCase = createCompounder(function (result, word, index) {
+    return result + (index ? "-" : "") + word.toLowerCase();
+  });
+
+  var kebabCase_1 = kebabCase;
+
   var TextElement = /** @class */ (function () {
     function TextElement(content) {
       this.content = "";
@@ -2799,19 +3753,18 @@
       var styleKeys = Object.keys(this.style).filter(function (key) {
         return _this.style[key] !== null && _this.style[key] !== undefined;
       });
-      if (styleKeys.length) {
+      if (styleKeys.length)
         return 'style="'.concat(
           styleKeys
             .map(function (key) {
               var _a;
-              return "".concat(key, ": ").concat((_a = _this.style[key]) === null || _a === void 0 ? void 0 : _a.toString(), ";");
+              return "".concat(kebabCase_1(key), ": ").concat((_a = _this.style[key]) === null || _a === void 0 ? void 0 : _a.toString(), ";");
             })
             .reduce(function (p, c) {
               return p + c;
-            }, ""),
+            }),
           '"',
         );
-      }
       return "";
     };
     PlainElement.prototype.serializeAttrs = function () {
@@ -2825,29 +3778,37 @@
           })
           .reduce(function (p, c) {
             return "".concat(p, " ").concat(c);
-          }, "");
+          });
       } else {
         return "";
       }
     };
     PlainElement.prototype.serializeProps = function () {
-      var props = "";
-      if (this.className !== undefined && this.className !== null) {
-        props += ' class="'.concat(this.className, '"');
-      }
-      return props;
+      if (this.className !== undefined && this.className !== null) return 'class="'.concat(this.className, '"');
+      return "";
     };
     PlainElement.prototype.serialize = function () {
-      return "".concat(this.serializeProps(), " ").concat(this.serializeStyle(), " ").concat(this.serializeAttrs());
+      var arr = [this.serializeProps(), this.serializeStyle(), this.serializeAttrs()].filter(function (i) {
+        return i.length;
+      });
+      if (arr.length)
+        return (
+          " " +
+          arr.reduce(function (p, c) {
+            return "".concat(p, " ").concat(c);
+          }) +
+          " "
+        );
+      return "";
     };
     PlainElement.prototype.toString = function () {
       if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type)) {
-        return "<".concat(this.type, " ").concat(this.serialize(), " />");
+        return "<".concat(this.type).concat(this.serialize(), "/>");
       } else {
         if (this.type) {
           return "<"
-            .concat(this.type, " ")
-            .concat(this.serialize(), " >")
+            .concat(this.type)
+            .concat(this.serialize(), ">")
             .concat(
               this.children
                 .reduce(function (p, c) {
@@ -2933,7 +3894,9 @@
           });
         if (props_1["dangerouslySetInnerHTML"]) {
           var typedProps = props_1["dangerouslySetInnerHTML"];
-          dom_1.append(new TextElement(typedProps.__html));
+          if (typedProps.__html) {
+            dom_1.append(new TextElement(typedProps.__html));
+          }
         }
       }
       if (fiber.patch & PATCH_TYPE.__pendingUpdate__) fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
@@ -2945,6 +3908,7 @@
     function ServerDispatch() {
       this.effectMap = {};
       this.strictMap = {};
+      this.keepLiveMap = {};
       this.layoutEffectMap = {};
       this.suspenseMap = {};
       this.elementTypeMap = {};
@@ -2957,6 +3921,13 @@
       return false;
     };
     ServerDispatch.prototype.resolveRef = function (_fiber) {};
+    ServerDispatch.prototype.resolveKeepLive = function (_fiber, _element) {
+      return null;
+    };
+    ServerDispatch.prototype.resolveKeepLiveMap = function (_fiber) {};
+    ServerDispatch.prototype.resolveMemorizeProps = function (_fiber) {
+      return {};
+    };
     ServerDispatch.prototype.resolveStrictMap = function (_fiber) {};
     ServerDispatch.prototype.resolveStrictValue = function (_fiber) {
       return false;
@@ -2965,7 +3936,7 @@
       return processHookNode(_fiber, _hookParams);
     };
     ServerDispatch.prototype.resolveSuspenseMap = function (_fiber) {
-      generateSuspenseMap(_fiber, this.suspenseMap);
+      defaultGenerateSuspenseMap(_fiber, this.suspenseMap);
     };
     ServerDispatch.prototype.resolveSuspenseElement = function (_fiber) {
       return react.cloneElement(this.suspenseMap[_fiber.uid]);
@@ -3037,6 +4008,7 @@
     };
     ServerDispatch.prototype.pendingContext = function (_fiber) {};
     ServerDispatch.prototype.pendingPosition = function (_fiber) {};
+    ServerDispatch.prototype.pendingDeactivate = function (_fiber) {};
     ServerDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {};
     ServerDispatch.prototype.pendingLayoutEffect = function (_fiber, _layoutEffect) {};
     ServerDispatch.prototype.pendingEffect = function (_fiber, _effect) {};
@@ -3066,8 +4038,18 @@
   var safeCall = react.__my_react_shared__.safeCall;
   var version = "0.0.1";
   var unstable_batchedUpdates = safeCall;
+  var ReactDOM = {
+    render: render,
+    hydrate: hydrate,
+    findDOMNode: findDOMNode,
+    createPortal: createPortal,
+    renderToString: renderToString,
+    unmountComponentAtNode: unmountComponentAtNode,
+    unstable_batchedUpdates: unstable_batchedUpdates,
+  };
 
   exports.createPortal = createPortal;
+  exports["default"] = ReactDOM;
   exports.findDOMNode = findDOMNode;
   exports.hydrate = hydrate;
   exports.render = render;
