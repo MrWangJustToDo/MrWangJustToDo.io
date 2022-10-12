@@ -115,7 +115,7 @@ function createRequest(config: AxiosRequestConfig): Request {
 
   if (axiosHeaders) {
     Object.keys(axiosHeaders).forEach((key) => {
-      headers.set(key, axiosHeaders[key].toString());
+      headers.set(key, axiosHeaders[key]?.toString() || "");
     });
   }
 

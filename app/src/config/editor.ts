@@ -6,11 +6,77 @@ export const INITIAL_EDITOR = {
     type: "text/babel",
     name: "script.tsx",
     language: "typescript",
-    content: `
+content: `
+
 // MyReact dev highlight
 (window as any).__highlight__ = false;
 
-const {useState, useEffect} = React;
+const { useState, useEffect, memo } = React;
+
+const { __my_react_reactive__, createReactive } = React as any;
+
+// ==== reactive api, more api see “https://github.com/MrWangJustToDo/MyReact” ==== //
+// reactive api like “Vue"
+const { reactiveApi, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted } = __my_react_reactive__;
+
+const { reactive, ref } = reactiveApi;
+
+const useReactiveApi_Time = () => {
+  const timeRef = ref(new Date().toString());
+  let id = null;
+  onMounted(() => {
+    id = setInterval(() => timeRef.value = new Date().toString(), 1000)
+  })
+
+  onUnmounted(() => {
+    clearInterval(id);
+  })
+
+  return timeRef
+}
+
+const useReactiveApi_Position = () => {
+  const position = reactive({ x: 0, y: 0 });
+  const action = (e) => (position.x = e.clientX, position.y = e.clientY);
+  onMounted(() => {
+    window.addEventListener("mousemove", action);
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener("mousemove", action);
+  })
+
+  return position
+}
+
+const ReactiveHook = createReactive(() => {
+  const timeRef = useReactiveApi_Time();
+  const position = useReactiveApi_Position();
+  return { timeRef, position }
+})
+
+const TestReactive = createReactive({
+  setup: () => {
+    const valueRef = ref("");
+    const count = ref(0);
+    const changeRef = (e) => {
+      valueRef.value = e.target.value;
+    };
+
+    onBeforeUpdate(() => {
+      // count.current++;
+      count.value++;
+      console.log('TestReactive before update')
+    })
+
+    return { changeRef, valueRef, count };
+  },
+  render: ({ valueRef, changeRef, count }, { isMemo }) => { return <div> <h3>{ isMemo ? 'memo reactive' : 'reactive' }</h3> <p>update count: {count}</p> reactive control component: <input value={valueRef} onChange={changeRef} /></div> }
+})
+
+const MemoTestReactive = memo(TestReactive);
+
+// ==== reactive example done ==== //
 
 const ReactGridLayout = (window as any).ReactGridLayout;
 
@@ -61,12 +127,12 @@ const ReactWindowExample = () => (
   </VariableSizeList>
 );
 
-class LocalStorageLayout extends React.PureComponent<{onLayoutChange: Function}, {layout: any}> {
+class LocalStorageLayout extends React.PureComponent<{ onLayoutChange: Function }, { layout: any }> {
   static defaultProps = {
     className: "layout",
     cols: 12,
     rowHeight: 30,
-    onLayoutChange: function () {},
+    onLayoutChange: function () { },
   };
   constructor(props) {
     super(props);
@@ -120,13 +186,28 @@ const App = () => {
 
   return <div>
     <div>
+      <h1>MyReact reactive api example</h1>
+      <TestReactive />
+      <MemoTestReactive isMemo />
+      <ReactiveHook>
+        {({timeRef, position: {x, y}}) => <div>
+          <h3>reactive hook</h3>
+          <p>ref time:  {timeRef}</p>
+          <p>reactive position: {x}: {y} </p>
+        </div>}
+      </ReactiveHook>
+    </div>
+    <hr />
+    <div>
       <h2>MyReact timer</h2>
       <p>Time: {time}</p>
     </div>
+    <hr />
     <div>
       <h2>MyReact window example</h2>
       <ReactWindowExample />
     </div>
+    <hr />
     <div>
       <h2>MyReact Grid Layout example</h2>
       <LocalStorageLayout />
@@ -135,7 +216,7 @@ const App = () => {
 }
 
 ReactDOM.render(<App />, document.querySelector("#root"));
-  `,
+`,
   },
   "main.css": {
     id: "main",
