@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 export const EDITOR_STORE_KEY = "MyReact_playGround";
 
 export const INITIAL_EDITOR = {
