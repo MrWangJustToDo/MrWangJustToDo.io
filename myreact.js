@@ -1513,7 +1513,7 @@
   var toArray = function (arrayLike) {
     return map(arrayLike, function (element, index) {
       return cloneElement(element, {
-        key: (element === null || element === void 0 ? void 0 : element.key) !== undefined ? ".$".concat(element.key) : ".".concat(index),
+        key: typeof (element === null || element === void 0 ? void 0 : element.key) === "string" ? ".$".concat(element.key) : ".".concat(index),
       });
     });
   };
@@ -1641,13 +1641,14 @@
       return null;
     };
     EmptyDispatch.prototype.resolveStrictMap = function (_fiber) {};
+    EmptyDispatch.prototype.resolveStrictValue = function (_fiber) {
+      return false;
+    };
     EmptyDispatch.prototype.resolveKeepLiveMap = function (_fiber) {};
     EmptyDispatch.prototype.resolveKeepLive = function (_fiber, _element) {
       return null;
     };
-    EmptyDispatch.prototype.resolveStrictValue = function (_fiber) {
-      return false;
-    };
+    EmptyDispatch.prototype.resolveElementTypeMap = function (_fiber) {};
     EmptyDispatch.prototype.resolveSuspenseMap = function (_fiber) {};
     EmptyDispatch.prototype.resolveSuspenseElement = function (_fiber) {
       return null;
@@ -1705,7 +1706,7 @@
 
   var fiberId = 0;
   var MyReactFiberNode = /** @class */ (function () {
-    function MyReactFiberNode(fiberIndex, parent, element) {
+    function MyReactFiberNode(parent, element) {
       var _a;
       this.mounted = true;
       this.activated = true;
@@ -1726,7 +1727,6 @@
       this.pendingProps = {};
       this.memoizedProps = null;
       this.uid = "fiber_" + fiberId++;
-      this.fiberIndex = fiberIndex;
       this.parent = parent;
       this.element = element;
       this.root = ((_a = this.parent) === null || _a === void 0 ? void 0 : _a.root) || this;
@@ -1744,14 +1744,17 @@
     MyReactFiberNode.prototype.initialParent = function () {
       if (this.parent) this.parent.addChild(this);
       var globalDispatch = this.root.globalDispatch;
+      globalDispatch.resolveElementTypeMap(this);
       globalDispatch.resolveSuspenseMap(this);
       globalDispatch.resolveContextMap(this);
       globalDispatch.resolveStrictMap(this);
     };
+    // TODO change name to `updateParent`
     MyReactFiberNode.prototype.installParent = function (parent) {
+      var _a;
       this.parent = parent;
       this.sibling = null;
-      this.initialParent();
+      (_a = this.parent) === null || _a === void 0 ? void 0 : _a.addChild(this);
     };
     MyReactFiberNode.prototype.addDependence = function (node) {
       if (
@@ -1802,24 +1805,6 @@
       var type = getTypeFromElement(element);
       this.type = type;
     };
-    // checkIsSameType(element: MyReactElementNode) {
-    //   // if (this.mode & UPDATE_TYPE.__trigger__) return true;
-    //   const type = getTypeFromElement(element);
-    //   const result = type === this.type;
-    //   const typedIncomingElement = element as MyReactElement;
-    //   const typedExistElement = this.element as MyReactElement;
-    //   if (result) {
-    //     if (this.type & (NODE_TYPE.__isDynamicNode__ | NODE_TYPE.__isPlainNode__)) {
-    //       return Object.is(typedExistElement.type, typedIncomingElement.type);
-    //     }
-    //     if (this.type & NODE_TYPE.__isObjectNode__ && typeof typedIncomingElement.type === "object" && typeof typedExistElement.type === "object") {
-    //       // for reactive component
-    //       if (this.type & NODE_TYPE.__isReactive__) return Object.is(typedExistElement.type, typedIncomingElement.type);
-    //       return Object.is(typedExistElement.type["$$typeof"], typedIncomingElement.type["$$typeof"]);
-    //     }
-    //   }
-    //   return result;
-    // }
     MyReactFiberNode.prototype.addHook = function (hookNode) {
       this.hookNodes.push(hookNode);
     };
@@ -1875,6 +1860,7 @@
         updateTimeStep: 0,
         currentUpdateTime: 0,
       };
+      _this._debugHookTypes = [];
       _this._debugContextMap = {};
       _this._debugGlobalDispatch = null;
       _this._debugStrict = false;
@@ -1968,11 +1954,10 @@
   };
 
   var createFiberNode = function (_a, element) {
-    var fiberIndex = _a.fiberIndex,
-      parent = _a.parent,
+    var parent = _a.parent,
       _b = _a.type,
       type = _b === void 0 ? "append" : _b;
-    var newFiberNode = new MyReactFiberNode(fiberIndex, parent, element);
+    var newFiberNode = new MyReactFiberNode(parent, element);
     newFiberNode.initialType();
     checkFiberElement(newFiberNode);
     newFiberNode.initialParent();
@@ -2474,7 +2459,7 @@
   exports.createElement = createElement;
   exports.createReactive = createReactive;
   exports.createRef = createRef;
-  exports["default"] = React;
+  exports.default = React;
   exports.forwardRef = forwardRef;
   exports.isValidElement = isValidElement;
   exports.lazy = lazy;
