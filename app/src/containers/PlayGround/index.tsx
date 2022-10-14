@@ -2,7 +2,7 @@ import { Modal, ModalBody, ModalContent, ModalOverlay } from "@chakra-ui/react";
 
 import { Editor } from "@app/components/Editor";
 import { GridCard } from "@app/components/GridCard";
-import { StyledReactGridLayout } from "@app/components/GridLayout";
+import { StyledResponsiveReactGridLayout } from "@app/components/GridLayout";
 import { Preview } from "@app/components/Preview";
 import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, GRID_ROW_HEIGHT } from "@app/config/gridLayout";
 import { usePlayGround } from "@app/hooks/usePlayGround";
@@ -59,7 +59,7 @@ const GRID_LAYOUTS = {
 
 const PlayGroundContent = () => {
   return (
-    <StyledReactGridLayout
+    <StyledResponsiveReactGridLayout
       className="layout"
       cols={GRID_COLS}
       layouts={GRID_LAYOUTS}
@@ -74,7 +74,7 @@ const PlayGroundContent = () => {
       <GridCard key="b">
         <Preview />
       </GridCard>
-    </StyledReactGridLayout>
+    </StyledResponsiveReactGridLayout>
   );
 };
 

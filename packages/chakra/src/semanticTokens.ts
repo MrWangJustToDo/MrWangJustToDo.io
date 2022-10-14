@@ -3,8 +3,12 @@ import type { ChakraTheme } from "@chakra-ui/react";
 export const semanticTokens: ChakraTheme["semanticTokens"] = {
   colors: {
     cardBackgroundColor: {
-      default: "white",
-      _dark: "gray.900",
+      default: "whiteAlpha.500",
+      _dark: "blackAlpha.600",
+    },
+    mobileModalColor: {
+      default: "rgb(220, 220, 220)",
+      _dark: "gray.700",
     },
     cardBorderColor: {
       default: "gray.300",

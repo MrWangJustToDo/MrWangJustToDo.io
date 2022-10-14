@@ -1,6 +1,8 @@
 import { styled } from "@chakra-ui/react";
 import { WidthProvider, Responsive } from "react-grid-layout";
 
-const ReactGridLayout = WidthProvider(Responsive);
+const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
-export const StyledReactGridLayout = styled(ReactGridLayout);
+export const StyledResponsiveReactGridLayout = styled(ResponsiveReactGridLayout);
+
+export const ReactGridLayout = Responsive;

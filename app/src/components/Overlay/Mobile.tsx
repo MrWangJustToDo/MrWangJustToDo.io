@@ -106,7 +106,7 @@ export const Mobile = (props: OverlayProps) => {
             className={className}
             onAnimationComplete={animationComplete}
           >
-            <Box height="25px" display="flex" alignItems="center" justifyContent="center" backgroundColor="cardBackgroundColor">
+            <Box height="25px" display="flex" alignItems="center" justifyContent="center" backgroundColor="mobileModalColor">
               <motion.span
                 style={{
                   width: "18px",
@@ -128,7 +128,7 @@ export const Mobile = (props: OverlayProps) => {
               />
             </Box>
             <Divider />
-            <Box backgroundColor="cardBackgroundColor" paddingX="3.5" paddingY="1.5">
+            <Box backgroundColor="mobileModalColor" paddingX="3.5" paddingY="1.5">
               {head}
             </Box>
             <Box
@@ -141,12 +141,12 @@ export const Mobile = (props: OverlayProps) => {
               marginTop="-1px"
               overflow="auto"
               position="relative"
-              backgroundColor="cardBackgroundColor"
+              backgroundColor="mobileModalColor"
               as={RemoveScroll}
             >
               {body}
             </Box>
-            <Box backgroundColor="cardBackgroundColor" padding="3.5" paddingY="1.5">
+            <Box backgroundColor="mobileModalColor" padding="3.5" paddingY="1.5">
               {foot}
             </Box>
           </motion.div>
