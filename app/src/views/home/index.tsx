@@ -47,12 +47,12 @@ const GRID_LAYOUTS = {
     },
   ],
   xs: [
-    { i: "a", x: 0, y: 0, w: 2, h: 20, minW: 1, minH: 10 },
-    { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2, minH: 30 },
+    { i: "a", x: 0, y: 0, w: 2, h: 20, minW: 1, minH: 10, static: true },
+    { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2, minH: 30, static: true },
   ],
   xxs: [
-    { i: "a", x: 0, y: 0, w: 2, h: 20, minW: 2, minH: 10 },
-    { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2, minH: 30 },
+    { i: "a", x: 0, y: 0, w: 2, h: 20, minW: 2, minH: 10, static: true },
+    { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2, minH: 30, static: true },
   ],
 };
 
@@ -71,7 +71,9 @@ export const Page = () => {
         <GridCard key="a" contentProps={{ overflow: "auto" }}>
           <User />
         </GridCard>
-        <GridCard key="b" className="grid-card-list">{ENABLE_INFINITY_SCROLL ? <BlogGridWithInfinityScroll /> : <BlogList />}</GridCard>
+        <GridCard key="b" className="grid-card-list">
+          {ENABLE_INFINITY_SCROLL ? <BlogGridWithInfinityScroll /> : <BlogList />}
+        </GridCard>
       </StyledResponsiveReactGridLayout>
     </Container>
   );

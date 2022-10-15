@@ -29,8 +29,8 @@ const Bg = memo(function Bg() {
         }}
         initial={{ y: 30, opacity: 0, scale: 1.3 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
-        exit={{ y: -30, opacity: 0, scale: 0.8 }}
-        transition={{ duration: 0.25 }}
+        exit={{ y: -30, opacity: 0, scale: 0.8, borderRadius: "60px" }}
+        transition={{ duration: 0.26 }}
       />
     </AnimatePresence>
   );
