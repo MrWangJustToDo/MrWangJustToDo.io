@@ -48,12 +48,12 @@ const GRID_LAYOUTS = {
     },
   ],
   xs: [
-    { i: "a", x: 0, y: 0, w: 2, h: 30, minW: 1, minH: 30 },
-    { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2, minH: 30 },
+    { i: "a", x: 0, y: 0, w: 2, h: 30, minW: 1, minH: 30, static: true },
+    { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2, minH: 30, static: true },
   ],
   xxs: [
-    { i: "a", x: 0, y: 0, w: 2, h: 30, minW: 2, minH: 30 },
-    { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2, minH: 30 },
+    { i: "a", x: 0, y: 0, w: 2, h: 30, minW: 2, minH: 30, static: true },
+    { i: "b", x: 2, y: 0, w: 2, h: 30, minW: 2, minH: 30, static: true },
   ],
 };
 

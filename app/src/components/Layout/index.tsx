@@ -11,13 +11,13 @@ import { ModuleManager } from "../ModuleManager";
 const Bg = memo(function Bg() {
   const bg = useColorModeValue("./bg-light.jpeg", "./bg.jpeg");
   return (
-    <AnimatePresence exitBeforeEnter>
+    <AnimatePresence>
       <motion.div
         key={bg}
         className="page-bg"
         style={{
           width: "100vw",
-          height: "100vh",
+          height: "100%",
           position: "fixed",
           zIndex: "-1",
           top: "0",
@@ -27,9 +27,9 @@ const Bg = memo(function Bg() {
           backgroundRepeat: "no-repeat",
           backgroundImage: `url(${bg})`,
         }}
-        initial={{ y: 30, opacity: 0, scale: 1.3 }}
+        initial={{ y: 30, opacity: 0, scale: 1.15 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
-        exit={{ y: -30, opacity: 0, scale: 0.8, borderRadius: "60px" }}
+        exit={{ y: -30, opacity: 0, scale: 0.95, borderRadius: "16px" }}
         transition={{ duration: 0.26 }}
       />
     </AnimatePresence>

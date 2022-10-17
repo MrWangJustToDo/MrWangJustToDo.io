@@ -10,7 +10,13 @@ import type { BoxProps } from "@chakra-ui/react";
 export const GridCard = forwardRef<BoxProps & { contentProps?: Omit<BoxProps, "children"> }, "div">(
   ({ children, className, contentProps, ...boxProps }, ref) => {
     return (
-      <Card ref={ref} {...boxProps} className={getClass(DRAG_HANDLER_SELECTOR, className)} backgroundColor="transparent" backdropFilter="blur(8px)">
+      <Card
+        ref={ref}
+        {...boxProps}
+        className={getClass(DRAG_HANDLER_SELECTOR, className)}
+        backgroundColor={{ base: "mobileCardBackgroundColor", sm: "transparent" }}
+        backdropFilter={{ base: "initial", sm: "blur(8px)" }}
+      >
         <Flex justifyContent="center" cursor="move">
           <Box as="span" width="8" height="1" backgroundColor="gray.300" borderRadius="full" marginY="2" />
         </Flex>
