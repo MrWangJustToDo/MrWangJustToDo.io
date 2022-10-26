@@ -723,8 +723,7 @@
   };
 
   var MyReactFiberNodeClass$2 = react.__my_react_internal__.MyReactFiberNode;
-  var enableKeyDiff = react.__my_react_shared__.enableKeyDiff,
-    log$3 = react.__my_react_shared__.log;
+  var enableKeyDiff = react.__my_react_shared__.enableKeyDiff;
   var getKeyMatchedChildren = function (newChildren, prevFiberChildren) {
     if (!enableKeyDiff.current) return prevFiberChildren;
     if (!prevFiberChildren) return prevFiberChildren;
@@ -863,7 +862,7 @@
     } else {
       if (parentFiber.return) {
         {
-          log$3({ message: "unmount for current fiber children, look like a bug", level: "warn" });
+          parentFiber.root.globalPlatform.log({ message: "unmount for current fiber children, look like a bug", level: "warn" });
         }
         globalDispatch.pendingUnmount(parentFiber, parentFiber.return);
       }
@@ -1223,7 +1222,7 @@
     var typedElement = fiber.element;
     var globalDispatch = fiber.root.globalDispatch;
     var typedInstance = fiber.instance;
-    var typedType = typedElement.type;
+    var typedType = fiber.type & NODE_TYPE.__isMemo__ ? typedElement.type["render"] : typedElement.type;
     var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedType.contextType);
     var context = globalDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
     var props = Object.assign({}, typedElement.props);
@@ -1299,7 +1298,7 @@
 
   var currentHookDeepIndex = react.__my_react_internal__.currentHookDeepIndex,
     currentFunctionFiber = react.__my_react_internal__.currentFunctionFiber,
-    currentRunningFiber = react.__my_react_internal__.currentRunningFiber,
+    currentRunningFiber$2 = react.__my_react_internal__.currentRunningFiber,
     currentComponentFiber = react.__my_react_internal__.currentComponentFiber;
   var nextWorkCommon = function (fiber, children) {
     var childrenFiber = transformChildrenFiber(fiber, children);
@@ -1522,7 +1521,7 @@
   var nextWorkSync = function (fiber) {
     if (!fiber.mounted) return [];
     if (fiber.invoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__))) return [];
-    currentRunningFiber.current = fiber;
+    currentRunningFiber$2.current = fiber;
     var children = [];
     if (fiber.type & NODE_TYPE.__isDynamicNode__) children = nextWorkComponent(fiber);
     else if (fiber.type & NODE_TYPE.__isObjectNode__) children = nextWorkObject(fiber);
@@ -1530,20 +1529,20 @@
     else children = nextWorkNormal(fiber);
     fiber.invoked = true;
     fiber.activated = true;
-    currentRunningFiber.current = null;
+    currentRunningFiber$2.current = null;
     return children;
   };
   var nextWorkAsync = function (fiber, loopController) {
     if (!fiber.mounted) return null;
     if (!fiber.invoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
-      currentRunningFiber.current = fiber;
+      currentRunningFiber$2.current = fiber;
       if (fiber.type & NODE_TYPE.__isDynamicNode__) nextWorkComponent(fiber);
       else if (fiber.type & NODE_TYPE.__isObjectNode__) nextWorkObject(fiber);
       else if (fiber.type & NODE_TYPE.__isKeepLiveNode__) nextWorkKeepLive(fiber);
       else nextWorkNormal(fiber);
       fiber.invoked = true;
       fiber.activated = true;
-      currentRunningFiber.current = null;
+      currentRunningFiber$2.current = null;
       if (fiber.children.length) {
         return fiber.child;
       }
@@ -1822,41 +1821,25 @@
     return currentHook;
   };
 
-  var safeCall$1$1 = react.__my_react_shared__.safeCall;
-  var updateLoopSync = function (loopController, reconcileUpdate) {
+  var updateLoopSync = function (loopController) {
     if (loopController.hasNext()) {
       var fiber = loopController.getNext();
-      var _loop_1 = function () {
+      while (fiber) {
         var _fiber = fiber;
-        fiber = safeCall$1$1(function () {
-          return nextWorkAsync(_fiber, loopController);
-        });
+        fiber = nextWorkAsync(_fiber, loopController);
         loopController.getUpdateList(_fiber);
         loopController.setYield(fiber);
-      };
-      while (fiber) {
-        _loop_1();
       }
     }
-    reconcileUpdate();
   };
 
-  var safeCall$2 = react.__my_react_shared__.safeCall;
-  var updateLoopAsync = function (loopController, shouldPause, reconcileUpdate) {
-    var _loop_1 = function () {
+  var updateLoopAsync = function (loopController, shouldPause) {
+    while (loopController.hasNext() && !shouldPause()) {
       var fiber = loopController.getNext();
       if (fiber) {
-        var nextFiber = safeCall$2(function () {
-          return nextWorkAsync(fiber, loopController);
-        });
+        var nextFiber = nextWorkAsync(fiber, loopController);
         loopController.setYield(nextFiber);
       }
-    };
-    while (loopController.hasNext() && !shouldPause()) {
-      _loop_1();
-    }
-    if (!loopController.doesPause()) {
-      reconcileUpdate();
     }
   };
 
@@ -2045,12 +2028,89 @@
     return DomScope;
   })();
 
+  var currentRunningFiber$1 = react.__my_react_internal__.currentRunningFiber;
+  var getFiberTree = react.__my_react_shared__.getFiberTree;
   var debugWithDOM = function (fiber) {
     if (fiber.node) {
       var debugDOM = fiber.node;
       debugDOM["__fiber__"] = fiber;
       debugDOM["__element__"] = fiber.element;
       debugDOM["__children__"] = fiber.children;
+    }
+  };
+  var originalConsoleWarn = console.warn;
+  var originalConsoleError = console.error;
+  var setScopeLog = function () {
+    console.warn = function () {
+      var args = [];
+      for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+      }
+      var fiberTree = getFiberTree(currentRunningFiber$1.current);
+      originalConsoleWarn.apply(void 0, __spreadArray$1(__spreadArray$1([], args, false), [fiberTree], false));
+    };
+    console.error = function () {
+      var args = [];
+      for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+      }
+      var fiberTree = getFiberTree(currentRunningFiber$1.current);
+      originalConsoleError.apply(void 0, __spreadArray$1(__spreadArray$1([], args, false), [fiberTree], false));
+    };
+  };
+  var resetScopeLog = function () {
+    console.warn = originalConsoleWarn;
+    console.error = originalConsoleError;
+  };
+  var cache = {};
+  var log = function (_a) {
+    var fiber = _a.fiber,
+      message = _a.message,
+      _b = _a.level,
+      level = _b === void 0 ? "warn" : _b,
+      _c = _a.triggerOnce,
+      triggerOnce = _c === void 0 ? false : _c;
+    var tree = getFiberTree(fiber || currentRunningFiber$1.current);
+    if (triggerOnce) {
+      if (cache[tree]) return;
+      cache[tree] = true;
+    }
+    console[level](
+      "[".concat(level, "]:"),
+      "\n-----------------------------------------\n",
+      "".concat(typeof message === "string" ? message : message.stack || message.message),
+      "\n-----------------------------------------\n",
+      "Render Tree:",
+      tree,
+    );
+  };
+  var safeCall = function (action) {
+    var args = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+      args[_i - 1] = arguments[_i];
+    }
+    try {
+      return action.call.apply(action, __spreadArray$1([null], args, false));
+    } catch (e) {
+      log({ message: e, level: "error" });
+      var fiber = currentRunningFiber$1.current;
+      if (fiber) fiber.root.globalScope.isAppCrash = true;
+      throw new Error(e.message);
+    }
+  };
+  var safeCallWithFiber = function (_a) {
+    var action = _a.action,
+      fiber = _a.fiber;
+    var args = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+      args[_i - 1] = arguments[_i];
+    }
+    try {
+      return action.call.apply(action, __spreadArray$1([null], args, false));
+    } catch (e) {
+      log({ message: e, level: "error", fiber: fiber });
+      fiber.root.globalScope.isAppCrash = true;
+      throw new Error(e.message);
     }
   };
 
@@ -2064,16 +2124,21 @@
   };
 
   var globalLoop$2 = react.__my_react_internal__.globalLoop;
-  var safeCall$1 = react.__my_react_shared__.safeCall;
+  var enableStrictLifeCycle$1 = react.__my_react_shared__.enableStrictLifeCycle;
   var startRender = function (fiber, hydrate) {
     if (hydrate === void 0) {
       hydrate = false;
     }
     globalLoop$2.current = true;
-    safeCall$1(function () {
+    setScopeLog();
+    safeCall(function () {
       return mountLoopSync(fiber);
     });
     reconcileMount(fiber, hydrate);
+    if (enableStrictLifeCycle$1.current) {
+      console.warn("react-18 like lifecycle have been enabled!");
+    }
+    resetScopeLog();
     fiber.root.globalScope.isAppMounted = true;
     globalLoop$2.current = false;
   };
@@ -2147,6 +2212,15 @@
       unmountFiber(fiber);
     }
   };
+
+  var DomPlatform = /** @class */ (function () {
+    function DomPlatform(name) {
+      this.name = "dom";
+      this.log = log;
+      this.name = name;
+    }
+    return DomPlatform;
+  })();
 
   var generateSVGElementType = function (_fiber, map) {
     var isSVG = _fiber.parent ? map[_fiber.parent.uid] : false;
@@ -2277,7 +2351,12 @@
   var globalLoop$1 = react.__my_react_internal__.globalLoop;
   var updateAllSync = function (updateFiberController, reconcileUpdate) {
     globalLoop$1.current = true;
-    updateLoopSync(updateFiberController, reconcileUpdate);
+    setScopeLog();
+    safeCall(function () {
+      return updateLoopSync(updateFiberController);
+    });
+    reconcileUpdate();
+    resetScopeLog();
     globalLoop$1.current = false;
     Promise.resolve().then(function () {
       if (updateFiberController.hasNext()) updateAllSync(updateFiberController, reconcileUpdate);
@@ -2285,12 +2364,15 @@
   };
   var updateAllAsync = function (updateFiberController, reconcileUpdate) {
     globalLoop$1.current = true;
-    updateLoopAsync(updateFiberController, shouldPauseAsyncUpdate, reconcileUpdate);
+    setScopeLog();
+    safeCall(function () {
+      return updateLoopAsync(updateFiberController, shouldPauseAsyncUpdate);
+    });
+    if (!updateFiberController.doesPause()) reconcileUpdate();
+    resetScopeLog();
     globalLoop$1.current = false;
     Promise.resolve().then(function () {
-      if (updateFiberController.hasNext()) {
-        updateAllAsync(updateFiberController, reconcileUpdate);
-      }
+      if (updateFiberController.hasNext()) updateAllAsync(updateFiberController, reconcileUpdate);
     });
   };
 
@@ -2321,7 +2403,7 @@
         return null;
       },
       getUpdateList: function (fiber) {
-        globalDispatch.generateUpdateList(fiber, globalScope);
+        return globalDispatch.generateUpdateList(fiber, globalScope);
       },
       hasNext: function () {
         if (globalScope.isAppCrash) return false;
@@ -2398,7 +2480,6 @@
     }
   };
 
-  var log$2 = react.__my_react_shared__.log;
   var getNextHydrateDom = function (parentDom) {
     var children = Array.from(parentDom.childNodes);
     return children.find(function (dom) {
@@ -2407,7 +2488,7 @@
   };
   var checkHydrateDom = function (fiber, dom) {
     if (!dom) {
-      log$2({
+      log({
         fiber: fiber,
         level: "error",
         message: "hydrate error, dom not render from server",
@@ -2416,7 +2497,7 @@
     }
     if (fiber.type & NODE_TYPE.__isTextNode__) {
       if (dom.nodeType !== Node.TEXT_NODE) {
-        log$2({
+        log({
           fiber: fiber,
           level: "error",
           message: "hydrate error, dom not match from server. server: ".concat(dom.nodeName.toLowerCase(), ", client: ").concat(fiber.element),
@@ -2428,7 +2509,7 @@
     if (fiber.type & NODE_TYPE.__isPlainNode__) {
       var typedElement = fiber.element;
       if (dom.nodeType !== Node.ELEMENT_NODE) {
-        log$2({
+        log({
           fiber: fiber,
           level: "error",
           message: "hydrate error, dom not match from server. server: ".concat(dom.nodeName.toLowerCase(), ", client: ").concat(typedElement.type.toString()),
@@ -2436,7 +2517,7 @@
         return false;
       }
       if (typedElement.type.toString() !== dom.nodeName.toLowerCase()) {
-        log$2({
+        log({
           fiber: fiber,
           level: "error",
           message: "hydrate error, dom not match from server. server: ".concat(dom.nodeName.toLowerCase(), ", client: ").concat(typedElement.type.toString()),
@@ -2486,7 +2567,6 @@
   };
 
   // for invalid dom structure
-  var log$1 = react.__my_react_shared__.log;
   // TODO
   var validDomNesting = function (fiber) {
     if (!enableAllCheck.current) return;
@@ -2497,7 +2577,7 @@
         while (parent_1 && parent_1.type & NODE_TYPE.__isPlainNode__) {
           var typedParentElement = parent_1.element;
           if (typedParentElement.type === "p") {
-            log$1({
+            log({
               fiber: fiber,
               level: "warn",
               triggerOnce: true,
@@ -2561,23 +2641,28 @@
     }
   };
 
+  var currentRunningFiber = react.__my_react_internal__.currentRunningFiber;
   var layoutEffect = function (fiber) {
     var globalDispatch = fiber.root.globalDispatch;
     var layoutEffectMap = globalDispatch.layoutEffectMap;
     var allLayoutEffect = layoutEffectMap[fiber.uid] || [];
     layoutEffectMap[fiber.uid] = [];
+    currentRunningFiber.current = fiber;
     allLayoutEffect.forEach(function (layoutEffect) {
       return layoutEffect.call(null);
     });
+    currentRunningFiber.current = null;
   };
   var effect = function (fiber) {
     var globalDispatch = fiber.root.globalDispatch;
     var effectMap = globalDispatch.effectMap;
     var allEffect = effectMap[fiber.uid] || [];
     effectMap[fiber.uid] = [];
+    currentRunningFiber.current = fiber;
     allEffect.forEach(function (effect) {
       return effect.call(null);
     });
+    currentRunningFiber.current = null;
   };
 
   var fallback = function (fiber) {
@@ -2713,7 +2798,6 @@
     return { nativeName: nativeName, isCapture: isCapture };
   };
 
-  var safeCallWithFiber$2 = react.__my_react_shared__.safeCallWithFiber;
   var controlElementTag = {
     input: true,
     // textarea: true,
@@ -2742,7 +2826,7 @@
           }
           var e = args[0];
           e.nativeEvent = e;
-          safeCallWithFiber$2({
+          safeCallWithFiber({
             action: function () {
               var _a;
               return (_a = handler_1.cb) === null || _a === void 0
@@ -2812,7 +2896,6 @@
     }
   };
 
-  var log = react.__my_react_shared__.log;
   var domPropsHydrate = function (fiber, node, isSVG) {
     if (fiber.type & NODE_TYPE.__isTextNode__) {
       if (node.textContent !== String(fiber.element)) {
@@ -2959,22 +3042,27 @@
           _this.__pendingUpdate__ = [];
           var allWrapper = [];
           allFiber.forEach(function (f) {
-            var _a, _b;
-            var wrapperDom = _this.getHighLight();
-            allWrapper.push(wrapperDom);
             f.type & NODE_TYPE.__isTextNode__ ? _this.range.selectNodeContents(f.node) : _this.range.selectNode(f.node);
             var rect = _this.range.getBoundingClientRect();
-            var left = rect.left + (((_a = document.scrollingElement) === null || _a === void 0 ? void 0 : _a.scrollLeft) || 0);
-            var top = rect.top + (((_b = document.scrollingElement) === null || _b === void 0 ? void 0 : _b.scrollTop) || 0);
-            var width = rect.width + 4;
-            var height = rect.height + 4;
-            var positionLeft = left - 2;
-            var positionTop = top - 2;
-            wrapperDom.style.cssText = "\n          position: absolute;\n          width: "
-              .concat(width, "px;\n          height: ")
-              .concat(height, "px;\n          left: ")
-              .concat(positionLeft, "px;\n          top: ")
-              .concat(positionTop, "px;\n          pointer-events: none;\n          box-shadow: 1px 1px 1px red, -1px -1px 1px red;\n          ");
+            if (
+              rect.top >= 0 &&
+              rect.left >= 0 &&
+              rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
+              rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+            ) {
+              // in the viewport
+              var wrapperDom = _this.getHighLight();
+              allWrapper.push(wrapperDom);
+              var width = rect.width + 4;
+              var height = rect.height + 4;
+              var positionLeft = rect.left - 2;
+              var positionTop = rect.top - 2;
+              wrapperDom.style.cssText = "\n          position: absolute;\n          width: "
+                .concat(width, "px;\n          height: ")
+                .concat(height, "px;\n          left: ")
+                .concat(positionLeft, "px;\n          top: ")
+                .concat(positionTop, "px;\n          pointer-events: none;\n          box-shadow: 1px 1px 1px red, -1px -1px 1px red;\n          ");
+            }
           });
           setTimeout(function () {
             allWrapper.forEach(function (wrapperDom) {
@@ -2990,7 +3078,7 @@
       this.container = document.createElement("div");
       this.container.setAttribute("debug_highlight", "MyReact");
       this.container.style.cssText =
-        "\n      position: absolute;\n      z-index: 999999;\n      width: 100%;\n      left: 0;\n      top: 0;\n      pointer-events: none;\n      ";
+        "\n      position: fixed;\n      z-index: 99999999;\n      width: 100%;\n      left: 0;\n      top: 0;\n      pointer-events: none;\n      ";
       document.body.append(this.container);
     }
     /**
@@ -3134,8 +3222,7 @@
     }
   };
 
-  var safeCallWithFiber$1 = react.__my_react_shared__.safeCallWithFiber,
-    enableStrictLifeCycle = react.__my_react_shared__.enableStrictLifeCycle;
+  var enableStrictLifeCycle = react.__my_react_shared__.enableStrictLifeCycle;
   var ClientDispatch = /** @class */ (function () {
     function ClientDispatch() {
       this.strictMap = {};
@@ -3239,19 +3326,19 @@
     };
     ClientDispatch.prototype.reconcileCommit = function (_fiber, _hydrate, _parentFiberWithDom) {
       var _isSVG = this.svgTypeMap[_fiber.uid];
-      var _result = safeCallWithFiber$1({
+      var _result = safeCallWithFiber({
         fiber: _fiber,
         action: function () {
           return create$1(_fiber, _hydrate, _parentFiberWithDom, _isSVG);
         },
       });
-      safeCallWithFiber$1({
+      safeCallWithFiber({
         fiber: _fiber,
         action: function () {
           return update$1(_fiber, _result, _isSVG);
         },
       });
-      safeCallWithFiber$1({
+      safeCallWithFiber({
         fiber: _fiber,
         action: function () {
           return append$2(_fiber, _parentFiberWithDom);
@@ -3262,14 +3349,14 @@
         _final = this.reconcileCommit(_fiber.child, _result, _fiber.node ? _fiber : _parentFiberWithDom);
         fallback(_fiber);
       }
-      safeCallWithFiber$1({
+      safeCallWithFiber({
         fiber: _fiber,
         action: function () {
           return layoutEffect(_fiber);
         },
       });
       Promise.resolve().then(function () {
-        return safeCallWithFiber$1({
+        return safeCallWithFiber({
           fiber: _fiber,
           action: function () {
             return effect(_fiber);
@@ -3290,31 +3377,31 @@
       _list.listToFoot(function (_fiber) {
         if (_fiber.mounted && _fiber.activated) {
           var _isSVG_1 = _this.svgTypeMap[_fiber.uid];
-          safeCallWithFiber$1({
+          safeCallWithFiber({
             fiber: _fiber,
             action: function () {
               return create$1(_fiber, false, _fiber, _isSVG_1);
             },
           });
-          safeCallWithFiber$1({
+          safeCallWithFiber({
             fiber: _fiber,
             action: function () {
               return update$1(_fiber, false, _isSVG_1);
             },
           });
-          safeCallWithFiber$1({
+          safeCallWithFiber({
             fiber: _fiber,
             action: function () {
               return unmount(_fiber);
             },
           });
-          safeCallWithFiber$1({
+          safeCallWithFiber({
             fiber: _fiber,
             action: function () {
               return deactivate(_fiber);
             },
           });
-          safeCallWithFiber$1({
+          safeCallWithFiber({
             fiber: _fiber,
             action: function () {
               return context(_fiber);
@@ -3324,7 +3411,7 @@
       });
       _list.listToHead(function (_fiber) {
         if (_fiber.mounted && _fiber.activated) {
-          safeCallWithFiber$1({
+          safeCallWithFiber({
             fiber: _fiber,
             action: function () {
               return position(_fiber);
@@ -3334,7 +3421,7 @@
       });
       _list.listToFoot(function (_fiber) {
         if (_fiber.mounted && _fiber.activated) {
-          safeCallWithFiber$1({
+          safeCallWithFiber({
             fiber: _fiber,
             action: function () {
               return append$2(_fiber);
@@ -3344,14 +3431,14 @@
       });
       _list.listToFoot(function (_fiber) {
         if (_fiber.mounted && _fiber.activated) {
-          safeCallWithFiber$1({
+          safeCallWithFiber({
             fiber: _fiber,
             action: function () {
               return layoutEffect(_fiber);
             },
           });
           Promise.resolve().then(function () {
-            return safeCallWithFiber$1({
+            return safeCallWithFiber({
               fiber: _fiber,
               action: function () {
                 return effect(_fiber);
@@ -3433,6 +3520,7 @@
     }
     var globalDispatch = new ClientDispatch();
     var globalScope = new DomScope();
+    var globalPlatform = new DomPlatform("myreact-dom");
     Array.from(container.children).forEach(function (n) {
       var _a;
       return (_a = n.remove) === null || _a === void 0 ? void 0 : _a.call(n);
@@ -3441,6 +3529,7 @@
     fiber.node = container;
     fiber.globalScope = globalScope;
     fiber.globalDispatch = globalDispatch;
+    fiber.globalPlatform = globalPlatform;
     globalScope.rootFiber = fiber;
     globalScope.rootContainer = container;
     (_a = container.setAttribute) === null || _a === void 0 ? void 0 : _a.call(container, "render", "MyReact");
@@ -3457,11 +3546,13 @@
     var _a;
     var globalDispatch = new ClientDispatch();
     var globalScope = new DomScope();
+    var globalPlatform = new DomPlatform("myreact-dom");
     globalScope.isHydrateRender = true;
     var fiber = new MyReactFiberNodeRoot$1(null, element);
     fiber.node = container;
     fiber.globalScope = globalScope;
     fiber.globalDispatch = globalDispatch;
+    fiber.globalPlatform = globalPlatform;
     globalScope.rootFiber = fiber;
     globalScope.rootContainer = container;
     (_a = container.setAttribute) === null || _a === void 0 ? void 0 : _a.call(container, "hydrate", "MyReact");
@@ -4309,7 +4400,6 @@
     }
   };
 
-  var safeCallWithFiber = react.__my_react_shared__.safeCallWithFiber;
   var ServerDispatch = /** @class */ (function () {
     function ServerDispatch() {
       this.effectMap = {};
@@ -4425,12 +4515,14 @@
   var renderToString = function (element) {
     var globalDispatch = new ServerDispatch();
     var globalScope = new DomScope();
+    var globalPlatform = new DomPlatform("myreact-dom/server");
     globalScope.isServerRender = true;
     var container = new PlainElement("");
     var fiber = new MyReactFiberNodeRoot(null, element);
     fiber.node = container;
     fiber.globalScope = globalScope;
     fiber.globalDispatch = globalDispatch;
+    fiber.globalPlatform = globalPlatform;
     globalScope.rootFiber = fiber;
     globalScope.rootContainer = container;
     initialFiberNode(fiber);
@@ -4439,8 +4531,8 @@
     return container.toString();
   };
 
-  var safeCall = react.__my_react_shared__.safeCall;
   var version = "0.0.2";
+  var flushSync = safeCall;
   var unstable_batchedUpdates = safeCall;
   var ReactDOM = {
     render: render,
@@ -4448,6 +4540,7 @@
     findDOMNode: findDOMNode,
     createPortal: createPortal,
     renderToString: renderToString,
+    flushSync: flushSync,
     unmountComponentAtNode: unmountComponentAtNode,
     unstable_batchedUpdates: unstable_batchedUpdates,
     version: version,
@@ -4456,6 +4549,7 @@
   exports.createPortal = createPortal;
   exports.default = ReactDOM;
   exports.findDOMNode = findDOMNode;
+  exports.flushSync = flushSync;
   exports.hydrate = hydrate;
   exports.render = render;
   exports.renderToString = renderToString;
