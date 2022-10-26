@@ -149,7 +149,9 @@
       }
       if (called) return;
       called = true;
-      action.call.apply(action, __spreadArray$1([null], args, false));
+      if (typeof action === "function") {
+        action.call.apply(action, __spreadArray$1([null], args, false));
+      }
     };
   };
 
@@ -158,9 +160,6 @@
   var globalReadOnlyMap = new WeakMap();
   var globalShallowReactiveMap = new WeakMap();
   var globalShallowReadOnlyMap = new WeakMap();
-  {
-    globalThis.__globalDeps__ = globalDepsMap;
-  }
 
   var createRef$1 = function (value) {
     return { current: value };
@@ -893,78 +892,6 @@
     return { current: value };
   };
 
-  /******************************************************************************
-  Copyright (c) Microsoft Corporation.
-
-  Permission to use, copy, modify, and/or distribute this software for any
-  purpose with or without fee is hereby granted.
-
-  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-  REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-  AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-  INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-  LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-  OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-  PERFORMANCE OF THIS SOFTWARE.
-  ***************************************************************************** */
-  /* global Reflect, Promise */
-
-  var extendStatics = function (d, b) {
-    extendStatics =
-      Object.setPrototypeOf ||
-      ({ __proto__: [] } instanceof Array &&
-        function (d, b) {
-          d.__proto__ = b;
-        }) ||
-      function (d, b) {
-        for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
-      };
-    return extendStatics(d, b);
-  };
-
-  function __extends(d, b) {
-    if (typeof b !== "function" && b !== null) throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-    extendStatics(d, b);
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : ((__.prototype = b.prototype), new __());
-  }
-
-  function __rest(s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-      for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-        if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-      }
-    return t;
-  }
-
-  function __spreadArray(to, from, pack) {
-    if (pack || arguments.length === 2)
-      for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-          if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-          ar[i] = from[i];
-        }
-      }
-    return to.concat(ar || Array.prototype.slice.call(from));
-  }
-
-  var globalLoop = createRef(false);
-  var currentRunningFiber = createRef(null);
-  var currentComponentFiber = createRef(null);
-  var currentFunctionFiber = createRef(null);
-  var currentReactiveInstance = createRef(null);
-  var currentHookDeepIndex = createRef(0);
-  // ==== feature ==== //
-  var enableDebugLog = createRef(false);
-  var enableAsyncUpdate = createRef(true);
-  var enableKeyDiff = createRef(true);
-  // enable react-18 strict lifecycle method
-  var enableStrictLifeCycle = createRef(true);
-
   var getTrackDevLog = function (fiber) {
     {
       var element = fiber.element;
@@ -1080,57 +1007,19 @@
     re += "".padEnd(6) + "^".repeat(30) + "\n";
     return re;
   };
-  var cache = {};
-  var log = function (_a) {
-    var fiber = _a.fiber,
-      message = _a.message,
-      _b = _a.level,
-      level = _b === void 0 ? "warn" : _b,
-      _c = _a.triggerOnce,
-      triggerOnce = _c === void 0 ? false : _c;
-    var tree = getFiberTree(fiber || currentRunningFiber.current);
-    if (triggerOnce) {
-      if (cache[tree]) return;
-      cache[tree] = true;
-    }
-    console[level](
-      "[".concat(level, "]:"),
-      "\n-----------------------------------------\n",
-      "".concat(typeof message === "string" ? message : message.stack || message.message),
-      "\n-----------------------------------------\n",
-      "Render Tree:",
-      tree,
-    );
-  };
-  var safeCall = function (action) {
-    var args = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-      args[_i - 1] = arguments[_i];
-    }
-    try {
-      return action.call.apply(action, __spreadArray([null], args, false));
-    } catch (e) {
-      log({ message: e, level: "error" });
-      var fiber = currentRunningFiber.current;
-      if (fiber) fiber.root.globalScope.isAppCrash = true;
-      throw new Error(e.message);
-    }
-  };
-  var safeCallWithFiber = function (_a) {
-    var action = _a.action,
-      fiber = _a.fiber;
-    var args = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-      args[_i - 1] = arguments[_i];
-    }
-    try {
-      return action.call.apply(action, __spreadArray([null], args, false));
-    } catch (e) {
-      log({ message: e, level: "error", fiber: fiber });
-      fiber.root.globalScope.isAppCrash = true;
-      throw new Error(e.message);
-    }
-  };
+
+  var globalLoop = createRef(false);
+  var currentRunningFiber = createRef(null);
+  var currentComponentFiber = createRef(null);
+  var currentFunctionFiber = createRef(null);
+  var currentReactiveInstance = createRef(null);
+  var currentHookDeepIndex = createRef(0);
+  // ==== feature ==== //
+  var enableDebugLog = createRef(false);
+  var enableAsyncUpdate = createRef(true);
+  var enableKeyDiff = createRef(true);
+  // enable react-18 strict lifecycle method
+  var enableStrictLifeCycle = createRef(true);
 
   var My_React_Element = Symbol.for("react.element");
   var My_React_Memo = Symbol.for("react.memo");
@@ -1209,14 +1098,20 @@
         nodeTypeSymbol |= NODE_TYPE.__isPlainNode__;
       } else {
         {
-          log({ message: "invalid element type ".concat(String(rawType)), level: "warn", triggerOnce: true });
+          var fiber = currentRunningFiber.current;
+          fiber === null || fiber === void 0
+            ? void 0
+            : fiber.root.globalPlatform.log({ message: "invalid element type ".concat(String(rawType)), level: "warn", triggerOnce: true });
         }
         nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
       }
     } else {
       if (typeof element === "object" && element !== null) {
         {
-          log({ message: "invalid object element type ".concat(JSON.stringify(element)), level: "warn", triggerOnce: true });
+          var fiber = currentRunningFiber.current;
+          fiber === null || fiber === void 0
+            ? void 0
+            : fiber.root.globalPlatform.log({ message: "invalid object element type ".concat(JSON.stringify(element)), level: "warn", triggerOnce: true });
         }
         nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
       } else if (element === null || element === undefined || typeof element === "boolean") {
@@ -1229,8 +1124,9 @@
   }
   var checkValidKey = function (children) {
     var obj = {};
-    var onceWarnDuplicate = once(log);
-    var onceWarnUndefined = once(log);
+    var fiber = currentRunningFiber.current;
+    var onceWarnDuplicate = once(fiber === null || fiber === void 0 ? void 0 : fiber.root.globalPlatform.log);
+    var onceWarnUndefined = once(fiber === null || fiber === void 0 ? void 0 : fiber.root.globalPlatform.log);
     var validElement = children.filter(function (c) {
       return isValidElement(c);
     });
@@ -1269,6 +1165,65 @@
       if (isValidElement(children)) children._store["validKey"] = true;
     }
   };
+
+  /******************************************************************************
+  Copyright (c) Microsoft Corporation.
+
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted.
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+  REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+  AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+  INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+  LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+  OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+  PERFORMANCE OF THIS SOFTWARE.
+  ***************************************************************************** */
+  /* global Reflect, Promise */
+
+  var extendStatics = function (d, b) {
+    extendStatics =
+      Object.setPrototypeOf ||
+      ({ __proto__: [] } instanceof Array &&
+        function (d, b) {
+          d.__proto__ = b;
+        }) ||
+      function (d, b) {
+        for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
+      };
+    return extendStatics(d, b);
+  };
+
+  function __extends(d, b) {
+    if (typeof b !== "function" && b !== null) throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+    extendStatics(d, b);
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : ((__.prototype = b.prototype), new __());
+  }
+
+  function __rest(s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+      for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+        if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
+      }
+    return t;
+  }
+
+  function __spreadArray(to, from, pack) {
+    if (pack || arguments.length === 2)
+      for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+          if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+          ar[i] = from[i];
+        }
+      }
+    return to.concat(ar || Array.prototype.slice.call(from));
+  }
 
   var createMyReactElement = function (_a) {
     var _b;
@@ -1690,6 +1645,16 @@
     return EmptyDispatch;
   })();
 
+  var EmptyPlatform = /** @class */ (function () {
+    function EmptyPlatform() {
+      this.name = "empty";
+      this.log = function () {
+        return void 0;
+      };
+    }
+    return EmptyPlatform;
+  })();
+
   var EmptyRenderScope = /** @class */ (function () {
     function EmptyRenderScope() {
       this.rootFiber = null;
@@ -1733,7 +1698,7 @@
       this.initialPops();
     }
     MyReactFiberNode.prototype.addChild = function (child) {
-      var last = this.children.at(-1);
+      var last = this.children[this.children.length - 1];
       if (last) {
         last.sibling = child;
       } else {
@@ -1845,6 +1810,7 @@
       var _this = (_super !== null && _super.apply(this, arguments)) || this;
       _this.globalDispatch = new EmptyDispatch();
       _this.globalScope = new EmptyRenderScope();
+      _this.globalPlatform = new EmptyPlatform();
       return _this;
     }
     return MyReactFiberNodeRoot;
@@ -1916,7 +1882,7 @@
     }
   };
   var checkFiberHook = function (fiber) {
-    var hookNode = fiber.hookNodes.at(-1);
+    var hookNode = fiber.hookNodes[fiber.hookNodes.length - 1];
     if (
       hookNode.hookType === HOOK_TYPE.useMemo ||
       hookNode.hookType === HOOK_TYPE.useEffect ||
@@ -1969,6 +1935,7 @@
     } else {
       globalDispatch.pendingPosition(newFiberNode);
     }
+    globalDispatch.pendingMemorizedProps(newFiberNode);
     if (newFiberNode.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
       if (element.ref) {
         globalDispatch.pendingLayoutEffect(newFiberNode, function () {
@@ -1984,7 +1951,6 @@
       parent = _a.parent,
       prevFiber = _a.prevFiber;
     var prevElement = fiber.element;
-    // fiber.applyElement();
     // make sure invoke `installParent` after `installElement`
     fiber.installElement(nextElement);
     fiber.installParent(parent);
@@ -2246,10 +2212,10 @@
     return (
       (_a = {}),
       (_a["$$typeof"] = My_React_Reactive),
-      (_a.name = typeof props === "function" ? props.name : props.name),
-      (_a.setup = typeof props === "function" ? props : props.setup),
-      (_a.render = typeof props === "function" ? null : props.render),
-      (_a.contextType = typeof props === "function" ? null : props.contextType),
+      (_a.name = typeof props === "function" ? props.name : props === null || props === void 0 ? void 0 : props.name),
+      (_a.setup = typeof props === "function" ? props : props === null || props === void 0 ? void 0 : props.setup),
+      (_a.render = typeof props === "function" ? null : props === null || props === void 0 ? void 0 : props.render),
+      (_a.contextType = typeof props === "function" ? null : props === null || props === void 0 ? void 0 : props.contextType),
       _a
     );
   }
@@ -2258,36 +2224,48 @@
     var reactiveInstance = currentReactiveInstance.current;
     if (reactiveInstance) {
       reactiveInstance.beforeMountHooks.push(cb);
+    } else {
+      throw new Error("can not use hook without setup function");
     }
   };
   var onMounted = function (cb) {
     var reactiveInstance = currentReactiveInstance.current;
     if (reactiveInstance) {
       reactiveInstance.mountedHooks.push(cb);
+    } else {
+      throw new Error("can not use hook without setup function");
     }
   };
   var onBeforeUpdate = function (cb) {
     var reactiveInstance = currentReactiveInstance.current;
     if (reactiveInstance) {
       reactiveInstance.beforeUpdateHooks.push(cb);
+    } else {
+      throw new Error("can not use hook without setup function");
     }
   };
   var onUpdated = function (cb) {
     var reactiveInstance = currentReactiveInstance.current;
     if (reactiveInstance) {
       reactiveInstance.updatedHooks.push(cb);
+    } else {
+      throw new Error("can not use hook without setup function");
     }
   };
   var onBeforeUnmount = function (cb) {
     var reactiveInstance = currentReactiveInstance.current;
     if (reactiveInstance) {
       reactiveInstance.beforeUnmountHooks.push(cb);
+    } else {
+      throw new Error("can not use hook without setup function");
     }
   };
   var onUnmounted = function (cb) {
     var reactiveInstance = currentReactiveInstance.current;
     if (reactiveInstance) {
       reactiveInstance.unmountedHooks.push(cb);
+    } else {
+      throw new Error("can not use hook without setup function");
     }
   };
 
@@ -2354,8 +2332,6 @@
   var PureComponent = MyReactPureComponent;
   var version = "0.0.2";
   var __my_react_shared__ = {
-    log: log,
-    safeCall: safeCall,
     getHookTree: getHookTree,
     getFiberTree: getFiberTree,
     createFiberNode: createFiberNode,
@@ -2363,7 +2339,6 @@
     initialFiberNode: initialFiberNode,
     createHookNode: createHookNode,
     getTypeFromElement: getTypeFromElement,
-    safeCallWithFiber: safeCallWithFiber,
     enableAsyncUpdate: enableAsyncUpdate,
     enableKeyDiff: enableKeyDiff,
     enableStrictLifeCycle: enableStrictLifeCycle,
