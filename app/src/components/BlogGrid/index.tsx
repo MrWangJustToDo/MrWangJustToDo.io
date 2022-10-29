@@ -1,10 +1,9 @@
 import { SimpleGrid } from "@chakra-ui/react";
-import { debounce } from "lodash";
-import { memo, useLayoutEffect, useState } from "react";
+import { memo } from "react";
 
 import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, GRID_ROW_HEIGHT } from "@app/config/gridLayout";
 import { useGetResponseListLayout } from "@app/hooks/useGetResponseListLayout";
-import { useIsMounted } from "@app/hooks/useIsMounted";
+import { useDomSize } from "@app/hooks/useSize";
 
 import { Card } from "../Card";
 import { GridCard } from "../GridCard";
@@ -17,29 +16,11 @@ import type { GetBlogListQuery } from "@blog/graphql";
 const BLOG_GRID_COLS = { lg: 3, md: 3, sm: 2, xs: 1, xxs: 1 };
 
 const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"]["issues"]["nodes"] }) => {
-  const isMounted = useIsMounted();
-
-  const [width, setWidth] = useState(0);
-
   const layouts = useGetResponseListLayout(data);
 
-  useLayoutEffect(() => {
-    const element = document.querySelector(".grid-card-list") as HTMLDivElement;
-    const calculateWidth = debounce(() => setWidth(element.getBoundingClientRect().width), 100, { leading: true, trailing: true });
-    if (element) {
-      calculateWidth();
-      if (ResizeObserver) {
-        const observer = new ResizeObserver(() => calculateWidth());
-        observer.observe(element);
-        return () => observer.disconnect();
-      } else {
-        element.addEventListener("resize", calculateWidth);
-        return () => element.removeEventListener("resize", calculateWidth);
-      }
-    }
-  }, [isMounted]);
+  const { width } = useDomSize({ cssSelector: ".grid-card-list" });
 
-  if (!isMounted) return null;
+  if (width === 0) return null;
 
   return (
     <ReactGridLayout

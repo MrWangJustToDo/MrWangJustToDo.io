@@ -1,7 +1,9 @@
-import { useCallbackRef, useSafeLayoutEffect } from "@chakra-ui/react";
+import { useCallbackRef } from "@chakra-ui/react";
 import { getRect, inView, smoothScroll } from "@reactour/utils";
 import { debounce } from "lodash-es";
 import { useEffect, useRef, useState, useMemo } from "react";
+
+import { useDebouncedState } from "./useDebouncedState";
 
 import type { RefObject } from "react";
 
@@ -27,29 +29,36 @@ const INITIAL_RECT: DOMRectType = {
   y: 0,
 };
 
-export const useSize = ({ ref }: { ref: RefObject<HTMLElement> }) => {
-  const [size, setSize] = useState({ width: 0, height: 0 });
+export function useDomSize({ ref, cssSelector }: { ref: RefObject<HTMLElement> | null; cssSelector?: string }): DOMRectType;
+export function useDomSize({ ref, cssSelector }: { ref?: RefObject<HTMLElement>; cssSelector: string }): DOMRectType;
+export function useDomSize({ ref, cssSelector }: { ref?: RefObject<HTMLElement> | null; cssSelector?: string }) {
+  const [rect, setRect] = useDebouncedState<DOMRectType>(INITIAL_RECT, 100);
 
-  useSafeLayoutEffect(() => {
-    const calculate = () => {
-      if (ref.current) {
-        const element = ref.current;
-        const rect = element.getBoundingClientRect();
-        setSize(rect);
+  useEffect(() => {
+    const domElement = ref ? ref.current : cssSelector ? document.querySelector(cssSelector) : null;
+    if (domElement) {
+      if (window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver(() => {
+          setRect(domElement.getBoundingClientRect());
+        });
+
+        resizeObserver.observe(domElement);
+
+        return () => resizeObserver.disconnect();
+      } else {
+        const handleResize = () => setRect(domElement.getBoundingClientRect());
+
+        handleResize();
+
+        window.addEventListener("resize", handleResize, { passive: true });
+
+        return () => window.removeEventListener("resize", handleResize);
       }
-    };
+    }
+  }, [ref, cssSelector, setRect]);
 
-    const debounceCalculate = debounce(calculate, 20, { leading: true });
-
-    debounceCalculate();
-
-    window.addEventListener("resize", debounceCalculate);
-
-    return () => window.removeEventListener("resize", debounceCalculate);
-  }, [ref]);
-
-  return size;
-};
+  return rect;
+}
 
 export const useTourTargetSize = (target: string, highlightSelectors: string[], action?: () => void) => {
   const [sizes, setSizes] = useState(INITIAL_RECT);
@@ -123,7 +132,7 @@ export const useTourTargetSize = (target: string, highlightSelectors: string[], 
 
   useEffect(() => {
     debouncedRefresh();
-    window.addEventListener("resize", debouncedRefresh);
+    window.addEventListener("resize", debouncedRefresh, { passive: true });
     return () => window.removeEventListener("resize", debouncedRefresh);
   }, [debouncedRefresh, highlightSelectors, setSizes, target]);
 

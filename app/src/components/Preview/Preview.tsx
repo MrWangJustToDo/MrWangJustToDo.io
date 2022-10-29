@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { PLAYGROUND_REACT_WINDOW, PLAYGROUND_MY_REACT, PLAYGROUND_GRID_LAYOUT, PLAYGROUND_MY_REACT_DOM } from "@app/config/source";
-import { useDebounceState } from "@app/hooks/useDebounceState";
+import { useDebouncedState } from "@app/hooks/useDebouncedState";
 import { useEditor } from "@app/hooks/useEditor";
 import { generateIframeDOC, generateLinkElementsString, generateScriptElementsString, generateStyleElementsString, getAllFiles } from "@app/utils/preview";
 
@@ -27,7 +27,7 @@ export const IFramePreview = ({ styles = [], scripts = [], links = [], onLoad }:
 
   const [compiled, setCompiled] = useState<{ js: string; id: number }>(null);
 
-  const [tsx, setTsx] = useDebounceState(files["script.tsx"].content, 600);
+  const [tsx, setTsx] = useDebouncedState(files["script.tsx"].content, 600);
 
   const content = files["script.tsx"].content;
 
