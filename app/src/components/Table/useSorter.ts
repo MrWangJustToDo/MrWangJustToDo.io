@@ -9,7 +9,7 @@ export const SorterContext = createContext<{
   onSort: (sorter: Sorter<any>) => void;
 }>({ sorter: { order: SortOrder.None }, onSort: () => void 0 });
 
-export function useSorter<T>(sorter?: Sorter<T>, dataSource?: T[], afterSorting?: () => void) {
+export function useSorter<T extends Record<string, number>>(sorter?: Sorter<T>, dataSource?: T[], afterSorting?: () => void) {
   const [innerSorter, setInnerSorter] = useState<Sorter<T>>({
     order: SortOrder.None,
     genCompareFn: (sorter: Sorter<T>) => (a: T, b: T) => {

@@ -10,7 +10,7 @@ export const INITIAL_EDITOR = {
 content: `
 
 // MyReact dev highlight
-(window as any).__highlight__ = false;
+(window as any).__highlight__ = true;
 
 const { useState, useEffect, memo } = React;
 

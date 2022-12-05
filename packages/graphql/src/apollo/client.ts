@@ -38,7 +38,7 @@ const createApolloClient = (initialState: NormalizedCacheObject = {}, enableInfi
 
 export const getApolloClient = createApolloClient;
 
-export const useApollo = (initialState: NormalizedCacheObject, enableInfinityLoad?: boolean) => {
+export const useApollo = (initialState: NormalizedCacheObject, enableInfinityLoad?: boolean): ApolloClient<any> => {
   const store = useMemo(() => createApolloClient(initialState, enableInfinityLoad), [initialState, enableInfinityLoad]);
   return store;
 };

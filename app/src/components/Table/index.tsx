@@ -9,7 +9,7 @@ import { SorterContext, useSorter } from "./useSorter";
 
 import type { TableProps } from "./type";
 
-export function Table<T>({
+export function Table<T extends Record<string, number>>({
   dataSource,
   sorter,
   pagination,

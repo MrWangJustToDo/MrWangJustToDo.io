@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useColorModeValue } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
@@ -14,7 +15,6 @@ const Bg = memo(function Bg() {
     <AnimatePresence>
       <motion.div
         key={bg}
-        className="page-bg"
         style={{
           width: "100vw",
           height: "100%",
@@ -41,7 +41,9 @@ export const Layout = ({ children }: { children: JSX.Element }) => {
     <>
       <Head />
       <LockBody />
-      <Bg />
+      {/* <div id="page-bg">
+        <Bg />
+      </div> */}
       <ModuleManager>
         <div id="page-header">
           <Header />
