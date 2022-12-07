@@ -21,9 +21,11 @@ import { BlogGrid } from "@app/components/BlogGrid";
 import { ErrorCom } from "@app/components/Error";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "@app/config/source";
 import { useGetListParams } from "@app/hooks/useGetListParams";
+import { useLeetCode } from "@app/hooks/useLeetCode";
 import { usePlayGround } from "@app/hooks/usePlayGround";
 
 import { BlogModal } from "../BlogModal";
+import { LeetCode } from "../LeetCode";
 import { Pagination } from "../Pagination";
 import { PlayGround } from "../PlayGround";
 
@@ -87,6 +89,8 @@ const _BlogList = () => {
 
 const _BlogListWithInfinityScroll = () => {
   const { onOpen } = usePlayGround();
+
+  const { onOpen: onOpenLeetCode } = useLeetCode();
 
   const ref = useRef<HTMLDivElement>();
 
@@ -161,6 +165,9 @@ const _BlogListWithInfinityScroll = () => {
           <Button color="purple.500" textTransform="capitalize" onClick={() => refetch()} size={{ base: "sm", lg: "md" }}>
             refresh
           </Button>
+          <Button color="red.500" textTransform="capitalize" onClick={onOpenLeetCode} size={{ base: "sm", lg: "md" }}>
+            leetCode
+          </Button>
           <Button color="red.500" textTransform="capitalize" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
             playGround
           </Button>
@@ -171,6 +178,7 @@ const _BlogListWithInfinityScroll = () => {
       </Portal>
       <BlogModal />
       <PlayGround />
+      <LeetCode />
     </Flex>
   );
 };

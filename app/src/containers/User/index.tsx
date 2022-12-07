@@ -47,7 +47,7 @@ const _User = () => {
   if (error) return <ErrorCom error={error} />;
 
   return (
-    <Flex flexDirection="column" padding="3" height="100%" className="tour_about">
+    <Flex flexDirection="column" padding="3" height={{ md: "100%" }} className="tour_about">
       <Box padding="2">
         <Avatar name={data.viewer.name} src={data.viewer.avatarUrl} size="xl">
           <AvatarBadge bg="green.500" boxSize="0.8em" />
@@ -82,7 +82,7 @@ const _User = () => {
         {momentTo(data.viewer.createdAt)}
       </Text>
       <Divider marginY="2" />
-      <Flex overflow="auto" flexDirection="column">
+      <Flex overflow={{ md: "auto" }} flexDirection="column">
         <Flex justifyContent="space-between" marginBottom="2">
           <Flex flexDirection="column" alignItems="center">
             <Flex alignItems="center" marginBottom="3">
