@@ -2315,6 +2315,7 @@
       });
     });
   };
+  // TODO maybe should provider a transform function to create fiber one by one?
   var nextWorkAsync = function (fiber, loopController) {
     if (!fiber.mounted) return null;
     if (!fiber.invoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
@@ -2635,7 +2636,9 @@
     }
     globalLoop$2.current = true;
     var startTime = Date.now();
-    setScopeLog();
+    {
+      setScopeLog();
+    }
     safeCall(function () {
       return mountLoopSync(fiber);
     });
@@ -2643,16 +2646,16 @@
     if (enableStrictLifeCycle$1.current) {
       console.warn("react-18 like lifecycle have been enabled!");
     }
-    resetScopeLog();
+    {
+      resetScopeLog();
+    }
     var endTime = Date.now();
     var globalScope = fiber.root.globalScope;
     globalScope.isAppMounted = true;
-    {
-      if (hydrate) {
-        globalScope.hydrateTime = endTime - startTime;
-      } else {
-        globalScope.renderTime = endTime - startTime;
-      }
+    if (hydrate) {
+      globalScope.hydrateTime = endTime - startTime;
+    } else {
+      globalScope.renderTime = endTime - startTime;
     }
     globalLoop$2.current = false;
   };
@@ -2667,7 +2670,9 @@
           case 0:
             globalLoop$2.current = true;
             startTime = Date.now();
-            setScopeLog();
+            {
+              setScopeLog();
+            }
             return [
               4 /*yield*/,
               safeCallAsync(function () {
@@ -2680,16 +2685,16 @@
             if (enableStrictLifeCycle$1.current) {
               console.warn("react-18 like lifecycle have been enabled!");
             }
-            resetScopeLog();
+            {
+              resetScopeLog();
+            }
             endTime = Date.now();
             globalScope = fiber.root.globalScope;
             globalScope.isAppMounted = true;
-            {
-              if (hydrate) {
-                globalScope.hydrateTime = endTime - startTime;
-              } else {
-                globalScope.renderTime = endTime - startTime;
-              }
+            if (hydrate) {
+              globalScope.hydrateTime = endTime - startTime;
+            } else {
+              globalScope.renderTime = endTime - startTime;
             }
             globalLoop$2.current = false;
             return [2 /*return*/];
@@ -3032,25 +3037,33 @@
   var globalLoop$1 = react.__my_react_internal__.globalLoop;
   var updateAllSync = function (updateFiberController, reconcileUpdate) {
     globalLoop$1.current = true;
-    setScopeLog();
+    {
+      setScopeLog();
+    }
     safeCall(function () {
       return updateLoopSync(updateFiberController);
     });
     reconcileUpdate();
-    resetScopeLog();
+    {
+      resetScopeLog();
+    }
     globalLoop$1.current = false;
-    Promise.resolve().then(function () {
-      if (updateFiberController.hasNext()) updateAllSync(updateFiberController, reconcileUpdate);
-    });
+    // Promise.resolve().then(() => {
+    // if (updateFiberController.hasNext()) updateAllSync(updateFiberController, reconcileUpdate);
+    // });
   };
   var updateAllAsync = function (updateFiberController, reconcileUpdate) {
     globalLoop$1.current = true;
-    setScopeLog();
+    {
+      setScopeLog();
+    }
     safeCall(function () {
       return updateLoopAsync(updateFiberController, shouldPauseAsyncUpdate);
     });
     if (!updateFiberController.doesPause()) reconcileUpdate();
-    resetScopeLog();
+    {
+      resetScopeLog();
+    }
     globalLoop$1.current = false;
     Promise.resolve().then(function () {
       if (updateFiberController.hasNext()) updateAllAsync(updateFiberController, reconcileUpdate);
@@ -3131,7 +3144,11 @@
     }
     fiber.triggerUpdate();
     globalScope.modifyFiberArray.push(fiber);
-    asyncUpdate(globalDispatch, globalScope);
+    if (enableConcurrentMode.current) {
+      asyncUpdate(globalDispatch, globalScope);
+    } else {
+      updateEntry(globalDispatch, globalScope);
+    }
   };
 
   var append$2 = function (fiber, parentFiberWithDom) {
@@ -5298,8 +5315,8 @@
       });
     });
   };
-  var renderToString = function (element, renderAsync) {
-    if (renderAsync) {
+  var renderToString = function (element, asyncRender) {
+    if (asyncRender) {
       return renderToStringAsync(element);
     } else {
       return renderToStringSync(element);

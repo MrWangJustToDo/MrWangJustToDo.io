@@ -987,17 +987,19 @@
     return "".concat(getElementName(fiber)).concat(getTrackDevLog(fiber));
   };
   var getFiberTree = function (fiber) {
-    if (fiber) {
-      var preString = "".padEnd(4) + "at".padEnd(4);
-      var parent_1 = fiber.parent;
-      var res = "".concat(preString).concat(getFiberNodeName(fiber));
-      while (parent_1) {
-        res = "".concat(preString).concat(getFiberNodeName(parent_1), "\n").concat(res);
-        parent_1 = parent_1.parent;
+    {
+      if (fiber) {
+        var preString = "".padEnd(4) + "at".padEnd(4);
+        var parent_1 = fiber.parent;
+        var res = "".concat(preString).concat(getFiberNodeName(fiber));
+        while (parent_1) {
+          res = "".concat(preString).concat(getFiberNodeName(parent_1), "\n").concat(res);
+          parent_1 = parent_1.parent;
+        }
+        return "\n".concat(res);
       }
-      return "\n".concat(res);
+      return "";
     }
-    return "";
   };
   var getHookTree = function (hookNodes, currentIndex, newHookType) {
     var _a, _b;
@@ -1538,6 +1540,7 @@
           trigger: _this,
         };
         (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
+        // this._ownerFiber?.update();
         Promise.resolve().then(function () {
           var _a;
           return (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update();
@@ -1551,6 +1554,7 @@
           trigger: _this,
         };
         (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
+        // this._ownerFiber?.update();
         Promise.resolve().then(function () {
           var _a;
           return (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update();
