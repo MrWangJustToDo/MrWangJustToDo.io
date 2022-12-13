@@ -7,7 +7,7 @@ export const INITIAL_EDITOR = {
     type: "text/babel",
     name: "script.tsx",
     language: "typescript",
-content: `
+    content: `
 
 // MyReact dev highlight
 (window as any).__highlight__ = true;
@@ -67,7 +67,7 @@ const TestReactive = createReactive({
     onBeforeUpdate(() => {
       // count.current++;
       count.value++;
-      console.log('TestReactive before update')
+      // console.log('TestReactive before update')
     })
 
     return { changeRef, valueRef, count };
@@ -78,6 +78,14 @@ const TestReactive = createReactive({
 const MemoTestReactive = memo(TestReactive);
 
 // ==== reactive example done ==== //
+
+// ==== antd example ==== //
+
+const { TimePicker, Button, Modal, notification, Calendar } = (window as any).antd;
+
+const dayjs = (window as any).dayjs;
+
+// ==== antd example ==== //
 
 const ReactGridLayout = (window as any).ReactGridLayout;
 
@@ -182,10 +190,84 @@ class LocalStorageLayout extends React.PureComponent<{ onLayoutChange: Function 
   }
 }
 
+const onChange = (time: any, timeString: string) => {
+  console.log(time, timeString);
+};
+
+const AntdModal = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  return (
+    <>
+      <Button type="primary" onClick={showModal}>
+        Open Modal
+      </Button>
+      <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
+    </>
+  );
+}
+
+const AntdNotification = () => {
+  const openNotification = () => {
+    notification.open({
+      message: 'Notification Title',
+      description:
+        'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
+      onClick: () => {
+        console.log('Notification Clicked!');
+      },
+    });
+  };
+
+  return (
+    <Button type="primary" onClick={openNotification}>
+      Open the notification box
+    </Button>
+  )
+}
+
+const MemoCalendar = memo(Calendar);
+
 const App = () => {
   const time = useTime();
 
   return <div>
+    <div>
+      <div>
+        <h2>MyReact timer</h2>
+        <p>Time: {time}</p>
+      </div>
+      <hr />
+      <h1>MyReact Antd example</h1>
+      <TimePicker onChange={onChange} defaultOpenValue={dayjs('00:00:00', 'HH:mm:ss')} />
+      <br />
+      <br />
+      <AntdModal />
+      <br />
+      <br />
+      <AntdNotification />
+      <br />
+      <br />
+      <div style={{ maxWidth: '600px', border: '2px solid blue', borderRadius: '4px', padding: '3px' }}>
+        <MemoCalendar />
+      </div>
+    </div>
     <div>
       <h1>MyReact reactive api example</h1>
       <TestReactive />
@@ -197,11 +279,6 @@ const App = () => {
           <p>reactive position: {x}: {y} </p>
         </div>}
       </ReactiveHook>
-    </div>
-    <hr />
-    <div>
-      <h2>MyReact timer</h2>
-      <p>Time: {time}</p>
     </div>
     <hr />
     <div>
@@ -224,6 +301,9 @@ ReactDOM.render(<App />, document.querySelector("#root"));
     name: "main.css",
     language: "css",
     content: `
+body {
+  padding-left: 4px;
+}
 #content {
   width: 100%;
 }

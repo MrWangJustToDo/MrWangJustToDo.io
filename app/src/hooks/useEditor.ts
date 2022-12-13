@@ -13,39 +13,69 @@ export const useEditor = create<{
   setContent: (newContent: string) => void;
 }>()(
   devtools(
-    persist(
-      (set, get) => ({
-        file: "script.tsx",
-        files: INITIAL_EDITOR,
-        reset: () => set({ files: INITIAL_EDITOR, file: "script.tsx" }),
-        setFile: (newFile) => {
-          const { files, file } = get();
-          const keys = Object.keys(files);
-          if (newFile !== file && keys.includes(newFile)) {
-            set({ file: newFile as keyof typeof INITIAL_EDITOR });
-          }
-        },
-        setContent: debounce(
-          (content) => {
-            const state = get();
-            const { file, files } = state;
-            set({
-              files: {
-                ...files,
-                [file]: {
-                  ...files[file],
-                  content,
-                },
+    !__DEV__
+      ? persist(
+          (set, get) => ({
+            file: "script.tsx",
+            files: INITIAL_EDITOR,
+            reset: () => set({ files: INITIAL_EDITOR, file: "script.tsx" }),
+            setFile: (newFile) => {
+              const { files, file } = get();
+              const keys = Object.keys(files);
+              if (newFile !== file && keys.includes(newFile)) {
+                set({ file: newFile as keyof typeof INITIAL_EDITOR });
+              }
+            },
+            setContent: debounce(
+              (content) => {
+                const state = get();
+                const { file, files } = state;
+                set({
+                  files: {
+                    ...files,
+                    [file]: {
+                      ...files[file],
+                      content,
+                    },
+                  },
+                });
               },
-            });
+              200,
+              { leading: true },
+            ),
+          }),
+          {
+            name: EDITOR_STORE_KEY + "_2022-12-13",
           },
-          200,
-          { leading: true },
-        ),
-      }),
-      {
-        name: EDITOR_STORE_KEY + "_2022-12-5",
-      },
-    ),
+        )
+      : (set, get) => ({
+          file: "script.tsx",
+          files: INITIAL_EDITOR,
+          reset: () => set({ files: INITIAL_EDITOR, file: "script.tsx" }),
+          setFile: (newFile) => {
+            const { files, file } = get();
+            const keys = Object.keys(files);
+            if (newFile !== file && keys.includes(newFile)) {
+              set({ file: newFile as keyof typeof INITIAL_EDITOR });
+            }
+          },
+          setContent: debounce(
+            (content) => {
+              const state = get();
+              const { file, files } = state;
+              set({
+                files: {
+                  ...files,
+                  [file]: {
+                    ...files[file],
+                    content,
+                  },
+                },
+              });
+            },
+            200,
+            { leading: true },
+          ),
+        }),
   ),
 );
