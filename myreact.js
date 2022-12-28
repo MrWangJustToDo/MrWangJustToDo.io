@@ -907,7 +907,7 @@
           lineNumber = _a.lineNumber;
         preString = "".concat(preString, " (").concat(fileName, ":").concat(lineNumber, ")");
       }
-      if (!(fiber.type & NODE_TYPE.__isDynamicNode__) && owner) {
+      if (owner) {
         var ownerElement = owner.element;
         var ownerElementType = ownerElement.type;
         if (typeof ownerElementType === "function") {
@@ -993,7 +993,7 @@
         var parent_1 = fiber.parent;
         var res = "".concat(preString).concat(getFiberNodeName(fiber));
         while (parent_1) {
-          res = "".concat(preString).concat(getFiberNodeName(parent_1), "\n").concat(res);
+          res += "\n".concat(preString).concat(getFiberNodeName(parent_1));
           parent_1 = parent_1.parent;
         }
         return "\n".concat(res);
@@ -1603,6 +1603,8 @@
   var EmptyDispatch = /** @class */ (function () {
     function EmptyDispatch() {
       this.strictMap = {};
+      this.scopeIdMap = {};
+      this.errorBoundariesMap = {};
       this.keepLiveMap = {};
       this.suspenseMap = {};
       this.effectMap = {};
@@ -1611,7 +1613,8 @@
       this.unmountMap = {};
       this.eventMap = {};
     }
-    EmptyDispatch.prototype.trigger = function (_fiber) {};
+    EmptyDispatch.prototype.triggerUpdate = function (_fiber) {};
+    EmptyDispatch.prototype.triggerError = function (_fiber, _error) {};
     EmptyDispatch.prototype.resolveLazyElement = function (_fiber) {
       return null;
     };
@@ -1620,6 +1623,10 @@
     };
     EmptyDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
       return null;
+    };
+    EmptyDispatch.prototype.resolveScopeIdMap = function (_fiber) {};
+    EmptyDispatch.prototype.resolveScopeId = function (_fiber) {
+      return "";
     };
     EmptyDispatch.prototype.resolveStrictMap = function (_fiber) {};
     EmptyDispatch.prototype.resolveStrictValue = function (_fiber) {
@@ -1641,6 +1648,10 @@
     EmptyDispatch.prototype.resolveContextValue = function (_fiber, _contextObject) {
       return null;
     };
+    EmptyDispatch.prototype.resolveErrorBoundaries = function (_fiber) {
+      return null;
+    };
+    EmptyDispatch.prototype.resolveErrorBoundariesMap = function (_fiber) {};
     EmptyDispatch.prototype.resolveComponentQueue = function (_fiber) {};
     EmptyDispatch.prototype.resolveHookQueue = function (_fiber) {};
     EmptyDispatch.prototype.resolveFiberUpdate = function (_fiber) {};
@@ -1697,9 +1708,9 @@
   var MyReactFiberNode = /** @class */ (function () {
     function MyReactFiberNode(parent, element) {
       var _a;
-      this.mounted = true;
-      this.activated = true;
-      this.invoked = false;
+      this.isMounted = true;
+      this.isActivated = true;
+      this.isInvoked = false;
       this.node = null;
       this.children = [];
       this.return = null;
@@ -1722,6 +1733,8 @@
       this.initialPops();
     }
     MyReactFiberNode.prototype.addChild = function (child) {
+      var globalDispatch = this.root.globalDispatch;
+      if (!this.child) globalDispatch.resolveErrorBoundariesMap(this);
       var last = this.children[this.children.length - 1];
       if (last) {
         last.sibling = child;
@@ -1737,6 +1750,7 @@
       globalDispatch.resolveSuspenseMap(this);
       globalDispatch.resolveContextMap(this);
       globalDispatch.resolveStrictMap(this);
+      globalDispatch.resolveScopeIdMap(this);
     };
     // TODO change name to `updateParent`
     MyReactFiberNode.prototype.installParent = function (parent) {
@@ -1804,25 +1818,30 @@
       this.instance = instance;
     };
     MyReactFiberNode.prototype.update = function () {
-      if (!this.activated || !this.mounted) return;
-      this.root.globalDispatch.trigger(this);
+      if (!this.isActivated || !this.isMounted) return;
+      this.root.globalDispatch.triggerUpdate(this);
+    };
+    MyReactFiberNode.prototype.error = function (error) {
+      this.root.globalDispatch.triggerError(this, error);
     };
     MyReactFiberNode.prototype.unmount = function () {
+      if (!this.isMounted) return;
       this.hookNodes.forEach(function (hook) {
         return hook.unmount();
       });
       this.instance && this.instance.unmount();
-      this.mounted = false;
+      this.isMounted = false;
       this.mode = UPDATE_TYPE.__initial__;
       this.patch = PATCH_TYPE.__initial__;
       this.root.globalDispatch.removeFiber(this);
     };
     MyReactFiberNode.prototype.deactivate = function () {
+      if (!this.isActivated) return;
       this.hookNodes.forEach(function (hook) {
         return hook.unmount();
       });
       this.instance && this.instance.unmount();
-      this.activated = false;
+      this.isActivated = false;
       this.mode = UPDATE_TYPE.__initial__;
       this.patch = PATCH_TYPE.__initial__;
     };
@@ -1969,7 +1988,7 @@
     var globalDispatch = fiber.root.globalDispatch;
     checkFiberElement(fiber);
     globalDispatch.resolveFiberUpdate;
-    if (prevElement !== nextElement || !fiber.activated) {
+    if (prevElement !== nextElement || !fiber.isActivated) {
       globalDispatch.resolveFiberUpdate(fiber);
       globalDispatch.resolveMemorizedProps(fiber);
     }
@@ -2318,7 +2337,7 @@
 
   var Component = MyReactComponent;
   var PureComponent = MyReactPureComponent;
-  var version = "0.0.2";
+  var version = "0.0.3";
   var __my_react_shared__ = {
     getHookTree: getHookTree,
     getFiberTree: getFiberTree,
