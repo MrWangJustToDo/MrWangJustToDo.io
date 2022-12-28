@@ -207,7 +207,7 @@
   })();
 
   var currentRunningFiber$2 = react.__my_react_internal__.currentRunningFiber;
-  var getFiberTree = react.__my_react_shared__.getFiberTree;
+  var getFiberTree$1 = react.__my_react_shared__.getFiberTree;
   var debugWithDOM = function (fiber) {
     if (fiber.node) {
       var debugDOM = fiber.node;
@@ -224,7 +224,7 @@
       for (var _i = 0; _i < arguments.length; _i++) {
         args[_i] = arguments[_i];
       }
-      var fiberTree = getFiberTree(currentRunningFiber$2.current);
+      var fiberTree = getFiberTree$1(currentRunningFiber$2.current);
       originalConsoleWarn.apply(void 0, __spreadArray$1(__spreadArray$1([], args, false), [fiberTree], false));
     };
     console.error = function () {
@@ -232,7 +232,7 @@
       for (var _i = 0; _i < arguments.length; _i++) {
         args[_i] = arguments[_i];
       }
-      var fiberTree = getFiberTree(currentRunningFiber$2.current);
+      var fiberTree = getFiberTree$1(currentRunningFiber$2.current);
       originalConsoleError.apply(void 0, __spreadArray$1(__spreadArray$1([], args, false), [fiberTree], false));
     };
   };
@@ -248,7 +248,7 @@
       level = _b === void 0 ? "warn" : _b,
       _c = _a.triggerOnce,
       triggerOnce = _c === void 0 ? false : _c;
-    var tree = getFiberTree(fiber || currentRunningFiber$2.current);
+    var tree = getFiberTree$1(fiber || currentRunningFiber$2.current);
     if (triggerOnce) {
       var messageKey = message.toString();
       cache[messageKey] = cache[messageKey] || {};
@@ -284,10 +284,11 @@
       return action.call.apply(action, __spreadArray$1([null], args, false));
     } catch (e) {
       var fiber = currentRunningFiber$2.current;
-      if (fiber && fiber.root.globalScope.isAppCrash) return;
-      log({ message: e, level: "error" });
-      if (fiber) fiber.root.globalScope.isAppCrash = true;
-      throw new Error(e.message);
+      log({ message: e, level: "error", fiber: fiber });
+      if (fiber) fiber.error(e);
+      // if (fiber && fiber.root.globalScope.isAppCrash) return;
+      // if (fiber) fiber.root.globalScope.isAppCrash = true;
+      // throw new Error((e as Error).message);
     }
   };
   var safeCallAsync = function (action) {
@@ -307,10 +308,9 @@
           case 2:
             e_1 = _a.sent();
             fiber = currentRunningFiber$2.current;
-            if (fiber && fiber.root.globalScope.isAppCrash) return [2 /*return*/];
-            log({ message: e_1, level: "error" });
-            if (fiber) fiber.root.globalScope.isAppCrash = true;
-            throw new Error(e_1.message);
+            log({ message: e_1, level: "error", fiber: fiber });
+            if (fiber) fiber.error(e_1);
+            return [3 /*break*/, 3];
           case 3:
             return [2 /*return*/];
         }
@@ -933,7 +933,7 @@
         var update_1 = function () {
           var _a;
           hookNode.cancel && hookNode.cancel();
-          if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.mounted) hookNode.cancel = hookNode.value();
+          if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.isMounted) hookNode.cancel = hookNode.value();
           hookNode.effect = false;
           hookNode.mode = Effect_TYPE.__initial__;
         };
@@ -950,7 +950,7 @@
         var update_2 = function () {
           var _a;
           hookNode.cancel && hookNode.cancel();
-          if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.mounted) hookNode.cancel = hookNode.value();
+          if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.isMounted) hookNode.cancel = hookNode.value();
           hookNode.effect = false;
           hookNode.mode = Effect_TYPE.__initial__;
         };
@@ -999,11 +999,22 @@
     }
     return false;
   };
+  var defaultGenerateScopeMap = function (fiber, map) {
+    var parent = fiber.parent;
+    if (fiber.type & NODE_TYPE.__isScopeNode__) {
+      map[fiber.uid] = fiber.uid;
+    } else {
+      if (parent) {
+        map[fiber.uid] = map[parent.uid];
+      } else {
+        map[fiber.uid] = null;
+      }
+    }
+  };
 
   var defaultGenerateStrictMap = function (fiber, map) {
     var parent = fiber.parent;
-    var element = fiber.element;
-    if (typeof element === "object" && fiber.type & NODE_TYPE.__isStrictNode__) {
+    if (fiber.type & NODE_TYPE.__isStrictNode__) {
       map[fiber.uid] = true;
     } else {
       if (parent) {
@@ -1108,6 +1119,31 @@
     return listTree;
   };
 
+  var isErrorBoundariesComponent = function (fiber) {
+    if (fiber.type & NODE_TYPE.__isClassComponent__) {
+      var typedElement = fiber.element;
+      var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
+      var typedComponent = Component;
+      var typedInstance = fiber.instance;
+      if (typeof typedComponent.getDerivedStateFromError === "function" || typeof typedInstance.componentDidCatch === "function") {
+        return true;
+      }
+    }
+    return false;
+  };
+  var defaultGenerateErrorBoundariesMap = function (fiber, map) {
+    if (isErrorBoundariesComponent(fiber)) {
+      map[fiber.uid] = fiber;
+    } else {
+      var parent_1 = fiber.parent;
+      if (parent_1) {
+        map[fiber.uid] = map[parent_1.uid];
+      } else {
+        map[fiber.uid] = null;
+      }
+    }
+  };
+
   var getHookTree$1 = react.__my_react_shared__.getHookTree;
   var updateHookNode = function (_a, fiber) {
     var hookIndex = _a.hookIndex,
@@ -1143,7 +1179,7 @@
         currentHook.reducer = reducer || currentHook.reducer;
         currentHook.deps = deps;
         currentHook.effect = true;
-      } else if (!fiber.activated) {
+      } else if (!fiber.isActivated) {
         // KeepLive component
         currentHook.value = value;
         currentHook.reducer = reducer || currentHook.reducer;
@@ -1174,7 +1210,7 @@
       return currentHook;
     }
     if (currentHook.hookType === HOOK_TYPE.useContext) {
-      if (!currentHook._contextFiber || !currentHook._contextFiber.mounted || !Object.is(currentHook.value, value)) {
+      if (!currentHook._contextFiber || !currentHook._contextFiber.isMounted || !Object.is(currentHook.value, value)) {
         currentHook.value = value;
         var ProviderFiber = globalDispatch.resolveContextFiber(currentHook._ownerFiber, currentHook.value);
         var context = globalDispatch.resolveContextValue(ProviderFiber, currentHook.value);
@@ -1207,7 +1243,7 @@
     var currentHook = null;
     if (fiber.hookNodes.length > hookIndex) {
       currentHook = updateHookNode({ hookIndex: hookIndex, hookType: hookType, reducer: reducer, value: value, deps: deps }, fiber);
-    } else if (!fiber.invoked) {
+    } else if (!fiber.isInvoked) {
       currentHook = createHookNode({ hookIndex: hookIndex, hookType: hookType, reducer: reducer, value: value, deps: deps }, fiber);
     } else {
       throw new Error(getHookTree(fiber.hookNodes, hookIndex, hookType));
@@ -1690,6 +1726,7 @@
     }
   };
 
+  var getFiberTree = react.__my_react_shared__.getFiberTree;
   var DEFAULT_RESULT = {
     newState: null,
     isForce: false,
@@ -1717,6 +1754,18 @@
         if (payloadState) {
           typedDevInstance.state = Object.assign({}, typedInstance.state, payloadState);
         }
+      }
+    }
+  };
+  var processComponentStateFromError = function (fiber, error) {
+    var typedElement = fiber.element;
+    var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
+    var typedComponent = Component;
+    var typedInstance = fiber.instance;
+    if (typeof typedComponent.getDerivedStateFromError === "function") {
+      var payloadState = typedComponent.getDerivedStateFromError(error);
+      if (payloadState) {
+        typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
       }
     }
   };
@@ -1785,13 +1834,24 @@
       });
     }
   };
+  var processComponentDidCatchOnMountAndUpdate = function (fiber, error, targetFiber) {
+    var typedInstance = fiber.instance;
+    var globalDispatch = fiber.root.globalDispatch;
+    if (typedInstance.componentDidCatch && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
+      typedInstance.mode = Effect_TYPE.__pendingEffect__;
+      globalDispatch.pendingLayoutEffect(fiber, function () {
+        typedInstance.mode = Effect_TYPE.__initial__;
+        typedInstance.componentDidCatch(error, { componentStack: getFiberTree(targetFiber) });
+      });
+    }
+  };
   var processComponentContextOnUpdate = function (fiber) {
     var typedElement = fiber.element;
     var globalDispatch = fiber.root.globalDispatch;
     var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
     var typedInstance = fiber.instance;
     var typedComponent = Component;
-    if (!(typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance._contextFiber) || !typedInstance._contextFiber.mounted) {
+    if (!(typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance._contextFiber) || !typedInstance._contextFiber.isMounted) {
       var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
       var context = globalDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
       typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance.setContext(ProviderFiber);
@@ -1905,6 +1965,12 @@
     } else {
       return { updated: false };
     }
+  };
+  var classComponentCatch = function (fiber, error, targetFiber) {
+    processComponentStateFromError(fiber, error);
+    var children = processComponentRenderOnMountAndUpdate(fiber);
+    processComponentDidCatchOnMountAndUpdate(fiber, error, targetFiber);
+    return children;
   };
 
   var jobs = new Set();
@@ -2071,7 +2137,7 @@
     if (!fiber.instance) {
       var children = classComponentMount(fiber);
       return nextWorkCommon(fiber, children);
-    } else if (!fiber.activated) {
+    } else if (!fiber.isActivated) {
       var children = classComponentActive(fiber);
       return nextWorkCommon(fiber, children);
     } else {
@@ -2185,7 +2251,7 @@
     if (!fiber.instance) {
       var children = reactiveComponentMount(fiber);
       return nextWorkCommon(fiber, children);
-    } else if (!fiber.activated) {
+    } else if (!fiber.isActivated) {
       var children = reactiveComponentActive(fiber);
       return nextWorkCommon(fiber, children);
     } else {
@@ -2237,7 +2303,7 @@
     var Context = typedType.Context;
     currentComponentFiber.current = fiber;
     // for deactivated context fiber, maybe will not update children context, but all the children has deactivated, so it will not matter
-    if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.mounted) {
+    if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.isMounted) {
       var ProviderFiber = globalDispatch.resolveContextFiber(fiber, Context);
       var context = globalDispatch.resolveContextValue(ProviderFiber, Context);
       fiber.instance.context = context;
@@ -2269,16 +2335,16 @@
     return transformKeepLiveChildrenFiber(fiber, children);
   };
   var nextWorkSync = function (fiber) {
-    if (!fiber.mounted) return [];
-    if (fiber.invoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__))) return [];
+    if (!fiber.isMounted) return [];
+    if (fiber.isInvoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__))) return [];
     currentRunningFiber$1.current = fiber;
     var children = [];
     if (fiber.type & NODE_TYPE.__isDynamicNode__) children = nextWorkComponent(fiber);
     else if (fiber.type & NODE_TYPE.__isObjectNode__) children = nextWorkObject(fiber);
     else if (fiber.type & NODE_TYPE.__isKeepLiveNode__) children = nextWorkKeepLive(fiber);
     else children = nextWorkNormal(fiber);
-    fiber.invoked = true;
-    fiber.activated = true;
+    fiber.isInvoked = true;
+    fiber.isActivated = true;
     currentRunningFiber$1.current = null;
     return children;
   };
@@ -2288,8 +2354,8 @@
       return __generator(this, function (_a) {
         switch (_a.label) {
           case 0:
-            if (!fiber.mounted) return [2 /*return*/, []];
-            if (fiber.invoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__))) return [2 /*return*/, []];
+            if (!fiber.isMounted) return [2 /*return*/, []];
+            if (fiber.isInvoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__))) return [2 /*return*/, []];
             currentRunningFiber$1.current = fiber;
             children = [];
             if (!(fiber.type & NODE_TYPE.__isDynamicNode__)) return [3 /*break*/, 1];
@@ -2307,8 +2373,8 @@
             else children = nextWorkNormal(fiber);
             _a.label = 4;
           case 4:
-            fiber.invoked = true;
-            fiber.activated = true;
+            fiber.isInvoked = true;
+            fiber.isActivated = true;
             currentRunningFiber$1.current = null;
             return [2 /*return*/, children];
         }
@@ -2317,15 +2383,39 @@
   };
   // TODO maybe should provider a transform function to create fiber one by one?
   var nextWorkAsync = function (fiber, loopController) {
-    if (!fiber.mounted) return null;
-    if (!fiber.invoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
+    if (!fiber.isMounted) return null;
+    if (!fiber.isInvoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
       currentRunningFiber$1.current = fiber;
       if (fiber.type & NODE_TYPE.__isDynamicNode__) nextWorkComponent(fiber);
       else if (fiber.type & NODE_TYPE.__isObjectNode__) nextWorkObject(fiber);
       else if (fiber.type & NODE_TYPE.__isKeepLiveNode__) nextWorkKeepLive(fiber);
       else nextWorkNormal(fiber);
-      fiber.invoked = true;
-      fiber.activated = true;
+      fiber.isInvoked = true;
+      fiber.isActivated = true;
+      currentRunningFiber$1.current = null;
+      if (fiber.children.length) {
+        return fiber.child;
+      }
+    }
+    var nextFiber = fiber;
+    while (nextFiber && nextFiber !== loopController.getTopLevel()) {
+      loopController.getUpdateList(nextFiber);
+      if (nextFiber.sibling) return nextFiber.sibling;
+      nextFiber = nextFiber.parent;
+    }
+    if (nextFiber === loopController.getTopLevel()) {
+      loopController.getUpdateList(nextFiber);
+    }
+    return null;
+  };
+  var nextWorkError = function (fiber, loopController, error, targetFiber) {
+    if (!fiber.isMounted) return null;
+    if (!fiber.isInvoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
+      currentRunningFiber$1.current = fiber;
+      var children = classComponentCatch(fiber, error, targetFiber);
+      nextWorkCommon(fiber, children);
+      fiber.isInvoked = true;
+      fiber.isActivated = true;
       currentRunningFiber$1.current = null;
       if (fiber.children.length) {
         return fiber.child;
@@ -2496,7 +2586,7 @@
   var defaultUpdateFiberNode = function (fiber) {
     var globalDispatch = fiber.root.globalDispatch;
     if (fiber.type & NODE_TYPE.__isMemo__) {
-      if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(fiber.pendingProps, fiber.memoizedProps) && fiber.activated) {
+      if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(fiber.pendingProps, fiber.memoizedProps) && fiber.isActivated) {
         fiber.afterUpdate();
       } else {
         fiber.prepareUpdate();
@@ -2551,7 +2641,7 @@
   var defaultGenerateUnmountArrayMap = function (fiber, unmount, map) {
     var allUnmount = flatten(unmount);
     var exist = map[fiber.uid] || [];
-    map[fiber.uid] = __spreadArray(__spreadArray([], exist, true), allUnmount, true);
+    map[fiber.uid] = __spreadArray(__spreadArray([], exist, true), allUnmount.map(generateFiberToList), true);
   };
 
   var defaultGetContextMapFromMap = function (fiber, map) {
@@ -2764,7 +2854,7 @@
     unmountMap[fiber.uid] = [];
     if (allUnmountFiber.length)
       allUnmountFiber.forEach(function (l) {
-        return unmountFiber(l);
+        return unmountList(l);
       });
   };
 
@@ -3088,7 +3178,7 @@
         globalScope.modifyFiberRoot = null;
         while (globalScope.modifyFiberArray.length) {
           var newProgressFiber = globalScope.modifyFiberArray.shift();
-          if (newProgressFiber === null || newProgressFiber === void 0 ? void 0 : newProgressFiber.mounted) {
+          if (newProgressFiber === null || newProgressFiber === void 0 ? void 0 : newProgressFiber.isMounted) {
             globalDispatch.beginProgressList(globalScope);
             globalScope.modifyFiberRoot = newProgressFiber;
             return newProgressFiber;
@@ -3150,6 +3240,21 @@
       updateEntry(globalDispatch, globalScope);
     }
   };
+  var triggerError = function (fiber, error) {
+    var globalDispatch = fiber.root.globalDispatch;
+    var errorBoundariesFiber = globalDispatch.resolveErrorBoundaries(fiber);
+    if (errorBoundariesFiber) {
+      var errorDispatch = new ClientDispatch();
+      var errorScope = new DomScope();
+      errorScope.modifyFiberRoot = errorBoundariesFiber;
+      errorBoundariesFiber.triggerUpdate();
+      var updateFiberController = generateUpdateControllerWithDispatch(errorDispatch, errorScope);
+      var reconcileUpdate = generateReconcileUpdate(errorDispatch, errorScope);
+      var nextFiber = nextWorkError(errorBoundariesFiber, updateFiberController, error, fiber);
+      updateFiberController.setYield(nextFiber);
+      updateAllSync(updateFiberController, reconcileUpdate);
+    }
+  };
 
   var append$2 = function (fiber, parentFiberWithDom) {
     if (fiber.patch & PATCH_TYPE.__pendingAppend__) {
@@ -3174,7 +3279,8 @@
       Promise.resolve().then(function () {
         new Set(allListeners_1).forEach(function (i) {
           var fiber = i._ownerFiber;
-          if ((fiber === null || fiber === void 0 ? void 0 : fiber.mounted) && (fiber === null || fiber === void 0 ? void 0 : fiber.activated)) fiber.update();
+          if ((fiber === null || fiber === void 0 ? void 0 : fiber.isMounted) && (fiber === null || fiber === void 0 ? void 0 : fiber.isActivated))
+            fiber.update();
         });
       });
       if (fiber.patch & PATCH_TYPE.__pendingContext__) fiber.patch ^= PATCH_TYPE.__pendingContext__;
@@ -3197,19 +3303,40 @@
       return true;
     });
   };
-  // const getNextScopeStartDom = (parentDom: Element) => {
-  //   const children = Array.from(parentDom.childNodes);
-  //   const targetElement = children.find((dom) => {
-  //     const typedDom = dom as HydrateDOM;
-  //     if (typedDom.__hydrate__) return false;
-  //     return true;
-  //   });
-  //   if (targetElement && targetElement.nodeType === Node.COMMENT_NODE && targetElement.textContent === commentS) {
-  //     return targetElement;
-  //   } else {
-  //     return false;
-  //   }
-  // };
+  var getNextHydrateScope = function (parentDom) {
+    var children = Array.from(parentDom.childNodes);
+    var start = null;
+    var index = 0;
+    var end = null;
+    for (var i = 0; i < children.length; i++) {
+      var typedDom = children[i];
+      if (!typedDom.__hydrate__) {
+        if (typedDom.nodeType === Node.COMMENT_NODE) {
+          if (typedDom.textContent === commentS) {
+            start = start || typedDom;
+            index++;
+          }
+          if (typedDom.textContent === commentE) {
+            index--;
+            if (index === 0) {
+              end = typedDom;
+            }
+          }
+        } else {
+          // there are some not match error, just break.
+          if (!start) break;
+        }
+      }
+      if (start && end) break;
+    }
+    return { start: start, end: end };
+  };
+  var generateHydrateScope = function (fiber, scope) {
+    var globalDispatch = fiber.root.globalDispatch;
+    var scopeId = globalDispatch.resolveScopeId(fiber);
+    // TODO 如果scope不存在，回退到更上层的scope
+    globalDispatch.hydrateScope[scopeId] = scope;
+  };
   var checkHydrateDom = function (fiber, dom) {
     if (!dom) {
       log({
@@ -3273,14 +3400,26 @@
   };
   var getHydrateDom = function (fiber, parentDom) {
     if (IS_SINGLE_ELEMENT[parentDom.tagName.toLowerCase()]) return { result: true };
-    var dom = getNextHydrateDom(parentDom);
-    var result = checkHydrateDom(fiber, dom);
-    if (result) {
-      var typedDom = dom;
-      fiber.node = typedDom;
-      return { dom: typedDom, result: result };
+    if (isCommentStartElement(fiber)) {
+      var scope = getNextHydrateScope(parentDom);
+      generateHydrateScope(fiber, scope);
+      var dom = scope.start;
+      if (dom) {
+        fiber.node = dom;
+        return { dom: dom, result: true };
+      } else {
+        return { dom: dom, result: false };
+      }
     } else {
-      return { dom: dom, result: result };
+      var dom = getNextHydrateDom(parentDom);
+      var result = checkHydrateDom(fiber, dom);
+      if (result) {
+        var typedDom = dom;
+        fiber.node = typedDom;
+        return { dom: typedDom, result: result };
+      } else {
+        return { dom: dom, result: result };
+      }
     }
   };
 
@@ -3384,7 +3523,7 @@
       allDeactivateFibers === null || allDeactivateFibers === void 0
         ? void 0
         : allDeactivateFibers.forEach(function (fiber) {
-            if (fiber.activated) deactivateFiber(fiber);
+            if (fiber.isActivated) deactivateFiber(fiber);
           });
       if (fiber.patch & PATCH_TYPE.__pendingDeactivate__) fiber.patch ^= PATCH_TYPE.__pendingDeactivate__;
     }
@@ -3418,9 +3557,9 @@
   var fallback = function (fiber) {
     var renderScope = fiber.root.globalScope;
     if (renderScope.isHydrateRender && fiber.type & NODE_TYPE.__isPlainNode__) {
+      var pendingDeleteArray_1 = [];
       var dom = fiber.node;
       var children = Array.from(dom.childNodes);
-      var pendingDeleteArray_1 = [];
       children.forEach(function (node) {
         var typedNode = node;
         if (!typedNode.__hydrate__) {
@@ -3884,7 +4023,9 @@
   var ClientDispatch = /** @class */ (function () {
     function ClientDispatch() {
       this.strictMap = {};
+      this.scopeIdMap = {};
       this.keepLiveMap = {};
+      this.errorBoundariesMap = {};
       this.effectMap = {};
       this.layoutEffectMap = {};
       this.suspenseMap = {};
@@ -3892,9 +4033,14 @@
       this.contextMap = {};
       this.unmountMap = {};
       this.eventMap = {};
+      this.hydrateScope = {};
     }
-    ClientDispatch.prototype.trigger = function (_fiber) {
+    ClientDispatch.prototype.triggerUpdate = function (_fiber) {
       triggerUpdate(_fiber);
+    };
+    ClientDispatch.prototype.triggerError = function (_fiber, _error) {
+      // void 0;
+      triggerError(_fiber, _error);
     };
     ClientDispatch.prototype.resolveLazyElement = function (_fiber) {
       return defaultResolveLazyElement$1(_fiber);
@@ -3917,11 +4063,23 @@
     ClientDispatch.prototype.resolveKeepLiveMap = function (_fiber) {
       defaultGenerateKeepLiveMap(_fiber, this.keepLiveMap);
     };
+    ClientDispatch.prototype.resolveScopeId = function (_fiber) {
+      return this.scopeIdMap[_fiber.uid];
+    };
+    ClientDispatch.prototype.resolveScopeIdMap = function (_fiber) {
+      defaultGenerateScopeMap(_fiber, this.scopeIdMap);
+    };
     ClientDispatch.prototype.resolveStrictMap = function (_fiber) {
       defaultGenerateStrictMap(_fiber, this.strictMap);
     };
     ClientDispatch.prototype.resolveStrictValue = function (_fiber) {
       return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
+    };
+    ClientDispatch.prototype.resolveErrorBoundaries = function (_fiber) {
+      return this.errorBoundariesMap[_fiber.uid] || this.errorBoundariesMap[_fiber.parent.uid];
+    };
+    ClientDispatch.prototype.resolveErrorBoundariesMap = function (_fiber) {
+      defaultGenerateErrorBoundariesMap(_fiber, this.errorBoundariesMap);
     };
     ClientDispatch.prototype.resolveSuspenseMap = function (_fiber) {
       defaultGenerateSuspenseMap(_fiber, this.suspenseMap);
@@ -4044,7 +4202,7 @@
     ClientDispatch.prototype.reconcileUpdate = function (_list) {
       var _this = this;
       _list.listToFoot(function (_fiber) {
-        if (_fiber.mounted && _fiber.activated) {
+        if (_fiber.isMounted && _fiber.isActivated) {
           var _isSVG_1 = _this.svgTypeMap[_fiber.uid];
           safeCallWithFiber({
             fiber: _fiber,
@@ -4079,7 +4237,7 @@
         }
       });
       _list.listToHead(function (_fiber) {
-        if (_fiber.mounted && _fiber.activated) {
+        if (_fiber.isMounted && _fiber.isActivated) {
           safeCallWithFiber({
             fiber: _fiber,
             action: function () {
@@ -4089,7 +4247,7 @@
         }
       });
       _list.listToFoot(function (_fiber) {
-        if (_fiber.mounted && _fiber.activated) {
+        if (_fiber.isMounted && _fiber.isActivated) {
           safeCallWithFiber({
             fiber: _fiber,
             action: function () {
@@ -4099,7 +4257,7 @@
         }
       });
       _list.listToFoot(function (_fiber) {
-        if (_fiber.mounted && _fiber.activated) {
+        if (_fiber.isMounted && _fiber.isActivated) {
           safeCallWithFiber({
             fiber: _fiber,
             action: function () {
@@ -4155,12 +4313,13 @@
     ClientDispatch.prototype.pendingRef = function (_fiber) {
       if (_fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
         if (_fiber.patch & PATCH_TYPE.__pendingRef__) return;
-        _fiber.patch |= PATCH_TYPE.__pendingRef__;
-        if (_fiber.element.ref)
+        if (_fiber.element.ref) {
+          _fiber.patch |= PATCH_TYPE.__pendingRef__;
           this.pendingLayoutEffect(_fiber, function () {
             _fiber.patch ^= PATCH_TYPE.__pendingRef__;
             setRef(_fiber);
           });
+        }
       }
     };
     ClientDispatch.prototype.removeFiber = function (_fiber) {
@@ -4168,11 +4327,14 @@
       delete this.strictMap[_fiber.uid];
       delete this.effectMap[_fiber.uid];
       delete this.contextMap[_fiber.uid];
+      delete this.scopeIdMap[_fiber.uid];
       delete this.unmountMap[_fiber.uid];
       delete this.svgTypeMap[_fiber.uid];
       delete this.keepLiveMap[_fiber.uid];
       delete this.suspenseMap[_fiber.uid];
+      delete this.hydrateScope[_fiber.uid];
       delete this.layoutEffectMap[_fiber.uid];
+      delete this.errorBoundariesMap[_fiber.uid];
     };
     return ClientDispatch;
   })();
@@ -4270,13 +4432,13 @@
       });
     });
   };
-  var hydrate = function (element, container, asyncRender) {
+  function hydrate(element, container, asyncRender) {
     if (asyncRender) {
       return hydrateAsync(element, container);
     } else {
       return hydrateSync(element, container);
     }
-  };
+  }
 
   var append = function (fiber, parentFiberWithDom) {
     if (fiber.patch & PATCH_TYPE.__pendingAppend__) {
@@ -5156,6 +5318,8 @@
     function ServerDispatch() {
       this.effectMap = {};
       this.strictMap = {};
+      this.scopeIdMap = {};
+      this.errorBoundariesMap = {};
       this.keepLiveMap = {};
       this.layoutEffectMap = {};
       this.suspenseMap = {};
@@ -5163,7 +5327,11 @@
       this.unmountMap = {};
       this.eventMap = {};
     }
-    ServerDispatch.prototype.trigger = function (_fiber) {};
+    ServerDispatch.prototype.triggerUpdate = function (_fiber) {};
+    ServerDispatch.prototype.triggerError = function (_fiber, _error) {
+      // server side runtime error
+      throw _error;
+    };
     ServerDispatch.prototype.resolveLazyElement = function (_fiber) {
       return defaultResolveLazyElement(_fiber);
     };
@@ -5176,6 +5344,10 @@
       return null;
     };
     ServerDispatch.prototype.resolveKeepLiveMap = function (_fiber) {};
+    ServerDispatch.prototype.resolveScopeId = function (_fiber) {
+      return "";
+    };
+    ServerDispatch.prototype.resolveScopeIdMap = function (_fiber) {};
     ServerDispatch.prototype.resolveStrictMap = function (_fiber) {};
     ServerDispatch.prototype.resolveStrictValue = function (_fiber) {
       return false;
@@ -5183,6 +5355,10 @@
     ServerDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
       return processHookNode(_fiber, _hookParams);
     };
+    ServerDispatch.prototype.resolveErrorBoundaries = function (_fiber) {
+      return null;
+    };
+    ServerDispatch.prototype.resolveErrorBoundariesMap = function (_fiber) {};
     ServerDispatch.prototype.resolveSuspenseMap = function (_fiber) {
       defaultGenerateSuspenseMap(_fiber, this.suspenseMap);
     };
@@ -5315,15 +5491,15 @@
       });
     });
   };
-  var renderToString = function (element, asyncRender) {
+  function renderToString(element, asyncRender) {
     if (asyncRender) {
       return renderToStringAsync(element);
     } else {
       return renderToStringSync(element);
     }
-  };
+  }
 
-  var version = "0.0.2";
+  var version = "0.0.3";
   var flushSync = safeCall;
   var unstable_batchedUpdates = safeCall;
   var ReactDOM = {
