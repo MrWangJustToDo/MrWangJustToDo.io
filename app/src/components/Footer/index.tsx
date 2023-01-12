@@ -3,8 +3,10 @@ import { memo } from "react";
 import { AiFillHeart } from "react-icons/ai";
 
 import { BLOG_SOURCE } from "@app/config/source";
+import { useIsMounted } from "@app/hooks/useIsMounted";
 
 const _Footer = () => {
+  const isMounted = useIsMounted();
   return (
     <Box textAlign="center">
       <Flex marginTop="6" justifyContent="center" alignItems="center">
@@ -18,7 +20,7 @@ const _Footer = () => {
         </Text>
       </Flex>
       <Text fontSize="sm" marginTop="2.5" marginBottom="9" color="lightTextColor">
-        {new Date().getFullYear()}
+        {isMounted ? new Date().getFullYear() : ""}
       </Text>
     </Box>
   );
