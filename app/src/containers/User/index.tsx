@@ -13,6 +13,7 @@ import {
   Skeleton,
   SkeletonCircle,
   SkeletonText,
+  Spacer,
   StackDivider,
   Text,
 } from "@chakra-ui/react";
@@ -48,11 +49,15 @@ const _User = () => {
 
   return (
     <Flex flexDirection="column" padding="3" height={{ md: "100%" }} className="tour_about">
-      <Box padding="2">
+      <Flex padding="2" alignItems="flex-end">
         <Avatar name={data.viewer.name} src={data.viewer.avatarUrl} size="xl">
           <AvatarBadge bg="green.500" boxSize="0.8em" />
         </Avatar>
-      </Box>
+        <Spacer marginLeft="2" />
+        <Link target="_blank" color="red.400" href="/简历.pdf" title="个人简历">
+          About me（个人简历）
+        </Link>
+      </Flex>
       <Chart marginY="2" className="tour_commit" />
       <Divider marginY="2" />
       <HStack divider={<StackDivider />} spacing="2">

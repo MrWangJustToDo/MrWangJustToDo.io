@@ -11,8 +11,8 @@ import { theme } from "@app/theme";
 
 import type { NormalizedCacheObject } from "@apollo/client";
 import type { NextComponentType, NextPageContext } from "next";
-import type { AbstractIntlMessages, IntlError } from "next-intl";
 import type { AppProps } from "next/app";
+import type { AbstractIntlMessages, IntlError } from "next-intl";
 
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";

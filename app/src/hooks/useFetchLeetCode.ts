@@ -1,5 +1,5 @@
 import { createRequest } from "@blog/axios";
-import { useCallbackRef, useSafeLayoutEffect } from "@chakra-ui/react";
+import { useCallbackRef, useSafeLayoutEffect, useToast } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 
 const request = createRequest({ baseURL: "https://raw.githubusercontent.com/MrWangJustToDo/leetcode/main", timeout: 5000 });
@@ -9,6 +9,7 @@ const allPath = ["/LeetCode1.html", "/LeetCode2.html", "/LeetCode3.html", "/Leet
 export const useFetchLeetCode = () => {
   const [content, setContent] = useState<string[][]>(Array(allPath.length));
   const [loading, setLoading] = useState(false);
+  const open = useToast();
 
   const domParseRef = useRef<DOMParser>(null);
 
@@ -31,6 +32,13 @@ export const useFetchLeetCode = () => {
           }),
       ),
     );
+    if (all.some((i) => i.status === "rejected")) {
+      open({
+        title: "fetch error",
+        description: "can not fetch result",
+        status: "error",
+      });
+    }
     setContent(all.map((i) => (i.status === "fulfilled" ? i.value : [])));
     setLoading(false);
   });
