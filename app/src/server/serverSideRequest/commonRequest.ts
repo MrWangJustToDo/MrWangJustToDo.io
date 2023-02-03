@@ -2,8 +2,8 @@
 
 import { serverSideTranslations } from "../serverSideTranslations";
 
-import type { NameSpaceConfig } from "../serverSideTranslations";
 import type { GenerateExtensionRequest, GenerateStaticRequest } from "./type";
+import type { NameSpaceConfig } from "../serverSideTranslations";
 
 // new version of @chakra-ui not export this variable
 const STORAGE_KEY = "chakra-ui-color-mode";

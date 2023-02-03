@@ -3,8 +3,8 @@ import { once } from "lodash-es";
 
 import { withColorCookie, withColorCookieStatic, withI18n, withI18nStatic } from "./commonRequest";
 
-import type { ExcludeNameSpaceConfig, IncludeNameSpaceConfig, NameSpaceConfig } from "../serverSideTranslations";
 import type { GetServerSidePropsWithGql, GetStaticPropsWithGql, ServerSidePropsExtensionRequest, StaticPropsExtensionRequest } from "./type";
+import type { ExcludeNameSpaceConfig, IncludeNameSpaceConfig, NameSpaceConfig } from "../serverSideTranslations";
 import type { GetServerSideProps, GetStaticProps } from "next";
 
 // NOTE: if you use this function to wrapper getServerSideProps, you need make sure handle all error by you hand
