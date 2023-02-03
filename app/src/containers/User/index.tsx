@@ -54,7 +54,7 @@ const _User = () => {
           <AvatarBadge bg="green.500" boxSize="0.8em" />
         </Avatar>
         <Spacer marginLeft="2" />
-        <Link target="_blank" color="red.400" href="/简历.pdf" title="个人简历">
+        <Link target="_blank" color="red.400" href="简历.pdf" title="个人简历">
           About me（个人简历）
         </Link>
       </Flex>
