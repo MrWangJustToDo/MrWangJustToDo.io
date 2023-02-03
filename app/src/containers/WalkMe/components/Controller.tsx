@@ -1,7 +1,7 @@
 import { useCallbackRef } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React, { useCallback, useMemo } from "react";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 
 import { useOpenTourAfterRedirect, useOpenTourByInit, useSyncToursWithPathName } from "../hooks/controller";
 import { useWalkMeStore } from "../hooks/useWalkMeStore";

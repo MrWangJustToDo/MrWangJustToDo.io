@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 
 import { useEffectOnce } from "@app/hooks/useEffectOnce";
 

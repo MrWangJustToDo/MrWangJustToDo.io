@@ -1,5 +1,5 @@
 import { debounce } from "lodash-es";
-import create from "zustand";
+import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
 
 import { INITIAL_EDITOR, EDITOR_STORE_KEY } from "@app/config/editor";
