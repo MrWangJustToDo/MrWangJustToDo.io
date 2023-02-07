@@ -7,13 +7,15 @@ export const BLOG_GRID_HEIGHT = 10;
 const _generateFunction =
   (width: number) =>
   (index: number, id: string, dataLength: number): Layout => {
+    const h = BLOG_GRID_HEIGHT + Math.floor(dataLength / 60);
+    const maxH = h > 60 ? 60 : h;
     return {
       i: id + index,
       x: Math.floor(index % width),
       y: Math.floor(index / width),
       w: 1,
       maxW: width,
-      h: BLOG_GRID_HEIGHT + Math.floor(dataLength / 60),
+      h: maxH,
       minH: BLOG_GRID_HEIGHT,
     };
   };
