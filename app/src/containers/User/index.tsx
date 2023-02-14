@@ -13,7 +13,7 @@ import {
   Skeleton,
   SkeletonCircle,
   SkeletonText,
-  Spacer,
+  // Spacer,
   StackDivider,
   Text,
 } from "@chakra-ui/react";
@@ -53,10 +53,10 @@ const _User = () => {
         <Avatar name={data.viewer.name} src={data.viewer.avatarUrl} size="xl">
           <AvatarBadge bg="green.500" boxSize="0.8em" />
         </Avatar>
-        <Spacer marginLeft="2" />
+        {/* <Spacer marginLeft="2" />
         <Link target="_blank" color="red.400" href="简历.pdf" title="个人简历">
           About me（个人简历）
-        </Link>
+        </Link> */}
       </Flex>
       <Chart marginY="2" className="tour_commit" />
       <Divider marginY="2" />
