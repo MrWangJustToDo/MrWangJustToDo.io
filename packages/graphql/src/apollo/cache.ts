@@ -7,6 +7,7 @@ export const autoMergeCache = new InMemoryCache({
         issues: {
           keyArgs: false,
           merge(existing = { nodes: [] }, incoming) {
+            if (existing?.pageInfo?.startCursor === incoming?.pageInfo?.startCursor) return existing;
             return {
               ...existing,
               ...incoming,
@@ -21,19 +22,12 @@ export const autoMergeCache = new InMemoryCache({
         comments: {
           keyArgs: false,
           merge(existing = { nodes: [] }, incoming) {
-            const isList = !!incoming.nodes;
-            if (isList) {
-              const addedNodes = incoming.nodes.filter((node: Record<string, unknown>) =>
-                existing.nodes.every((_node: Record<string, unknown>) => _node.__ref !== node.__ref),
-              );
-              return {
-                ...existing,
-                ...incoming,
-                nodes: [...existing.nodes, ...addedNodes],
-              };
-            } else {
-              return existing;
-            }
+            if (existing?.pageInfo?.startCursor === incoming?.pageInfo?.startCursor) return existing;
+            return {
+              ...existing,
+              ...incoming,
+              nodes: [...existing.nodes, ...incoming.nodes],
+            };
           },
         },
       },
