@@ -14,13 +14,9 @@ export const INITIAL_EDITOR = {
 
 const { useState, useEffect, memo } = React;
 
-const { __my_react_reactive__, createReactive } = React as any;
-
 // ==== reactive api, more api see “https://github.com/MrWangJustToDo/MyReact” ==== //
 // reactive api like “Vue"
-const { reactiveApi, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted } = __my_react_reactive__;
-
-const { reactive, ref } = reactiveApi;
+const { createReactive, reactive, ref ,reactiveApi, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted } = (window as any).ReactReactive;
 
 const useReactiveApi_Time = () => {
   const timeRef = ref(new Date().toString());

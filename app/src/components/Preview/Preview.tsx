@@ -1,17 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 
-import { PLAYGROUND_REACT_WINDOW, PLAYGROUND_MY_REACT, PLAYGROUND_GRID_LAYOUT, PLAYGROUND_MY_REACT_DOM, ANTD_UMD, DAYJS_UMD } from "@app/config/source";
+import {
+  PLAYGROUND_REACT_WINDOW,
+  PLAYGROUND_MY_REACT,
+  PLAYGROUND_GRID_LAYOUT,
+  PLAYGROUND_MY_REACT_DOM,
+  ANTD_UMD,
+  DAYJS_UMD,
+  PLAYGROUND_MY_REACT_REACTIVE,
+} from "@app/config/source";
 import { useDebouncedState } from "@app/hooks/useDebouncedState";
 import { useEditor } from "@app/hooks/useEditor";
 import { generateIframeDOC, generateLinkElementsString, generateScriptElementsString, generateStyleElementsString, getAllFiles } from "@app/utils/preview";
 
 // const BABEL_URL = PLAYGROUND_BABEL;
 const REACT_URL = PLAYGROUND_MY_REACT;
+const REACT_REACTIVE_URL = PLAYGROUND_MY_REACT_REACTIVE;
 const REACT_DOM_URL = PLAYGROUND_MY_REACT_DOM;
 const REACT_WINDOW = PLAYGROUND_REACT_WINDOW;
 const GRID_LAYOUT = PLAYGROUND_GRID_LAYOUT;
 
-const ALL_SCRIPTS = Array.from(new Set([REACT_URL, REACT_DOM_URL, GRID_LAYOUT, REACT_WINDOW, DAYJS_UMD, ANTD_UMD]));
+const ALL_SCRIPTS = Array.from(new Set([REACT_URL, REACT_REACTIVE_URL, REACT_DOM_URL, GRID_LAYOUT, REACT_WINDOW, DAYJS_UMD, ANTD_UMD]));
 
 const DEFAULT_SCRIPTS: PreviewProps["scripts"] = ALL_SCRIPTS.map((s, index) => ({ href: s, id: index.toString() }));
 
