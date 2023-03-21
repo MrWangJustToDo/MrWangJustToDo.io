@@ -16,7 +16,7 @@ const { useState, useEffect, memo } = React;
 
 // ==== reactive api, more api see “https://github.com/MrWangJustToDo/MyReact” ==== //
 // reactive api like “Vue"
-const { createReactive, reactive, ref ,reactiveApi, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted } = (window as any).ReactReactive;
+const { createReactive, reactive, ref, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted } = (window as any).ReactReactive;
 
 const useReactiveApi_Time = () => {
   const timeRef = ref(new Date().toString());
@@ -68,7 +68,7 @@ const TestReactive = createReactive({
 
     return { changeRef, valueRef, count };
   },
-  render: ({ valueRef, changeRef, count }, { isMemo }) => { return <div> <h3>{ isMemo ? 'memo reactive' : 'reactive' }</h3> <p>update count: {count}</p> reactive control component: <input value={valueRef} onChange={changeRef} /></div> }
+  render: ({ valueRef, changeRef, count, isMemo }) => { return <div> <h3>{ isMemo ? 'memo reactive' : 'reactive' }</h3> <p>update count: {count}</p> reactive control component: <input value={valueRef} onChange={changeRef} /></div> }
 })
 
 const MemoTestReactive = memo(TestReactive);
