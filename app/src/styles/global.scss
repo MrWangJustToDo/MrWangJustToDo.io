@@ -56,6 +56,26 @@
   font-size: 0.9em;
   // margin-inline-start: 0.15em;
   // margin-inline-end: 0.15em;
+  // padding-left: 1.5px;
+  // padding-right: 1.5px;
+  // margin-left: 1px;
+  // margin-right: 1px;
+  // border-radius: 1px;
+  // background-color: var(--chakra-colors-gray-200);
+}
+
+.typo code:not(.hljs) {
+  font-size: 0.94em;
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-left: 1px;
+  margin-right: 1px;
+  border-radius: 1.5px;
+  background-color: var(--chakra-colors-gray-200);
+}
+
+.chakra-ui-dark .typo code:not(.hljs) {
+  background-color: var(--chakra-colors-whiteAlpha-300);
 }
 
 /* 去掉列表前的标识, li 会继承，大部分网站通常用列表来很多内容，所以应该当去 */

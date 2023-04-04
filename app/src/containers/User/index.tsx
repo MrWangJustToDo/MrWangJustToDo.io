@@ -4,6 +4,7 @@ import {
   Avatar,
   AvatarBadge,
   Box,
+  Button,
   Divider,
   Flex,
   HStack,
@@ -13,7 +14,6 @@ import {
   Skeleton,
   SkeletonCircle,
   SkeletonText,
-  // Spacer,
   StackDivider,
   Text,
 } from "@chakra-ui/react";
@@ -21,6 +21,7 @@ import React, { memo } from "react";
 import { AiOutlineGithub, AiOutlineMail, AiOutlineUser } from "react-icons/ai";
 import { SiLeetcode } from "react-icons/si";
 
+import { AboutMe } from "@app/components/AboutMe";
 import { Chart } from "@app/components/Chart";
 import { ErrorCom } from "@app/components/Error";
 import { Followers } from "@app/components/Follower";
@@ -53,23 +54,55 @@ const _User = () => {
         <Avatar name={data.viewer.name} src={data.viewer.avatarUrl} size="xl">
           <AvatarBadge bg="green.500" boxSize="0.8em" />
         </Avatar>
-        {/* <Spacer marginLeft="2" />
-        <Link target="_blank" color="red.400" href="简历.pdf" title="个人简历">
-          About me（个人简历）
-        </Link> */}
       </Flex>
       <Chart marginY="2" className="tour_commit" />
       <Divider marginY="2" />
       <HStack divider={<StackDivider />} spacing="2">
-        <IconButton aria-label="github" variant="link" icon={<Icon as={AiOutlineGithub} fontSize="xl" />} as="a" href="https://github.com/MrWangJustToDo/" />
-        <IconButton aria-label="leetcode" variant="link" icon={<Icon as={SiLeetcode} fontSize="xl" />} as="a" href="https://leetcode.com/MrWangSay/" />
+        <IconButton
+          as="a"
+          color="gray"
+          variant="outline"
+          aria-label="github"
+          href="https://github.com/MrWangJustToDo/"
+          icon={<Icon as={AiOutlineGithub} fontSize="xl" />}
+        />
+        <IconButton
+          as="a"
+          color="gray"
+          variant="outline"
+          aria-label="leetcode"
+          href="https://leetcode.com/MrWangSay/"
+          icon={<Icon as={SiLeetcode} fontSize="xl" />}
+        />
+        <AboutMe />
       </HStack>
       {/* <Text fontWeight="semibold">{data.viewer.login}</Text> */}
       <Box fontSize="sm" marginY="2">
         <Text fontWeight="semibold">Recommend:</Text>
-        <Link target="_blank" color="red.400" href="https://github.com/MrWangJustToDo/MyReact" title="https://github.com/MrWangJustToDo/MyReact">
-          MyReact
-        </Link>
+        <HStack divider={<StackDivider />} spacing="2" marginTop="1">
+          <Button
+            as="a"
+            size="sm"
+            color="red.300"
+            target="_blank"
+            variant="outline"
+            href="https://github.com/MrWangJustToDo/MyReact"
+            title="https://github.com/MrWangJustToDo/MyReact"
+          >
+            MyReact
+          </Button>
+          <Button
+            as="a"
+            size="sm"
+            color="red.300"
+            target="_blank"
+            variant="outline"
+            href="https://github.com/MrWangJustToDo/r-store"
+            title="https://github.com/MrWangJustToDo/r-store"
+          >
+            RStore
+          </Button>
+        </HStack>
       </Box>
       <Flex alignItems="center" marginTop="1">
         <Icon as={AiOutlineUser} />
