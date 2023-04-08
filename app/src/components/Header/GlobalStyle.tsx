@@ -15,7 +15,7 @@ export const GlobalStyle = () => {
       }
       .hljs {
         color: #383a42;
-        background: #fafafa;
+        background: #f5f5f5;
       }
       .hljs-comment,
       .hljs-quote {

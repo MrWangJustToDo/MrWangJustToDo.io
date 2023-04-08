@@ -22,7 +22,8 @@ export const Pagination = ({
         <IconButton
           aria-label="Prev"
           icon={<Icon as={AiOutlineLeft} />}
-          disabled={!hasPreviousPage}
+          isDisabled={!hasPreviousPage}
+          data-disable={hasPreviousPage}
           onClick={() => {
             push({
               pathname: "/",
@@ -37,7 +38,7 @@ export const Pagination = ({
         <IconButton
           aria-label="Next"
           icon={<Icon as={AiOutlineRight} />}
-          disabled={!hasNextPage}
+          isDisabled={!hasNextPage}
           onClick={() => {
             push({
               pathname: "/",

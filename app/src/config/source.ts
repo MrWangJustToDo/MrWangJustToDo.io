@@ -4,6 +4,10 @@ export const BLOG_SOURCE = "https://github.com/MrWangJustToDo/MrWangJustToDo.io/
 export const BLOG_REPOSITORY = "MrWangJustToDo.io";
 export const BLOG_REPOSITORY_OWNER = "MrWangJustToDo";
 
+// export const BLOG_SOURCE = "https://github.com/facebook/react/issues";
+// export const BLOG_REPOSITORY = "react";
+// export const BLOG_REPOSITORY_OWNER = "facebook";
+
 // can be replace here to use React
 export const PLAYGROUND_MY_REACT = "https://unpkg.com/@my-react/react@latest/dist/umd/index.development.js";
 export const PLAYGROUND_MY_REACT_REACTIVE = "https://unpkg.com/@my-react/react-reactive@latest/dist/umd/index.development.js";

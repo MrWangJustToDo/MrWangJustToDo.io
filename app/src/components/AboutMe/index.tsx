@@ -1,4 +1,4 @@
-import { HStack, Icon, IconButton, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, useDisclosure } from "@chakra-ui/react";
+import { AspectRatio, HStack, Icon, IconButton, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, useDisclosure } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { FaUserTie } from "react-icons/fa";
 
@@ -20,15 +20,19 @@ export const AboutMe = () => {
 
   return (
     <>
-      <IconButton color="gray" variant="outline" aria-label="github" onClick={onOpen} icon={<Icon as={FaUserTie} fontSize="xl" />} />
+      <IconButton color="gray" variant="outline" aria-label="about me" title="about me" onClick={onOpen} icon={<Icon as={FaUserTie} fontSize="xl" />} />
       <Modal size="4xl" isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
-        <ModalOverlay />
-        <ModalContent>
+        <ModalOverlay backdropFilter="blur(10px)" />
+        <ModalContent backgroundColor="cardBackgroundColor" border="1px" borderRadius="md" borderColor="cardBorderColor">
           <ModalCloseButton />
           <ModalBody>
-            <HStack>
-              <Image src={resourceUri("./1.png")} width="46%" alt="about me" />
-              <Image src={resourceUri("./2.png")} width="46%" alt="about me" />
+            <HStack alignItems="flex-start">
+              <AspectRatio ratio={11 / 16} width="46%">
+                <Image src={resourceUri("./1.png")} width="100%" alt="about me" />
+              </AspectRatio>
+              <AspectRatio ratio={12 / 16} width="46%">
+                <Image src={resourceUri("./2.png")} width="100%" alt="about me" />
+              </AspectRatio>
             </HStack>
           </ModalBody>
         </ModalContent>

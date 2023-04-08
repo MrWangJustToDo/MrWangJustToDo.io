@@ -8,7 +8,7 @@ export const semanticTokens: ChakraTheme["semanticTokens"] = {
     },
     cardBackgroundColor: {
       default: "whiteAlpha.500",
-      _dark: "blackAlpha.600",
+      _dark: "blackAlpha.700",
     },
     mobileModalColor: {
       default: "rgb(220, 220, 220)",

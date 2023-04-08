@@ -70,7 +70,7 @@ const _BlogList = () => {
   return (
     <Flex flexDirection="column" height="100%">
       <Box overflow="auto" paddingRight="4">
-        <BlogGrid data={data.repository.issues.nodes} />
+        <BlogGrid data={data.repository.issues.nodes} disableGridLayout={false} />
       </Box>
       <BlogModal />
       <Portal>

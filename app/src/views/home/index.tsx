@@ -71,7 +71,7 @@ export const Page = () => {
         <GridCard key="a" contentProps={{ overflow: "auto" }}>
           <User />
         </GridCard>
-        <GridCard key="b" className="grid-card-list">
+        <GridCard key="b" className="grid-card-list" enableBlur={false}>
           {ENABLE_INFINITY_SCROLL ? <BlogGridWithInfinityScroll /> : <BlogList />}
         </GridCard>
       </StyledResponsiveReactGridLayout>
