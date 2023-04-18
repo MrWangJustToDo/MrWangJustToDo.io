@@ -1,5 +1,5 @@
-import { createRequest } from "@blog/axios";
 import { useCallbackRef, useSafeLayoutEffect, useToast } from "@chakra-ui/react";
+import { createRequest } from "project-tool/request";
 import { useEffect, useRef, useState } from "react";
 
 const request = createRequest({ baseURL: "https://raw.githubusercontent.com/MrWangJustToDo/leetcode/main", timeout: 5000 });

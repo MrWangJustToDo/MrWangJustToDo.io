@@ -2,6 +2,7 @@ import { useColorModeValue, Menu, MenuButton, MenuList, MenuItem, Button, Icon, 
 import Editor from "@monaco-editor/react";
 import { useRef } from "react";
 import { AiOutlineDown, AiOutlineFile } from "react-icons/ai";
+import { BsCheck } from "react-icons/bs";
 
 import { useEditor } from "@app/hooks/useEditor";
 import { usePlayGround } from "@app/hooks/usePlayGround";
@@ -42,8 +43,8 @@ export const Monaco = () => {
             <MenuList>
               {Object.keys(files).map((key) => {
                 return (
-                  <MenuItem key={key} value={key} onClick={() => setFile(key)}>
-                    {files[key].name}
+                  <MenuItem key={key} value={key} onClick={() => setFile(key)} justifyContent="space-between">
+                    {files[key].name} {currentFile.name === files[key]?.name && <Icon as={BsCheck} />}
                   </MenuItem>
                 );
               })}

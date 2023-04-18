@@ -54,14 +54,6 @@
 
 .typo code {
   font-size: 0.9em;
-  // margin-inline-start: 0.15em;
-  // margin-inline-end: 0.15em;
-  // padding-left: 1.5px;
-  // padding-right: 1.5px;
-  // margin-left: 1px;
-  // margin-right: 1px;
-  // border-radius: 1px;
-  // background-color: var(--chakra-colors-gray-200);
 }
 
 .typo code:not(.hljs) {
@@ -342,7 +334,6 @@ blockquote {
 /* 去除 webkit 中 input 和 textarea 的默认样式  */
 .typo-input,
 .typo-textarea {
-  -webkit-appearance: none;
   border-radius: 0;
 }
 
