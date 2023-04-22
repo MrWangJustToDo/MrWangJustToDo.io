@@ -136,13 +136,13 @@ const _BlogListWithInfinityScroll = () => {
         <PlayGround />
         <Portal>
           <ButtonGroup variant="solid" position="fixed" bottom="4" right="4" className="tour_buttons">
-            <Button color="purple.500" textTransform="capitalize" onClick={() => refetch()} size={{ base: "sm", lg: "md" }}>
+            <Button colorScheme="facebook" textTransform="capitalize" onClick={() => refetch()} size={{ base: "sm", lg: "md" }}>
               refresh
             </Button>
-            <Button color="red.500" textTransform="capitalize" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
+            <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
               playGround
             </Button>
-            <Button color="purple.500" textTransform="capitalize" display={{ base: "none", lg: "block" }} onClick={() => setDisableGridLayout((last) => !last)}>
+            <Button colorScheme="facebook" textTransform="capitalize" display={{ base: "none", lg: "block" }} onClick={() => setDisableGridLayout((last) => !last)}>
               {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}
             </Button>
           </ButtonGroup>
@@ -162,16 +162,21 @@ const _BlogListWithInfinityScroll = () => {
       </Box>
       <Portal>
         <ButtonGroup variant="solid" position="fixed" bottom="4" right="4" className="tour_buttons">
-          <Button color="purple.500" textTransform="capitalize" onClick={() => refetch()} size={{ base: "sm", lg: "md" }}>
+          <Button colorScheme="facebook" textTransform="capitalize" onClick={() => refetch()} size={{ base: "sm", lg: "md" }}>
             refresh
           </Button>
-          <Button color="red.500" textTransform="capitalize" onClick={onOpenLeetCode} size={{ base: "sm", lg: "md" }}>
+          <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpenLeetCode} size={{ base: "sm", lg: "md" }}>
             leetCode
           </Button>
-          <Button color="red.500" textTransform="capitalize" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
+          <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
             playGround
           </Button>
-          <Button color="purple.500" textTransform="capitalize" display={{ base: "none", lg: "block" }} onClick={() => setDisableGridLayout((last) => !last)}>
+          <Button
+            colorScheme="facebook"
+            textTransform="capitalize"
+            display={{ base: "none", lg: "block" }}
+            onClick={() => setDisableGridLayout((last) => !last)}
+          >
             {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}
           </Button>
         </ButtonGroup>

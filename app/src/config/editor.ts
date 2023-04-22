@@ -528,6 +528,62 @@ body {
     id: "main",
     name: "index.html",
     language: "html",
-    content: "<h1 style='text-align: center;' >Play MyReact, open devtools to debug</h1> <div id='root'></div>",
+    content: `<h1 style='text-align: center;' >Play MyReact, open devtools to debug</h1> <div id='root'>
+      <style>
+        @keyframes loading {
+          0% {
+            transform: rotate(0deg)
+          }
+
+          50% {
+            transform: rotate(180deg)
+          }
+
+          100% {
+            transform: rotate(360deg)
+          }
+        }
+
+        .loadingBlock {
+          position: absolute;
+          width: 80px;
+          height: 80px;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          margin: auto;
+          border-radius: 50%;
+          animation: 1s loading linear infinite;
+          background: gray;
+        }
+
+        .loadingBlock::before {
+          content: '';
+          position: absolute;
+          width: 80%;
+          height: 80%;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          background: white;
+          border-radius: 50%;
+        }
+
+        .loadingBlock::after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 0;
+          border: 40px solid;
+          border-color: transparent white transparent transparent;
+          border-left: 10px;
+          left: 60%;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      </style>
+      <div class='loadingBlock'></div>
+    </div>`,
   },
 };
