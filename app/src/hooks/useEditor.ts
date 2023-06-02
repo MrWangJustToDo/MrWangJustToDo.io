@@ -45,7 +45,7 @@ export const useEditor = create<{
             ),
           }),
           {
-            name: EDITOR_STORE_KEY + "_2023-3-12",
+            name: EDITOR_STORE_KEY + "_2023-6-1",
           },
         )
       : (set, get) => ({
