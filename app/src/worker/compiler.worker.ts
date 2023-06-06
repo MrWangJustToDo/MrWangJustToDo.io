@@ -1,5 +1,6 @@
-import * as Babel from "@babel/standalone";
 import { debounce } from "lodash-es";
+
+importScripts("https://unpkg.com/@babel/standalone/babel.min.js");
 
 const compiler = (tsxString: string) => Babel.transform(tsxString, { filename: "index.tsx", presets: ["env", "typescript", "react"] });
 
