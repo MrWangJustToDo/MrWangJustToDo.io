@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { AiOutlineDown, AiOutlineFile } from "react-icons/ai";
 import { BsCheck } from "react-icons/bs";
 
-import { useEditor } from "@app/hooks/useEditor";
+import { useEditor_v2 } from "@app/hooks/useEditor";
 import { usePlayGround } from "@app/hooks/usePlayGround";
 import { useDomSize } from "@app/hooks/useSize";
 import { setMonacoTSXSupport } from "@app/utils/monaco";
@@ -20,7 +20,7 @@ export const Monaco = () => {
 
   const monacoInstance = useRef<monaco.editor.IStandaloneCodeEditor>();
 
-  const { file, files, setFile, setContent, reset } = useEditor();
+  const { file, files, setFile, setContent, reset } = useEditor_v2();
 
   const currentFile = files[file];
 

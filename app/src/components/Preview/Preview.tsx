@@ -10,7 +10,7 @@ import {
   PLAYGROUND_MY_REACT_REACTIVE,
 } from "@app/config/source";
 import { useDebouncedState } from "@app/hooks/useDebouncedState";
-import { useEditor } from "@app/hooks/useEditor";
+import { useEditor_v2 } from "@app/hooks/useEditor";
 import { generateIframeDOC, generateLinkElementsString, generateScriptElementsString, generateStyleElementsString, getAllFiles } from "@app/utils/preview";
 
 // const BABEL_URL = PLAYGROUND_BABEL;
@@ -32,7 +32,7 @@ export type PreviewProps = {
 };
 
 export const IFramePreview = ({ styles = [], scripts = [], links = [], onLoad }: PreviewProps) => {
-  const files = useEditor((state) => state.files);
+  const files = useEditor_v2((state) => state.files);
 
   const [compiled, setCompiled] = useState<{ js: string; id: number }>(null);
 

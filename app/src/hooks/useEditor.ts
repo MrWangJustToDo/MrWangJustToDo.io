@@ -1,4 +1,5 @@
 import { debounce } from "lodash-es";
+import { createState, withActions, withPersist } from "reactivity-store";
 import { create } from "zustand";
 import { persist, devtools } from "zustand/middleware";
 
@@ -79,3 +80,52 @@ export const useEditor = create<{
         }),
   ),
 );
+
+const setup = __DEV__
+  ? withActions(() => ({ file: "script.tsx", files: INITIAL_EDITOR }), {
+      generateActions: (state) => ({
+        reset: () => {
+          state.file = "script.tsx";
+          state.files = INITIAL_EDITOR;
+        },
+        setFile: (newFile: string) => {
+          const keys = Object.keys(state.files);
+          if (newFile !== state.file && keys.includes(newFile)) {
+            state.file = newFile;
+          }
+        },
+        setContent: debounce(
+          (content: string) => {
+            state.files[state.file as keyof typeof INITIAL_EDITOR].content = content;
+          },
+          200,
+          { leading: true },
+        ),
+      }),
+    })
+  : withActions(
+      withPersist(() => ({ file: "script.tsx", files: INITIAL_EDITOR }), { key: EDITOR_STORE_KEY + "_2023-6-25" + "_new" }),
+      {
+        generateActions: (state) => ({
+          reset: () => {
+            state.file = "script.tsx";
+            state.files = INITIAL_EDITOR;
+          },
+          setFile: (newFile: string) => {
+            const keys = Object.keys(state.files);
+            if (newFile !== state.file && keys.includes(newFile)) {
+              state.file = newFile;
+            }
+          },
+          setContent: debounce(
+            (content: string) => {
+              state.files[state.file as keyof typeof INITIAL_EDITOR].content = content;
+            },
+            200,
+            { leading: true },
+          ),
+        }),
+      },
+    );
+
+export const useEditor_v2 = createState(setup)
