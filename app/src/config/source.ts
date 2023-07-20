@@ -1,6 +1,7 @@
 import { resourceUri } from "@app/utils/resourceUri";
 
 export const BLOG_SOURCE = "https://github.com/MrWangJustToDo/MrWangJustToDo.io/issues";
+export const POWER_BY = "https://github.com/MrWangJustToDo/MyReact";
 export const BLOG_REPOSITORY = "MrWangJustToDo.io";
 export const BLOG_REPOSITORY_OWNER = "MrWangJustToDo";
 

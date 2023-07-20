@@ -1,3 +1,5 @@
+import withNext from '@my-react/react-refresh-tools/withNext';
+
 const isProd = process.env.NODE_ENV === "production";
 
 // https://www.swyx.io/how-to-add-monaco-editor-to-a-next-js-app-ha3  not work
@@ -29,4 +31,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNext(nextConfig);
