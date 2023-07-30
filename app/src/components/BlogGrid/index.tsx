@@ -1,8 +1,8 @@
 import { SimpleGrid } from "@chakra-ui/react";
-import { memo } from "react";
+import { memo, useEffect } from "react";
 
 import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, GRID_ROW_HEIGHT } from "@app/config/gridLayout";
-import { useGetResponseListLayout } from "@app/hooks/useGetResponseListLayout";
+import { useGetResponseListLayout, useListLayoutStore } from "@app/hooks/useGetResponseListLayout";
 import { useDomSize } from "@app/hooks/useSize";
 
 import { Card } from "../Card";
@@ -16,17 +16,28 @@ import type { GetBlogListQuery } from "@blog/graphql";
 const BLOG_GRID_COLS = { lg: 3, md: 3, sm: 2, xs: 1, xxs: 1 };
 
 const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"]["issues"]["nodes"] }) => {
-  const layouts = useGetResponseListLayout(data);
+  const newLayout = useGetResponseListLayout(data);
+
+  const { updateLayout, data: layouts, mergeLayout } = useListLayoutStore();
 
   const { width } = useDomSize({ cssSelector: ".grid-card-list" });
 
+  useEffect(() => {
+    mergeLayout(newLayout);
+  }, [mergeLayout, newLayout])
+
   if (width === 0) return null;
+
+  const hasSet = Object.keys(layouts).length > 0
 
   return (
     <ReactGridLayout
       width={width}
-      layouts={layouts}
+      layouts={hasSet ? layouts : newLayout}
       cols={BLOG_GRID_COLS}
+      onLayoutChange={(_, layouts) => {
+        updateLayout(layouts);
+      }}
       rowHeight={GRID_ROW_HEIGHT}
       draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
       draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}

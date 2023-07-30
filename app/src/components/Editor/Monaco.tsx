@@ -7,6 +7,7 @@ import { BsCheck } from "react-icons/bs";
 import { useEditor_v2 } from "@app/hooks/useEditor";
 import { usePlayGround } from "@app/hooks/usePlayGround";
 import { useDomSize } from "@app/hooks/useSize";
+import { useType } from "@app/hooks/useType";
 import { setMonacoTSXSupport } from "@app/utils/monaco";
 
 import type monaco from "monaco-editor";
@@ -15,6 +16,8 @@ export const Monaco = () => {
   const { onClose } = usePlayGround();
 
   const boxRef = useRef<HTMLDivElement>();
+
+  const type = useType((s) => s.type);
 
   const { height } = useDomSize({ ref: boxRef });
 
@@ -61,8 +64,8 @@ export const Monaco = () => {
             Close
           </Button>
         </WrapItem>
-        <Divider marginY="2" />
       </Wrap>
+      <Divider marginY="2" />
       <Box height={`calc(100% - ${height}px - 2px)`} width="100%" className="tour_playGround_editor">
         <Editor
           theme={theme}
@@ -70,10 +73,9 @@ export const Monaco = () => {
           defaultValue={currentFile.content}
           defaultLanguage={currentFile.language}
           onMount={(editor, monaco) => {
-            setMonacoTSXSupport(editor, monaco).then(() => {
+            setMonacoTSXSupport(editor, monaco, type).then(() => {
               monacoInstance.current = editor;
             });
-            // setMonacoTSXSupport(editor, monaco);
           }}
           onChange={() => {
             setContent(monacoInstance.current?.getValue());

@@ -7,6 +7,8 @@ import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, ENABLE_INFINITY_S
 import { BlogGridWithInfinityScroll, BlogList } from "@app/containers/BlogList";
 import { User } from "@app/containers/User";
 import { WalkMe } from "@app/containers/WalkMe";
+import { useEffectOnce } from "@app/hooks/useEffectOnce";
+import { useType } from "@app/hooks/useType";
 
 const GRID_COLS = { lg: 12, md: 12, sm: 12, xs: 2, xxs: 2 };
 const GRID_LAYOUTS = {
@@ -56,7 +58,13 @@ const GRID_LAYOUTS = {
   ],
 };
 
-export const Page = () => {
+export const Page = (p: { ReactType: string; ReactDOMType: string }) => {
+  const set = useType((s) => s.set);
+
+  useEffectOnce(() => {
+    set(p.ReactType + "\n" + p.ReactDOMType);
+  });
+
   return (
     <Container maxWidth={CONTAINER_WIDTH}>
       <WalkMe />

@@ -101,6 +101,17 @@ const _User = () => {
           >
             RStore
           </Button>
+          <Button
+            as="a"
+            size="sm"
+            color="red.300"
+            target="_blank"
+            variant="outline"
+            href="https://github.com/MrWangJustToDo/react-ssr-setup"
+            title="https://github.com/MrWangJustToDo/react-ssr-setup"
+          >
+            SSR template
+          </Button>
         </HStack>
       </Box>
       <Flex alignItems="center" marginTop="1">
