@@ -13,16 +13,22 @@ import {
   Button,
   ButtonGroup,
   useBreakpointValue,
+  IconButton,
 } from "@chakra-ui/react";
 import { throttle } from "lodash-es";
-import { memo, useMemo, useRef, useState } from "react";
+import { memo, useMemo, useRef } from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 import { BlogGrid } from "@app/components/BlogGrid";
 import { ErrorCom } from "@app/components/Error";
+import { GridLayoutButton } from "@app/components/GridLayoutButton";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "@app/config/source";
+import { useCollapse } from "@app/hooks/useCollapse";
 import { useGetListParams } from "@app/hooks/useGetListParams";
+import { useGridLayout } from "@app/hooks/useGridLayout";
 import { useLeetCode } from "@app/hooks/useLeetCode";
 import { usePlayGround } from "@app/hooks/usePlayGround";
+import { useDomSize } from "@app/hooks/useSize";
 
 import { BlogModal } from "../BlogModal";
 import { LeetCode } from "../LeetCode";
@@ -49,6 +55,38 @@ const BASIC_VARIABLE = {
     field: IssueOrderField.CreatedAt,
     direction: OrderDirection.Desc,
   },
+};
+
+const BlogListButton = (props: { onRefresh: () => void }) => {
+  const { onOpen } = usePlayGround();
+
+  const { onOpen: onOpenLeetCode } = useLeetCode();
+
+  const { state: collapse, toggle } = useCollapse();
+
+  const ref = useRef<HTMLDivElement>();
+
+  const { width } = useDomSize({ ref });
+
+  return (
+    <ButtonGroup position="fixed" bottom="4" right="4" className="tour_buttons" variant="solid">
+      <IconButton icon={collapse ? <FaChevronLeft /> : <FaChevronRight />} aria-label="collapse" onClick={toggle} />
+      <Box transitionProperty="width" transitionDuration="0.3s" width={collapse ? "0px" : width} overflow="hidden">
+        <ButtonGroup ref={ref}>
+          <Button colorScheme="facebook" textTransform="capitalize" onClick={() => props.onRefresh()} size={{ base: "sm", lg: "md" }}>
+            refresh
+          </Button>
+          <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
+            playGround
+          </Button>
+          <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpenLeetCode} size={{ base: "sm", lg: "md" }}>
+            leetCode
+          </Button>
+          <GridLayoutButton />
+        </ButtonGroup>
+      </Box>
+    </ButtonGroup>
+  );
 };
 
 const _BlogList = () => {
@@ -88,13 +126,9 @@ const _BlogList = () => {
 };
 
 const _BlogListWithInfinityScroll = () => {
-  const { onOpen } = usePlayGround();
-
-  const { onOpen: onOpenLeetCode } = useLeetCode();
-
   const ref = useRef<HTMLDivElement>();
 
-  const [disableGridLayout, setDisableGridLayout] = useState(false);
+  const disableGridLayout = useGridLayout((s) => s.state);
 
   const isMobileWidth = useBreakpointValue({ base: true, md: false });
 
@@ -133,20 +167,11 @@ const _BlogListWithInfinityScroll = () => {
     return (
       <>
         <ErrorCom error={error} />
-        <PlayGround />
         <Portal>
-          <ButtonGroup variant="solid" position="fixed" bottom="4" right="4" className="tour_buttons">
-            <Button colorScheme="facebook" textTransform="capitalize" onClick={() => refetch()} size={{ base: "sm", lg: "md" }}>
-              refresh
-            </Button>
-            <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
-              playGround
-            </Button>
-            <Button colorScheme="facebook" textTransform="capitalize" display={{ base: "none", lg: "block" }} onClick={() => setDisableGridLayout((last) => !last)}>
-              {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}
-            </Button>
-          </ButtonGroup>
+          <BlogListButton onRefresh={() => refetch()} />
         </Portal>
+        <PlayGround />
+        <LeetCode />
       </>
     );
 
@@ -161,25 +186,7 @@ const _BlogListWithInfinityScroll = () => {
         )}
       </Box>
       <Portal>
-        <ButtonGroup variant="solid" position="fixed" bottom="4" right="4" className="tour_buttons">
-          <Button colorScheme="facebook" textTransform="capitalize" onClick={() => refetch()} size={{ base: "sm", lg: "md" }}>
-            refresh
-          </Button>
-          <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpenLeetCode} size={{ base: "sm", lg: "md" }}>
-            leetCode
-          </Button>
-          <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
-            playGround
-          </Button>
-          <Button
-            colorScheme="facebook"
-            textTransform="capitalize"
-            display={{ base: "none", lg: "block" }}
-            onClick={() => setDisableGridLayout((last) => !last)}
-          >
-            {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}
-          </Button>
-        </ButtonGroup>
+        <BlogListButton onRefresh={() => refetch()} />
       </Portal>
       <BlogModal />
       <PlayGround />

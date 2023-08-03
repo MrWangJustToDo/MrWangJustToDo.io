@@ -1,5 +1,5 @@
 import RefreshWebpackPlugin from "@my-react/react-refresh-tools/RefreshWebpackPlugin";
-import { createRequire } from 'node:module'
+import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 
@@ -24,17 +24,17 @@ const nextConfig = {
   webpack: (config, { buildId: _build, dev, isServer, defaultLoaders, nextRuntime: _nextRuntime, webpack }) => {
     const originalEntry = config.entry;
 
-    config.entry = async () => {
-      const entries = await originalEntry();
-
-      if (entries["main.js"] && !entries["main.js"].includes(require.resolve("@my-react/react-refresh-tools/runtime"))) {
-        entries["main.js"].unshift(require.resolve("@my-react/react-refresh-tools/runtime"));
-      }
-
-      return entries;
-    };
-
     if (dev) {
+      config.entry = async () => {
+        const entries = await originalEntry();
+
+        if (entries["main.js"] && !entries["main.js"].includes(require.resolve("@my-react/react-refresh-tools/runtime"))) {
+          entries["main.js"].unshift(require.resolve("@my-react/react-refresh-tools/runtime"));
+        }
+
+        return entries;
+      };
+
       config.plugins.push(new RefreshWebpackPlugin());
     }
 

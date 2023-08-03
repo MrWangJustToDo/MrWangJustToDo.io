@@ -12,14 +12,21 @@ export const useListLayoutStore = createState(() => ({ data: {} as Layouts }), {
     },
     mergeLayout: (newLayout: Layouts) => {
       const oldData = s.data
+      const obj = {};
       Object.keys(newLayout).forEach((key) => {
+        obj[key] = [];
         const oldValue = oldData[key];
         const newValue = newLayout[key];
-        const newAdded = newValue.filter((item) => oldValue?.every((i) => i.i !== item.i));
-        if (newAdded.length) {
-          s.data[key].push(...newAdded);
-        }
-      })
+        newValue.forEach((item) => {
+          const lastItem = oldValue?.find((_i) => _i.i === item.i);
+          if (lastItem) {
+            obj[key].push(lastItem);
+          } else {
+            obj[key].push(item);
+          }
+        });
+      });
+      s.data = obj;
     }
   }),
 });
@@ -32,7 +39,7 @@ const _generateFunction =
     const layout = {
       i,
       x: Math.floor(index % width),
-      y: Math.floor(index / width),
+      y: Math.floor(index / width) * h,
       w: 1,
       maxW: width,
       h: h,

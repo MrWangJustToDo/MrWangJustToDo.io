@@ -222,8 +222,8 @@ importers:
         specifier: ^3.0.5
         version: 3.0.5(react-dom@18.2.0)(react@18.2.0)
       reactivity-store:
-        specifier: ^0.1.7
-        version: 0.1.7(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^0.1.8
+        version: 0.1.8(react-dom@18.2.0)(react@18.2.0)
       use-pinch-ref:
         specifier: ^0.1.3
         version: 0.1.3(react@18.2.0)
@@ -9723,8 +9723,8 @@ packages:
     dependencies:
       loose-envify: 1.4.0
 
-  /reactivity-store@0.1.7(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-ULDyAjTi0TzF5Ix/EY5r8JlR1YGqz+qQG/PZZVqZljVESBrRo7dts4kJxJ+TDXtpuQ/Qxs/XCTWmm0bJ1GHT4w==}
+  /reactivity-store@0.1.8(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-rF1SjHwTUQlc8LmpkgcWNbfbYE1hrWKMt/ZB0dZtXOrRUtonfyPEfV+EfXNl4AjwcS7GCwxxwdc9t2uThD7GKQ==}
     peerDependencies:
       react: ^17.0.2 || ^18.2.0
       react-dom: ^17.0.2 || ^18.2.0
