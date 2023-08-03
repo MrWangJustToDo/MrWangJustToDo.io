@@ -8,6 +8,7 @@ import { BlogGridWithInfinityScroll, BlogList } from "@app/containers/BlogList";
 import { User } from "@app/containers/User";
 import { WalkMe } from "@app/containers/WalkMe";
 import { useEffectOnce } from "@app/hooks/useEffectOnce";
+import { useMainCard } from "@app/hooks/useMainCard";
 import { useType } from "@app/hooks/useType";
 
 const GRID_COLS = { lg: 12, md: 12, sm: 12, xs: 2, xxs: 2 };
@@ -61,6 +62,8 @@ const GRID_LAYOUTS = {
 export const Page = (p: { ReactType: string; ReactDOMType: string }) => {
   const set = useType((s) => s.set);
 
+  const { drag, onDragEnd, onDragStart } = useMainCard();
+
   useEffectOnce(() => {
     set(p.ReactType + "\n" + p.ReactDOMType);
   });
@@ -75,11 +78,13 @@ export const Page = (p: { ReactType: string; ReactDOMType: string }) => {
         rowHeight={GRID_ROW_HEIGHT}
         draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
         draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
+        onDragStart={onDragStart}
+        onDragStop={onDragEnd}
       >
         <GridCard key="a" contentProps={{ overflow: "auto" }}>
           <User />
         </GridCard>
-        <GridCard key="b" className="grid-card-list" enableBlur={false}>
+        <GridCard key="b" className="grid-card-list" enableBlur={drag}>
           {ENABLE_INFINITY_SCROLL ? <BlogGridWithInfinityScroll /> : <BlogList />}
         </GridCard>
       </StyledResponsiveReactGridLayout>

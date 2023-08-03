@@ -10,7 +10,8 @@ import { Card } from "@app/components/Card";
 import { Comment } from "@app/components/Comment";
 import { ErrorCom } from "@app/components/Error";
 import { Hover } from "@app/components/Hover";
-import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "@app/config/source";
+// import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "@app/config/source";
+import { useBlogSource } from "@app/hooks/useBlogSource";
 import { mark } from "@app/utils/markdown";
 
 import type { GetSingleBlogQuery } from "@blog/graphql";
@@ -30,10 +31,12 @@ export const DetailModal = ({
   RenderLoading: JSX.Element;
   Render: ({ data }: { data: GetSingleBlogQuery }) => JSX.Element;
 }) => {
+  const { repository, owner } = useBlogSource((s) => s.source);
+
   const { data, loading, error, fetchMore, networkStatus } = useQuery(GetSingleBlogDocument, {
     variables: {
-      name: BLOG_REPOSITORY,
-      owner: BLOG_REPOSITORY_OWNER,
+      name: repository,
+      owner: owner,
       number: Number(id),
       first: COMMENT_LENGTH,
     },
@@ -88,26 +91,33 @@ export const DetailModalBody = ({ id }: { id: string }) => (
     Render={({ data }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const rendered = useMemo(() => mark.render(data?.repository?.issue?.body || ""), [data]);
-
-      return (
-        <>
-          <Card padding="2" borderColor="Highlight" backgroundColor="initial">
-            <Actor
-              marginTop="2"
-              alignItems="center"
-              time={data?.repository?.issue?.publishedAt}
-              login={data?.repository?.issue?.author?.login}
-              avatarUrl={data?.repository?.issue?.author?.avatarUrl}
-              avatarProps={{
-                width: 6,
-                height: 6,
-              }}
-            />
-            <Box className="typo" marginTop="3.5" fontSize={{ base: "sm", lg: "md" }} dangerouslySetInnerHTML={{ __html: rendered }} />
+      if (data?.repository?.issue) {
+        return (
+          <>
+            <Card padding="2" borderColor="Highlight" backgroundColor="initial">
+              <Actor
+                marginTop="2"
+                alignItems="center"
+                time={data?.repository?.issue?.publishedAt}
+                login={data?.repository?.issue?.author?.login}
+                avatarUrl={data?.repository?.issue?.author?.avatarUrl}
+                avatarProps={{
+                  width: 6,
+                  height: 6,
+                }}
+              />
+              <Box className="typo" marginTop="3.5" fontSize={{ base: "sm", lg: "md" }} dangerouslySetInnerHTML={{ __html: rendered }} />
+            </Card>
+            <Comment data={data.repository.issue.comments.nodes} />
+          </>
+        );
+      } else {
+        return (
+          <Card padding="6" backgroundColor="initial" boxShadow="none" borderColor="transparent" textAlign="center">
+            <Text>404 Not Found</Text>
           </Card>
-          <Comment data={data.repository.issue.comments.nodes} />
-        </>
-      );
+        );
+      }
     }}
   />
 );

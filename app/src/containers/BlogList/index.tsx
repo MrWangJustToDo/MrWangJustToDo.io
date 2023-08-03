@@ -14,15 +14,21 @@ import {
   ButtonGroup,
   useBreakpointValue,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Icon,
 } from "@chakra-ui/react";
 import { throttle } from "lodash-es";
 import { memo, useMemo, useRef } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { BsCheck } from "react-icons/bs";
+import { FaChevronDown, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 import { BlogGrid } from "@app/components/BlogGrid";
 import { ErrorCom } from "@app/components/Error";
 import { GridLayoutButton } from "@app/components/GridLayoutButton";
-import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "@app/config/source";
+import { useBlogSource } from "@app/hooks/useBlogSource";
 import { useCollapse } from "@app/hooks/useCollapse";
 import { useGetListParams } from "@app/hooks/useGetListParams";
 import { useGridLayout } from "@app/hooks/useGridLayout";
@@ -49,8 +55,6 @@ const BlogListLoading = () => (
 );
 
 const BASIC_VARIABLE = {
-  name: __CLIENT__ ? localStorage.getItem("blog_name") || BLOG_REPOSITORY : BLOG_REPOSITORY,
-  owner: __CLIENT__ ? localStorage.getItem("blog_owner") || BLOG_REPOSITORY_OWNER : BLOG_REPOSITORY_OWNER,
   orderBy: {
     field: IssueOrderField.CreatedAt,
     direction: OrderDirection.Desc,
@@ -68,6 +72,8 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
 
   const { width } = useDomSize({ ref });
 
+  const { sources, setSource, sourceName } = useBlogSource();
+
   return (
     <ButtonGroup position="fixed" bottom="4" right="4" className="tour_buttons" variant="solid">
       <IconButton icon={collapse ? <FaChevronLeft /> : <FaChevronRight />} aria-label="collapse" onClick={toggle} />
@@ -83,6 +89,27 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
             leetCode
           </Button>
           <GridLayoutButton />
+          <Box>
+            <Menu>
+              <MenuButton
+                colorScheme="facebook"
+                textTransform="capitalize"
+                as={Button}
+                minWidth="14em"
+                title="Change source"
+                rightIcon={<Icon as={FaChevronDown} fontSize="small" />}
+              >
+                {sourceName}
+              </MenuButton>
+              <MenuList>
+                {sources.map((item) => (
+                  <MenuItem key={item.name} onClick={() => setSource(item.name)} justifyContent="space-between">
+                    {item.name} {item.name === sourceName && <Icon as={BsCheck} fontSize="lg" />}
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Menu>
+          </Box>
         </ButtonGroup>
       </Box>
     </ButtonGroup>
@@ -91,9 +118,14 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
 
 const _BlogList = () => {
   const { before, after, navDirection = "first" } = useGetListParams();
+
+  const source = useBlogSource((s) => s.source);
+
   const { data, loading, error } = useQuery(GetBlogListDocument, {
     variables: {
       ...BASIC_VARIABLE,
+      name: source.repository,
+      owner: source.owner,
       first: navDirection === "first" ? ITEM_PER_PAGE : undefined,
       last: navDirection === "last" ? ITEM_PER_PAGE : undefined,
       after,
@@ -132,9 +164,13 @@ const _BlogListWithInfinityScroll = () => {
 
   const isMobileWidth = useBreakpointValue({ base: true, md: false });
 
+  const source = useBlogSource((s) => s.source);
+
   const { data, loading, error, fetchMore, refetch, networkStatus } = useQuery(GetBlogListDocument, {
     variables: {
       ...BASIC_VARIABLE,
+      name: source?.repository,
+      owner: source?.owner,
       first: ITEM_PER_PAGE,
     },
     notifyOnNetworkStatusChange: true,
@@ -180,7 +216,7 @@ const _BlogListWithInfinityScroll = () => {
       <Box ref={ref} overflow="auto" paddingRight="4" onScroll={onThrottleScroll} className="tour_blogList">
         <BlogGrid data={data.repository.issues.nodes} disableGridLayout={disableGridLayout || isMobileWidth} />
         {loading && data.repository.issues.nodes.length && (
-          <Center>
+          <Center height="60px">
             <Spinner />
           </Center>
         )}
