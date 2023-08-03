@@ -1,6 +1,6 @@
 import { NetworkStatus, useApolloClient, useQuery } from "@apollo/client";
 import { GetSingleBlogDocument } from "@blog/graphql";
-import { Box, Text, SkeletonText, SkeletonCircle, useCallbackRef, Icon, IconButton } from "@chakra-ui/react";
+import { Box, Text, SkeletonText, SkeletonCircle, useCallbackRef, Icon, IconButton, useColorModeValue } from "@chakra-ui/react";
 import { throttle } from "lodash-es";
 import { useEffect, useMemo } from "react";
 import { AiOutlineReload } from "react-icons/ai";
@@ -9,8 +9,6 @@ import { Actor } from "@app/components/Actor";
 import { Card } from "@app/components/Card";
 import { Comment } from "@app/components/Comment";
 import { ErrorCom } from "@app/components/Error";
-import { Hover } from "@app/components/Hover";
-// import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "@app/config/source";
 import { useBlogSource } from "@app/hooks/useBlogSource";
 import { mark } from "@app/utils/markdown";
 
@@ -25,9 +23,11 @@ const RenderWrapper = ({ data, Render }: { data: GetSingleBlogQuery; Render: ({ 
 export const DetailModal = ({
   id,
   Render,
+  needAutoLoad,
   RenderLoading,
 }: {
   id: string;
+  needAutoLoad?: boolean;
   RenderLoading: JSX.Element;
   Render: ({ data }: { data: GetSingleBlogQuery }) => JSX.Element;
 }) => {
@@ -67,11 +67,13 @@ export const DetailModal = ({
 
   useEffect(() => {
     const scrollElement = document.querySelector("#modal-scroll-box") as HTMLDivElement;
-    if (scrollElement) {
+    if (scrollElement && needAutoLoad) {
       scrollElement.addEventListener("scroll", onThrottleScroll);
-      return () => scrollElement.removeEventListener("scroll", onThrottleScroll);
+      return () => {
+        scrollElement.removeEventListener("scroll", onThrottleScroll);
+      };
     }
-  }, [onThrottleScroll]);
+  }, [onThrottleScroll, needAutoLoad]);
 
   if (loading && networkStatus !== NetworkStatus.fetchMore) return RenderLoading;
 
@@ -83,6 +85,7 @@ export const DetailModal = ({
 export const DetailModalBody = ({ id }: { id: string }) => (
   <DetailModal
     id={id}
+    needAutoLoad
     RenderLoading={
       <Box padding="2">
         <SkeletonText marginTop="4" noOfLines={8} />
@@ -136,18 +139,27 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const client = useApolloClient();
 
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const colorScheme = useColorModeValue("blackAlpha", "gray");
+
       const refetch = () =>
         client.refetchQueries({
           include: [GetSingleBlogDocument],
         });
 
       return (
-        <Box paddingRight="3em">
+        <Box paddingRight="3em" marginBottom="-1.5">
           <Text as="h1" fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
             {data?.repository?.issue?.title}
-            <Hover marginLeft="2" display="inline-flex" alignItems="center">
-              <IconButton size="sm" variant="link" aria-label="reload" onClick={() => refetch()} icon={<Icon as={AiOutlineReload} />} />
-            </Hover>
+            <IconButton
+              size="sm"
+              marginLeft="4"
+              variant="ghost"
+              colorScheme={colorScheme}
+              aria-label="reload"
+              onClick={() => refetch()}
+              icon={<Icon as={AiOutlineReload} />}
+            />
           </Text>
         </Box>
       );

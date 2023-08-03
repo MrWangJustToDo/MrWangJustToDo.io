@@ -67,7 +67,7 @@ const _PlayGroundContent = () => {
       draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
       draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
     >
-      <GridCard key="a">
+      <GridCard key="a" zIndex="1">
         <Editor />
       </GridCard>
       <GridCard key="b">

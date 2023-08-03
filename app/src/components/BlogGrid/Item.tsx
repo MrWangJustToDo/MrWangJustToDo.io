@@ -1,4 +1,4 @@
-import { Text, Flex, Box, Icon, IconButton, Divider } from "@chakra-ui/react";
+import { Text, Flex, Box, Icon, IconButton, Divider, Tooltip } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { AiOutlineRight } from "react-icons/ai";
@@ -32,9 +32,11 @@ const ItemHeader = ({ title, externalUrl, detailNumber }: { title: string; exter
 
   return (
     <Flex justifyContent="space-between" alignItems="center">
-      <Text fontSize={{ base: "18", md: "20", lg: "22" }} width="85%" fontWeight="medium" title={title} noOfLines={1}>
-        {title}
-      </Text>
+      <Tooltip label={title} placement="top" hasArrow>
+        <Text fontSize={{ base: "18", md: "20", lg: "22" }} width="85%" fontWeight="medium" noOfLines={1}>
+          {title}
+        </Text>
+      </Tooltip>
       <Hover display="flex" alignItems="center">
         <IconButton aria-label="detail" onClick={openModal} variant="link" size="sm" icon={<Icon as={AiOutlineRight} userSelect="none" />} />
       </Hover>
