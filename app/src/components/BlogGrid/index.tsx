@@ -1,5 +1,5 @@
 import { SimpleGrid } from "@chakra-ui/react";
-import { memo, useEffect } from "react";
+import { memo, useEffect, useMemo } from "react";
 
 import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, GRID_ROW_HEIGHT } from "@app/config/gridLayout";
 import { useGetResponseListLayout, useListLayoutStore } from "@app/hooks/useGetResponseListLayout";
@@ -24,16 +24,38 @@ const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"
 
   useEffect(() => {
     mergeLayout(newLayout);
-  }, [mergeLayout, newLayout])
+  }, [mergeLayout, newLayout]);
+
+  const mergedLayout = useMemo(() => {
+    const obj = {};
+    Object.keys(newLayout).forEach((key) => {
+      layouts[key] = layouts[key] || [];
+      const hasItem = layouts[key].length > 0;
+      obj[key] = [];
+      const oldValue = layouts[key];
+      const newValue = newLayout[key];
+      newValue.forEach((item) => {
+        const lastItem = oldValue.find((_i) => _i.i === item.i);
+        if (lastItem) {
+          obj[key].push(lastItem);
+        } else {
+          if (hasItem) {
+            obj[key].push({ ...item, y: Infinity });
+          } else {
+            obj[key].push(item);
+          }
+        }
+      });
+    });
+    return obj;
+  }, [newLayout, layouts]);
 
   if (width === 0) return null;
-
-  const hasSet = Object.keys(layouts).length > 0
 
   return (
     <ReactGridLayout
       width={width}
-      layouts={hasSet ? layouts : newLayout}
+      layouts={mergedLayout}
       cols={BLOG_GRID_COLS}
       onLayoutChange={(_, layouts) => {
         updateLayout(layouts);
