@@ -88,7 +88,7 @@ const _User = () => {
             href="https://github.com/MrWangJustToDo/MyReact"
             title="https://github.com/MrWangJustToDo/MyReact"
           >
-            MyReact
+            @my-react
           </Button>
           <Button
             as="a"
