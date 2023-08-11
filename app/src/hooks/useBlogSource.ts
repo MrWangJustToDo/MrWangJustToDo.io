@@ -2,7 +2,7 @@ import { createStore, ref } from "reactivity-store";
 
 const Source = [
   {
-    name: "MrWangJustToDo.io",
+    name: "Blog",
     url: "https://github.com/MrWangJustToDo/MrWangJustToDo.io/issues",
     repository: "MrWangJustToDo.io",
     owner: "MrWangJustToDo",

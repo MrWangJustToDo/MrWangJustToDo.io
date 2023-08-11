@@ -76,7 +76,7 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
 
   return (
     <ButtonGroup position="fixed" bottom="4" right="4" className="tour_buttons" variant="solid">
-      <IconButton icon={collapse ? <FaChevronLeft /> : <FaChevronRight />} aria-label="collapse" onClick={toggle} />
+      <IconButton icon={collapse ? <FaChevronLeft /> : <FaChevronRight />} aria-label="collapse" onClick={toggle} size={{ base: "sm", lg: "md" }} />
       <Box transitionProperty="width" transitionDuration="0.3s" width={collapse ? "0px" : width} overflow="hidden">
         <ButtonGroup ref={ref}>
           <Button colorScheme="facebook" textTransform="capitalize" onClick={() => props.onRefresh()} size={{ base: "sm", lg: "md" }}>
@@ -85,7 +85,7 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
           <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
             playGround
           </Button>
-          <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpenLeetCode} size={{ base: "sm", lg: "md" }}>
+          <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpenLeetCode} display={{ base: "none", lg: "block" }} size={{ base: "sm", lg: "md" }}>
             leetCode
           </Button>
           <GridLayoutButton />
@@ -98,6 +98,7 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
                 minWidth="14em"
                 title="Change source"
                 rightIcon={<Icon as={FaChevronDown} fontSize="small" />}
+                size={{ base: "sm", lg: "md" }}
               >
                 {sourceName}
               </MenuButton>
