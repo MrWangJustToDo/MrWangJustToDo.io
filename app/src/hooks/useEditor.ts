@@ -10,8 +10,8 @@ export const useEditor = create<{
   file: keyof typeof INITIAL_EDITOR;
   files: typeof INITIAL_EDITOR;
   reset: () => void;
-  setFile: (newKey: string) => void;
-  setContent: (newContent: string) => void;
+  setFile: (_newKey: string) => void;
+  setContent: (_newContent: string) => void;
 }>()(
   devtools(
     !__DEV__

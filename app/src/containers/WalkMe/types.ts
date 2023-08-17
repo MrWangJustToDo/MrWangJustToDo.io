@@ -2,8 +2,8 @@ import type { ReactElement } from "react";
 import type React from "react";
 
 export type BaseComp =
-  | ReactElement<Record<string, unknown>, (p: Record<string, unknown>) => ReactElement | null>
-  | ReactElement<Record<string, unknown>, (p: Record<string, unknown>) => ReactElement | null>[]
+  | ReactElement<Record<string, unknown>, (_p: Record<string, unknown>) => ReactElement | null>
+  | ReactElement<Record<string, unknown>, (_p: Record<string, unknown>) => ReactElement | null>[]
   | string
   | undefined
   | null;

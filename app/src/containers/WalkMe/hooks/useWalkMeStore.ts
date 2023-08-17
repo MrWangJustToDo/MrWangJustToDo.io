@@ -9,17 +9,17 @@ type ActionRes = (WalkMeHistoryItem & { redirectPath?: string }) | null;
 export const useWalkMeStore = create<{
   isOpen: boolean;
   history: WalkMeHistoryItem[];
-  updateHistory: (items: WalkMeHistoryItem[]) => void;
+  updateHistory: (_items: WalkMeHistoryItem[]) => void;
 
   tours: WalkMeTour[];
   currentTour: WalkMeTourItem | null;
-  setTours: (tours: WalkMeTour[]) => void;
+  setTours: (_tours: WalkMeTour[]) => void;
   gotoNextTour: () => ActionRes;
   gotoPrevTour: () => void;
 
   close: () => void;
   open: () => boolean;
-  reset: (force?: boolean) => void;
+  reset: (_force?: boolean) => void;
 }>((set, get) => ({
   isOpen: false,
 

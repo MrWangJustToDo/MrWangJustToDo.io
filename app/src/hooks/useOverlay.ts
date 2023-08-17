@@ -35,6 +35,7 @@ let count = 0;
 
 export const OverlayOpenContext = createContext<UseOverlayOpenType>(() => void 0);
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const OverlayCloseContext = createContext<({ modalId, closeAll }?: { modalId?: string; closeAll?: boolean }) => void>(() => void 0);
 
 export const OverlayArrayContext = createContext<{
