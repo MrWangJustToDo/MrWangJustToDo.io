@@ -103,7 +103,7 @@ importers:
         version: 3.0.2
       project-tool:
         specifier: git+ssh://git@github.com:MrWangJustToDo/project-tool.git
-        version: github.com/MrWangJustToDo/project-tool/c2b30052121f732350799295c40638793800afd5(typescript@4.7.4)
+        version: git@github.com+MrWangJustToDo/project-tool/c2b30052121f732350799295c40638793800afd5(typescript@4.7.4)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -159,8 +159,8 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
       '@my-react/react-dom':
-        specifier: ^0.2.2
-        version: 0.2.2(@my-react/react@0.2.2)
+        specifier: ^0.2.3
+        version: 0.2.3(@my-react/react@0.2.2)
       '@reactour/mask':
         specifier: ^1.1.0
         version: 1.1.0(react@18.2.0)
@@ -236,10 +236,10 @@ importers:
         version: 7.22.10
       '@my-react/react-refresh':
         specifier: ^0.2.2
-        version: 0.2.2(@my-react/react-dom@0.2.2)(@my-react/react@0.2.2)
+        version: 0.2.2(@my-react/react-dom@0.2.3)(@my-react/react@0.2.2)
       '@my-react/react-refresh-tools':
         specifier: ^0.0.4
-        version: 0.0.4(@my-react/react-dom@0.2.2)(@my-react/react@0.2.2)
+        version: 0.0.4(@my-react/react-dom@0.2.3)(@my-react/react@0.2.2)
       '@types/lodash-es':
         specifier: ^4.17.8
         version: 4.17.8
@@ -320,7 +320,7 @@ importers:
         version: 4.17.21
       project-tool:
         specifier: git+ssh://git@github.com:MrWangJustToDo/project-tool.git
-        version: github.com/MrWangJustToDo/project-tool/c2b30052121f732350799295c40638793800afd5(typescript@4.7.4)
+        version: git@github.com+MrWangJustToDo/project-tool/c2b30052121f732350799295c40638793800afd5(typescript@4.7.4)
       react:
         specifier: '>=16.8'
         version: 18.2.0
@@ -4408,8 +4408,8 @@ packages:
       hey-listen: 1.0.8
       tslib: 2.5.0
 
-  /@my-react/react-dom@0.2.2(@my-react/react@0.2.2):
-    resolution: {integrity: sha512-0/V6gTX4cRfLebYm3zLh9hYET9lDKXjOjnEU6gwq+mTfuGUUkw8oyjlsSUxRKMH1ynKeSqER0zXKBRpohFv73A==}
+  /@my-react/react-dom@0.2.3(@my-react/react@0.2.2):
+    resolution: {integrity: sha512-GUiLLqSKporWi+ht8Z1quomZqUlkFdS0m+1PkACP5pL1C9q+bjvONoeCItVL0UVQn9WqNbQKVNv6A3Fw9pWPIg==}
     peerDependencies:
       '@my-react/react': '>=0.2.2'
     dependencies:
@@ -4433,7 +4433,7 @@ packages:
       '@my-react/react': 0.2.2
       '@my-react/react-shared': 0.2.2
 
-  /@my-react/react-refresh-tools@0.0.4(@my-react/react-dom@0.2.2)(@my-react/react@0.2.2):
+  /@my-react/react-refresh-tools@0.0.4(@my-react/react-dom@0.2.3)(@my-react/react@0.2.2):
     resolution: {integrity: sha512-TRov7pD3xuc7ZknI5XOkcva5oboqXself1I0jL08Wkft6U8Becbv7M40dekpfN0wawiEIS2JfvsZmuHKomOUzA==}
     peerDependencies:
       webpack: ^4 || ^5
@@ -4441,20 +4441,20 @@ packages:
       webpack:
         optional: true
     dependencies:
-      '@my-react/react-refresh': 0.2.2(@my-react/react-dom@0.2.2)(@my-react/react@0.2.2)
+      '@my-react/react-refresh': 0.2.2(@my-react/react-dom@0.2.3)(@my-react/react@0.2.2)
     transitivePeerDependencies:
       - '@my-react/react'
       - '@my-react/react-dom'
     dev: true
 
-  /@my-react/react-refresh@0.2.2(@my-react/react-dom@0.2.2)(@my-react/react@0.2.2):
+  /@my-react/react-refresh@0.2.2(@my-react/react-dom@0.2.3)(@my-react/react@0.2.2):
     resolution: {integrity: sha512-bLr+T5tl2+8C3McTL+b7fqFAWZEEGu5QiJL0+7A0vx9IS9D1L8zis9uIfrPjvTsachyuoeEHpd1ouSCFfF7JZg==}
     peerDependencies:
       '@my-react/react': '>=0.2.2'
       '@my-react/react-dom': '>=0.2.2'
     dependencies:
       '@my-react/react': 0.2.2
-      '@my-react/react-dom': 0.2.2(@my-react/react@0.2.2)
+      '@my-react/react-dom': 0.2.3(@my-react/react@0.2.2)
       '@my-react/react-shared': 0.2.2
     dev: true
 
@@ -11612,9 +11612,9 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  github.com/MrWangJustToDo/project-tool/c2b30052121f732350799295c40638793800afd5(typescript@4.7.4):
-    resolution: {tarball: https://codeload.github.com/MrWangJustToDo/project-tool/tar.gz/c2b30052121f732350799295c40638793800afd5}
-    id: github.com/MrWangJustToDo/project-tool/c2b30052121f732350799295c40638793800afd5
+  git@github.com+MrWangJustToDo/project-tool/c2b30052121f732350799295c40638793800afd5(typescript@4.7.4):
+    resolution: {commit: c2b30052121f732350799295c40638793800afd5, repo: git@github.com:MrWangJustToDo/project-tool.git, type: git}
+    id: git@github.com+MrWangJustToDo/project-tool/c2b30052121f732350799295c40638793800afd5
     name: project-tool
     version: 0.2.1
     engines: {node: '>=10'}
