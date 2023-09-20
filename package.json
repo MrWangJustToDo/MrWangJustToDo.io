@@ -1,6 +1,6 @@
 {
   "name": "blog",
-  "packageManager": "pnpm@7.5.0",
+  "packageManager": "pnpm@8.7.5",
   "scripts": {
     "dev": "node ./dev.js",
     "dev:app": "cd app && pnpm dev",
