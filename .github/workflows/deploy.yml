@@ -28,7 +28,7 @@ jobs:
       
       - name: build site
         run: |
-          pnpm install
+          pnpm install --frozen-lockfile
           pnpm build
           pnpm export
 
