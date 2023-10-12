@@ -10,7 +10,7 @@ const isProd = process.env.NODE_ENV === "production";
 /**
  * @type {import('next').NextConfig}
  */
-const nextConfig = {
+const nextConfigWithMyReact = {
   reactStrictMode: true,
   // Use the prefix in production and not development.
   assetPrefix: isProd ? "/MrWangJustToDo.io/" : undefined,
@@ -84,7 +84,32 @@ const nextConfig = {
   },
 };
 
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
+  reactStrictMode: true,
+  // Use the prefix in production and not development.
+  assetPrefix: isProd ? "/MrWangJustToDo.io/" : undefined,
+  basePath: isProd ? "/MrWangJustToDo.io" : undefined,
+  // custom webpack config
+  webpack: (config, { isServer, webpack }) => {
+
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        __SERVER__: isServer,
+        __CLIENT__: !isServer,
+        __DEV__: process.env.NODE_ENV !== "production",
+      }),
+    );
+
+    return config;
+  },
+}
+
 // TODO not work for worker loader
 // export default withNext(nextConfig);
 
-export default nextConfig;
+const config = process.env.FRAMEWORK === 'myreact' ? nextConfigWithMyReact : nextConfig;
+
+export default config;
