@@ -21,7 +21,7 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { throttle } from "lodash-es";
-import { memo, useMemo, useRef } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 import { BsCheck } from "react-icons/bs";
 import { FaChevronDown, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
@@ -30,6 +30,7 @@ import { ErrorCom } from "@app/components/Error";
 import { GridLayoutButton } from "@app/components/GridLayoutButton";
 import { useBlogSource } from "@app/hooks/useBlogSource";
 import { useCollapse } from "@app/hooks/useCollapse";
+import { useFullScreen } from "@app/hooks/useFullScreen";
 import { useGetListParams } from "@app/hooks/useGetListParams";
 import { useGridLayout } from "@app/hooks/useGridLayout";
 import { useLeetCode } from "@app/hooks/useLeetCode";
@@ -85,7 +86,13 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
           <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
             playGround
           </Button>
-          <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpenLeetCode} display={{ base: "none", lg: "block" }} size={{ base: "sm", lg: "md" }}>
+          <Button
+            colorScheme="facebook"
+            textTransform="capitalize"
+            onClick={onOpenLeetCode}
+            display={{ base: "none", lg: "block" }}
+            size={{ base: "sm", lg: "md" }}
+          >
             leetCode
           </Button>
           <GridLayoutButton />
@@ -140,7 +147,7 @@ const _BlogList = () => {
 
   return (
     <Flex flexDirection="column" height="100%">
-      <Box overflow="auto" paddingRight="4">
+      <Box overflow="auto" paddingRight="4" className="tour_blogList">
         <BlogGrid data={data.repository.issues.nodes} disableGridLayout={false} />
       </Box>
       <BlogModal />
@@ -159,9 +166,9 @@ const _BlogList = () => {
 };
 
 const _BlogListWithInfinityScroll = () => {
-  const ref = useRef<HTMLDivElement>();
-
   const disableGridLayout = useGridLayout((s) => s.state);
+
+  const state = useFullScreen((s) => s.state);
 
   const isMobileWidth = useBreakpointValue({ base: true, md: false });
 
@@ -187,16 +194,27 @@ const _BlogListWithInfinityScroll = () => {
 
   const onThrottleScroll = useMemo(
     () =>
-      throttle(() => {
-        const node = ref.current;
+      throttle((e) => {
+        const node = e.target as HTMLDivElement;
         if (node) {
           if (node.scrollTop + node.clientHeight >= node.scrollHeight * 0.85) {
             fetchMoreCallback();
           }
         }
+        const html = document.scrollingElement;
+        if (html.scrollTop + html.clientHeight >= html.scrollHeight * 0.85) {
+          fetchMoreCallback();
+        }
       }, 200),
     [fetchMoreCallback],
   );
+
+  useEffect(() => {
+    if (state) {
+      window.addEventListener("scroll", onThrottleScroll);
+      return () => window.removeEventListener("scroll", onThrottleScroll);
+    }
+  }, [onThrottleScroll, state]);
 
   if (loading && networkStatus !== NetworkStatus.fetchMore) return <BlogListLoading />;
 
@@ -214,7 +232,7 @@ const _BlogListWithInfinityScroll = () => {
 
   return (
     <Flex flexDirection="column" height="100%">
-      <Box ref={ref} overflow="auto" paddingRight="4" onScroll={onThrottleScroll} className="tour_blogList">
+      <Box overflow="auto" paddingRight="4" onScroll={onThrottleScroll} className="tour_blogList">
         <BlogGrid data={data.repository.issues.nodes} disableGridLayout={disableGridLayout || isMobileWidth} />
         {loading && data.repository.issues.nodes.length && (
           <Center height="60px">

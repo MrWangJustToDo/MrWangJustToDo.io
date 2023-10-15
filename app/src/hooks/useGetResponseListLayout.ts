@@ -51,7 +51,7 @@ const _generateFunction =
 const xsGenerate = _generateFunction(1);
 const smGenerate = _generateFunction(2);
 const mdGenerate = _generateFunction(3);
-const lgGenerate = _generateFunction(4);
+const lgGenerate = _generateFunction(3);
 
 export const useGetResponseListLayout = (items: { id: string; bodyText: string }[]) => {
   return useMemo(() => {

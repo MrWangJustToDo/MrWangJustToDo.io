@@ -110,4 +110,14 @@ const markNOLineNumber = new Mark({
   },
 });
 
+const map = new Map<string, string>();
+
+Mark.prototype.renderWithMemo = function (this: Mark, item: string) {
+  const exist = map.has(item);
+  if (exist) return map.get(item);
+  const value = this.render(item);
+  map.set(item, value);
+  return value;
+};
+
 export { mark, markNOLineNumber, addIdForHeads };

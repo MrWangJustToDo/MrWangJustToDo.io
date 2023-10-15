@@ -2,6 +2,7 @@ import { SimpleGrid } from "@chakra-ui/react";
 import { memo, useEffect, useMemo } from "react";
 
 import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, GRID_ROW_HEIGHT } from "@app/config/gridLayout";
+import { useFullScreen } from "@app/hooks/useFullScreen";
 import { useGetResponseListLayout, useListLayoutStore } from "@app/hooks/useGetResponseListLayout";
 import { useDomSize } from "@app/hooks/useSize";
 
@@ -20,7 +21,11 @@ const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"
 
   const { updateLayout, data: layouts, mergeLayout } = useListLayoutStore();
 
+  const state = useFullScreen((s) => s.state);
+
   const { width } = useDomSize({ cssSelector: ".grid-card-list" });
+
+  const { width: bodyWidth } = useDomSize({ cssSelector: ".tour_blogList" });
 
   useEffect(() => {
     mergeLayout(newLayout);
@@ -50,11 +55,11 @@ const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"
     return obj;
   }, [newLayout, layouts]);
 
-  if (width === 0) return null;
+  if (width === 0 && !state) return null;
 
   return (
     <ReactGridLayout
-      width={width}
+      width={width || bodyWidth}
       layouts={mergedLayout}
       cols={BLOG_GRID_COLS}
       onLayoutChange={(_, layouts) => {

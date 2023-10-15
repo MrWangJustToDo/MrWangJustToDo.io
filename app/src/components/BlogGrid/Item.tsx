@@ -56,7 +56,7 @@ export const Item = (props: GetBlogListQuery["repository"]["issues"]["nodes"][0]
     author: { avatarUrl, login },
     url,
   } = props;
-  const renderedBody = useMemo(() => markNOLineNumber.render(body), [body]);
+  const renderedBody = useMemo(() => (markNOLineNumber as any).renderWithMemo(body), [body]);
   return (
     <Flex flexDirection="column" height="100%">
       <Box padding="2" borderTopRadius="md">

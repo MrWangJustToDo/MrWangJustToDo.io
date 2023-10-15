@@ -12,5 +12,13 @@ declare global {
       NODE_ENV: "development" | "production";
     }
   }
+
 }
+
+declare module "markdown-it" {
+  interface MarkdownIt {
+    renderWithMemo: (item: string) => string;
+  }
+}
+
 export {};

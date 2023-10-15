@@ -8,6 +8,7 @@ import { BlogGridWithInfinityScroll, BlogList } from "@app/containers/BlogList";
 import { User } from "@app/containers/User";
 import { WalkMe } from "@app/containers/WalkMe";
 import { useEffectOnce } from "@app/hooks/useEffectOnce";
+import { useFullScreen } from "@app/hooks/useFullScreen";
 import { useMainCard } from "@app/hooks/useMainCard";
 import { useType } from "@app/hooks/useType";
 
@@ -59,10 +60,14 @@ const GRID_LAYOUTS = {
   ],
 };
 
+const Ele = ENABLE_INFINITY_SCROLL ? <BlogGridWithInfinityScroll /> : <BlogList />;
+
 export const Page = (p: { ReactType: string; ReactDOMType: string }) => {
   const set = useType((s) => s.set);
 
   const { drag, onDragEnd, onDragStart } = useMainCard();
+
+  const state = useFullScreen((state) => state.state);
 
   useEffectOnce(() => {
     set(p.ReactType + "\n" + p.ReactDOMType);
@@ -71,23 +76,27 @@ export const Page = (p: { ReactType: string; ReactDOMType: string }) => {
   return (
     <Container maxWidth={CONTAINER_WIDTH}>
       <WalkMe />
-      <StyledResponsiveReactGridLayout
-        className="layout"
-        cols={GRID_COLS}
-        layouts={GRID_LAYOUTS}
-        rowHeight={GRID_ROW_HEIGHT}
-        draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
-        draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
-        onDragStart={onDragStart}
-        onDragStop={onDragEnd}
-      >
-        <GridCard key="a" contentProps={{ overflow: "auto" }}>
-          <User />
-        </GridCard>
-        <GridCard key="b" className="grid-card-list" enableBlur={drag}>
-          {ENABLE_INFINITY_SCROLL ? <BlogGridWithInfinityScroll /> : <BlogList />}
-        </GridCard>
-      </StyledResponsiveReactGridLayout>
+      {!state ? (
+        <StyledResponsiveReactGridLayout
+          className="layout"
+          cols={GRID_COLS}
+          layouts={GRID_LAYOUTS}
+          rowHeight={GRID_ROW_HEIGHT}
+          draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
+          draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
+          onDragStart={onDragStart}
+          onDragStop={onDragEnd}
+        >
+          <GridCard key="a" contentProps={{ overflow: "auto" }}>
+            <User />
+          </GridCard>
+          <GridCard key="b" className="grid-card-list" enableBlur={drag}>
+            {Ele}
+          </GridCard>
+        </StyledResponsiveReactGridLayout>
+      ) : (
+        Ele
+      )}
     </Container>
   );
 };

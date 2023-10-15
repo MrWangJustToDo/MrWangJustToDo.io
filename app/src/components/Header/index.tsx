@@ -1,10 +1,11 @@
-import { Container, Flex, Link, Text, Tooltip } from "@chakra-ui/react";
+import { Container, Flex, HStack, Link, Text, Tooltip } from "@chakra-ui/react";
 import { memo } from "react";
 
 import { CONTAINER_WIDTH } from "@app/config/container";
 import { POWER_BY } from "@app/config/source";
 
 import { ColorMode } from "../ColorMode";
+import { FullScreen } from "../FullScreen";
 
 import { GlobalStyle } from "./GlobalStyle";
 
@@ -26,7 +27,10 @@ const _Header = () => {
             </Tooltip>
           </small>
         </Flex>
-        <ColorMode />
+        <HStack spacing={4}>
+          <FullScreen />
+          <ColorMode />
+        </HStack>
       </Flex>
     </Container>
   );
