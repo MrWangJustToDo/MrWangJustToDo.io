@@ -211,7 +211,7 @@ const _BlogListWithInfinityScroll = () => {
 
   useEffect(() => {
     if (state) {
-      window.addEventListener("scroll", onThrottleScroll);
+      window.addEventListener("scroll", onThrottleScroll, { passive: true });
       return () => window.removeEventListener("scroll", onThrottleScroll);
     }
   }, [onThrottleScroll, state]);

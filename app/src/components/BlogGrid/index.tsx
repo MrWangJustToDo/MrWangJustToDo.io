@@ -14,7 +14,6 @@ import { ReactGridLayout } from "../GridLayout";
 import { Item } from "./Item";
 
 import type { GetBlogListQuery } from "@blog/graphql";
-import type { RefObject } from "react";
 
 const BLOG_GRID_COLS = { lg: 3, md: 3, sm: 2, xs: 1, xxs: 1 };
 
@@ -25,16 +24,20 @@ const _Item = ({
   data,
   col,
   state,
-  containerRef,
 }: {
   number: number;
   data: GetBlogListQuery["repository"]["issues"]["nodes"][number];
   col: number;
   state: boolean;
-  containerRef: RefObject<HTMLDivElement>;
 }) => {
   const ref = useRef();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["end start", "start end"], container: state ? undefined : containerRef });
+  const containerRef = useRef();
+
+  useLayoutEffect(() => {
+    containerRef.current = document.querySelector(".tour_blogList");
+  }, [state]);
+
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["end end", "end start"], container: state ? undefined : containerRef });
   const x_1 = useTransform(scrollYProgress, [0.2, 1], [0, 45]);
   const x_2 = useTransform(scrollYProgress, [0.2, 1], [0, -45]);
   const x_3 = useTransform(scrollYProgress, [0.3, 1], [0, 25]);
@@ -156,19 +159,13 @@ const _BlogGridWithGridLayout = ({ data, state }: { data: GetBlogListQuery["repo
 const _BlogGrid = ({ data, disableGridLayout = true }: { data: GetBlogListQuery["repository"]["issues"]["nodes"]; disableGridLayout?: boolean }) => {
   const col = useBreakpointValue({ base: 1, md: 2, lg: 3, "2xl": 4 });
 
-  const containerRef = useRef();
-
   const state = useFullScreen((s) => s.state);
-
-  useLayoutEffect(() => {
-    containerRef.current = document.querySelector(".tour_blogList");
-  }, [state]);
 
   if (disableGridLayout) {
     return (
       <SimpleGrid width="100%" padding="2" columns={{ base: 1, md: 2, lg: 3, "2xl": 4 }} spacing={3}>
         {data.map((p, index) => (
-          <_Item data={p} number={index + 1} key={p.id + index} col={col} containerRef={containerRef} state={state} />
+          <_Item data={p} number={index + 1} key={p.id + index} col={col} state={state} />
         ))}
       </SimpleGrid>
     );
