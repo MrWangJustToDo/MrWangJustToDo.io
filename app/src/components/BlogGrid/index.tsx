@@ -24,11 +24,13 @@ const _Item = ({
   data,
   col,
   state,
+  layoutId,
 }: {
   number: number;
   data: GetBlogListQuery["repository"]["issues"]["nodes"][number];
   col: number;
   state: boolean;
+  layoutId?: string;
 }) => {
   const ref = useRef();
   const containerRef = useRef();
@@ -88,7 +90,7 @@ const _Item = ({
         : skew_2
       : plain;
   return (
-    <MotionCard maxHeight="96" ref={ref} style={{ x, skew }}>
+    <MotionCard maxHeight="96" ref={ref} style={{ x, skew }} layoutId={layoutId}>
       <Item {...data} />
     </MotionCard>
   );
@@ -165,7 +167,7 @@ const _BlogGrid = ({ data, disableGridLayout = true }: { data: GetBlogListQuery[
     return (
       <SimpleGrid width="100%" padding="2" columns={{ base: 1, md: 2, lg: 3, "2xl": 4 }} spacing={3}>
         {data.map((p, index) => (
-          <_Item data={p} number={index + 1} key={p.id + index} col={col} state={state} />
+          <_Item data={p} number={index + 1} layoutId={p.id} key={p.id + index} col={col} state={state} />
         ))}
       </SimpleGrid>
     );

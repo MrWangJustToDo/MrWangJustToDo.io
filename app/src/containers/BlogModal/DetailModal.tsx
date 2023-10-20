@@ -12,6 +12,8 @@ import { ErrorCom } from "@app/components/Error";
 import { useBlogSource } from "@app/hooks/useBlogSource";
 import { mark } from "@app/utils/markdown";
 
+import { DetailProgressBar } from "./DetailProgressBar";
+
 import type { GetSingleBlogQuery } from "@blog/graphql";
 
 const COMMENT_LENGTH = 15;
@@ -97,6 +99,7 @@ export const DetailModalBody = ({ id }: { id: string }) => (
       if (data?.repository?.issue) {
         return (
           <>
+            <DetailProgressBar />
             <Card padding="2" borderColor="Highlight" backgroundColor="initial">
               <Actor
                 marginTop="2"
