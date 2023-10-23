@@ -167,7 +167,7 @@ const _BlogGrid = ({ data, disableGridLayout = true }: { data: GetBlogListQuery[
     return (
       <SimpleGrid width="100%" padding="2" columns={{ base: 1, md: 2, lg: 3, "2xl": 4 }} spacing={3}>
         {data.map((p, index) => (
-          <_Item data={p} number={index + 1} layoutId={p.id} key={p.id + index} col={col} state={state} />
+          <_Item data={p} number={index + 1} key={p.id + index} col={col} state={state} />
         ))}
       </SimpleGrid>
     );
