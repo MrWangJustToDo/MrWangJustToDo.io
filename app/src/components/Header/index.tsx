@@ -1,4 +1,5 @@
 import { Container, Flex, HStack, Link, Text, Tooltip } from "@chakra-ui/react";
+import { version } from "@my-react/react";
 import { memo } from "react";
 
 import { CONTAINER_WIDTH } from "@app/config/container";
@@ -20,7 +21,7 @@ const _Header = () => {
           </Text>
           <small>
             power by{" "}
-            <Tooltip label={"Go to @my-react project"} placement="top" hasArrow>
+            <Tooltip label={`Go to @my-react project, version: ${version}`} placement="top" hasArrow>
               <Link color="purple.500" href={POWER_BY} target="_blank" _hover={{ textDecoration: "none" }}>
                 @my-react
               </Link>
