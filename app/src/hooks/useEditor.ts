@@ -104,7 +104,7 @@ const setup = __DEV__
       }),
     })
   : withActions(
-      withPersist(() => ({ file: "script.tsx", files: INITIAL_EDITOR }), { key: EDITOR_STORE_KEY + "_2023-6-25" + "_new" }),
+      withPersist(() => ({ file: "script.tsx", files: INITIAL_EDITOR }), { key: EDITOR_STORE_KEY + "_2023-11-7" + "_new" }),
       {
         generateActions: (state) => ({
           reset: () => {

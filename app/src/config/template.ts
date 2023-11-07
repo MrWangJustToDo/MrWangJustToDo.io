@@ -70,7 +70,7 @@ const MemoTestReactive = memo(TestReactive);
 
 // ==== antd example ==== //
 
-const { TimePicker, Button, Modal, notification, Calendar } = (window as any).antd;
+const { TimePicker, Button, Modal, notification, Calendar, ColorPicker } = (window as any).antd;
 
 const dayjs = (window as any).dayjs;
 
@@ -243,7 +243,10 @@ const App = () => {
         <p>Time: {time}</p>
       </div>
       <hr />
-      <h1>MyReact Antd example</h1>
+      <h1>MyReact Antd example, version {antd.version}</h1>
+      <ColorPicker />
+      <br />
+      <br />
       <TimePicker onChange={onChange} defaultOpenValue={dayjs('00:00:00', 'HH:mm:ss')} />
       <br />
       <br />

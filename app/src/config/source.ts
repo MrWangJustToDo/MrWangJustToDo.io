@@ -15,8 +15,8 @@ export const PLAYGROUND_MY_REACT_REACTIVE = "https://unpkg.com/@my-react/react-r
 export const PLAYGROUND_MY_REACT_DOM = "https://unpkg.com/@my-react/react-dom@latest/dist/umd/index.development.js";
 export const PLAYGROUND_GRID_LAYOUT = resourceUri("grid.js");
 export const PLAYGROUND_BABEL = "https://unpkg.com/@babel/standalone/babel.min.js";
-export const PLAYGROUND_REACT_WINDOW = "https://unpkg.com/react-window@1.8.7/dist/index-dev.umd.js";
+export const PLAYGROUND_REACT_WINDOW = "https://unpkg.com/react-window@latest/dist/index-dev.umd.js";
 
 // antd umd source
-export const ANTD_UMD = "https://cdnjs.cloudflare.com/ajax/libs/antd/5.1.7/antd-with-locales.js";
-export const DAYJS_UMD = "https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.7/dayjs.min.js";
+export const ANTD_UMD = "https://unpkg.com/antd@latest/dist/antd-with-locales.js";
+export const DAYJS_UMD = "https://unpkg.com/dayjs@latest/dayjs.min.js";
