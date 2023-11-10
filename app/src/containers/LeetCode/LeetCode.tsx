@@ -1,6 +1,6 @@
 import { Box, CloseButton, SimpleGrid, SkeletonText, useUnmountEffect } from "@chakra-ui/react";
 import { AnimatePresence, motion, useInView } from "framer-motion";
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 import { Card } from "@app/components/Card";
 import { useFetchLeetCode } from "@app/hooks/useFetchLeetCode";
@@ -41,6 +41,8 @@ const Content = ({ children }: { children: string }) => {
 };
 
 const ModalCard = ({ content }: { content: string }) => {
+  const [animateDone, setAnimateDone] = useState(false);
+
   return (
     /* Container */
     <div
@@ -74,6 +76,7 @@ const ModalCard = ({ content }: { content: string }) => {
           borderRadius: "20px",
           overflow: "auto",
         }}
+        onLayoutAnimationComplete={() => setAnimateDone(true)}
       >
         <motion.div
           exit={{ opacity: 0 }}
@@ -83,7 +86,7 @@ const ModalCard = ({ content }: { content: string }) => {
           }}
         >
           <CloseButton onClick={() => set(undefined)} position="absolute" right="10px" top="10px" />
-          <Content>{content}</Content>
+          {!animateDone ? <SkeletonText noOfLines={15} marginY="2" /> : <Content>{content}</Content>}
         </motion.div>
       </MotionCard>
     </div>
