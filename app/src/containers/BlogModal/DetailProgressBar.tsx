@@ -21,6 +21,7 @@ export const DetailProgressBar = () => {
       marginRight={-6}
       position="sticky"
       top={0}
+      marginY={2}
       zIndex="dropdown"
       style={{ opacity, borderBottom: "2px solid rgba(160, 160, 160, .4)", transformOrigin: "0%", scaleX: scrollYProgress }}
     />

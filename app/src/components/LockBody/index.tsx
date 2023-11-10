@@ -6,7 +6,7 @@ export const LockBody = () => {
   const count = useLockBodyCount();
 
   return (
-    <RemoveScroll enabled={count > 0} className="placeholder" as="span">
+    <RemoveScroll enabled={count > 0} className="placeholder" as="span" data-lock-scroll={count > 0}>
       <></>
     </RemoveScroll>
   );
