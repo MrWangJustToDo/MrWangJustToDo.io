@@ -1,3 +1,3 @@
 import { createState } from "reactivity-store";
 
-export const useLeetCodeSelectId = createState(() => ({ state: undefined }), { withActions: (state) => ({ set: (id?: string) => (state.state = id) }) });
+export const useLeetCodeSelectId = createState(() => ({ state: undefined }), { withActions: (state: { state: string; }) => ({ set: (id?: string) => (state.state = id) }), withNamespace: 'useLeetCodeSelectId' });

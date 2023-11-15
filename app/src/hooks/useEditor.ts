@@ -128,4 +128,4 @@ const setup = __DEV__
       },
     );
 
-export const useEditor_v2 = createState(setup)
+export const useEditor_v2 = createState(setup, { withNamespace: "useEditor_v2" });

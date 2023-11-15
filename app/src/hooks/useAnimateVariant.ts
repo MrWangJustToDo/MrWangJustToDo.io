@@ -48,9 +48,10 @@ const getVariant = () => {
 };
 
 export const useAnimateVariant = createState(() => ({ light: getVariant(), dark: getVariant() }), {
-  withActions: (s) => ({
+  withActions: (s: { [x: string]: { length: number; leaveVariants: { x: number; y: number; size: number; }[]; entryVariants: { x: number; y: number; size: number; }[]; }; }) => ({
     generate: (key: ColorMode) => {
       s[key] = getVariant();
     },
   }),
+  withNamespace: 'useAnimateVariant'
 });

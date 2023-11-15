@@ -1,35 +1,38 @@
 import { useMemo } from "react";
-import { createState } from "reactivity-store";
+import { createState, withNamespace } from "reactivity-store";
 
 import type { Layout, Layouts } from "react-grid-layout";
 
 export const BLOG_GRID_HEIGHT = 10;
 
-export const useListLayoutStore = createState(() => ({ data: {} as Layouts }), {
-  withActions: (s) => ({
-    updateLayout: (newLayout: Layouts) => {
-      s.data = newLayout;
-    },
-    mergeLayout: (newLayout: Layouts) => {
-      const oldData = s.data
-      const obj = {};
-      Object.keys(newLayout).forEach((key) => {
-        obj[key] = [];
-        const oldValue = oldData[key];
-        const newValue = newLayout[key];
-        newValue.forEach((item) => {
-          const lastItem = oldValue?.find((_i) => _i.i === item.i);
-          if (lastItem) {
-            obj[key].push(lastItem);
-          } else {
-            obj[key].push(item);
-          }
+export const useListLayoutStore = createState(
+  withNamespace(() => ({ data: {} as Layouts }), { namespace: "useListLayoutStore", reduxDevTool: true }),
+  {
+    withActions: (s) => ({
+      updateLayout: (newLayout: Layouts) => {
+        s.data = newLayout;
+      },
+      mergeLayout: (newLayout: Layouts) => {
+        const oldData = s.data;
+        const obj = {};
+        Object.keys(newLayout).forEach((key) => {
+          obj[key] = [];
+          const oldValue = oldData[key];
+          const newValue = newLayout[key];
+          newValue.forEach((item) => {
+            const lastItem = oldValue?.find((_i) => _i.i === item.i);
+            if (lastItem) {
+              obj[key].push(lastItem);
+            } else {
+              obj[key].push(item);
+            }
+          });
         });
-      });
-      s.data = obj;
-    }
-  }),
-});
+        s.data = obj;
+      },
+    }),
+  },
+);
 
 const _generateFunction =
   (width: number) =>

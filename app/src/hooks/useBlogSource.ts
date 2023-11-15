@@ -1,4 +1,4 @@
-import { createStore, ref } from "reactivity-store";
+import { createState } from "reactivity-store";
 
 const Source = [
   {
@@ -15,19 +15,14 @@ const Source = [
   },
 ];
 
-export const useBlogSource = createStore(() => {
-  const sources = ref(Source);
-
-  const sourceName = ref(Source[0].name);
-
-  const source = ref(Source[0]);
-
-  const setSource = (newSource: string) => {
-    if (newSource !== sourceName.value && sources.value.some((v) => v.name === newSource)) {
-      sourceName.value = newSource;
-      source.value = sources.value.find((v) => v.name === newSource);
-    }
-  };
-
-  return { sources, source, setSource, sourceName };
+export const useBlogSource = createState(() => ({ sources: Source, source: Source[0], sourceName: Source[0].name }), {
+  withActions: (state: { sourceName: string; sources: typeof Source; source: typeof Source[number]; }) => ({
+    setSource: (newSource: string) => {
+      if (newSource !== state.sourceName && state.sources.some((v) => v.name === newSource)) {
+        state.sourceName = newSource;
+        state.source = state.sources.find((v) => v.name === newSource);
+      }
+    },
+  }),
+  withNamespace: "useBlogSource",
 });
