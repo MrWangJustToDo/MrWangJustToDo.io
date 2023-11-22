@@ -156,11 +156,11 @@ importers:
         specifier: ^4.5.0
         version: 4.5.0(monaco-editor@0.38.0)(react-dom@18.2.0)(react@18.2.0)
       '@my-react/react':
-        specifier: ^0.2.6
-        version: 0.2.6
+        specifier: ^0.2.7
+        version: 0.2.7
       '@my-react/react-dom':
-        specifier: ^0.2.6
-        version: 0.2.6(@my-react/react@0.2.6)
+        specifier: ^0.2.7
+        version: 0.2.7(@my-react/react@0.2.7)
       '@reactour/mask':
         specifier: ^1.1.0
         version: 1.1.0(react@18.2.0)
@@ -235,11 +235,11 @@ importers:
         specifier: ^7.22.10
         version: 7.22.10
       '@my-react/react-refresh':
-        specifier: ^0.2.6
-        version: 0.2.6(@my-react/react-dom@0.2.6)(@my-react/react@0.2.6)
+        specifier: ^0.2.7
+        version: 0.2.7(@my-react/react-dom@0.2.7)(@my-react/react@0.2.7)
       '@my-react/react-refresh-tools':
         specifier: ^0.0.7
-        version: 0.0.7(@my-react/react-refresh@0.2.6)
+        version: 0.0.7(@my-react/react-refresh@0.2.7)
       '@types/lodash-es':
         specifier: ^4.17.8
         version: 4.17.8
@@ -4800,21 +4800,21 @@ packages:
       hey-listen: 1.0.8
       tslib: 2.5.0
 
-  /@my-react/react-dom@0.2.6(@my-react/react@0.2.6):
-    resolution: {integrity: sha512-eZ8saZjlZ6+bX1CFFolqqB9or2O6dQks+Aimg2yQ6TyzJ07tYRLYuFEJXauHfq0XzdgkrUdvHnvHX+uJPr7MFg==}
+  /@my-react/react-dom@0.2.7(@my-react/react@0.2.7):
+    resolution: {integrity: sha512-Llav/xvTQUKpipqnmgPaL4jyvzYtOs/s71kdSv5YSD0PZoAUH+3cejtOMFIsbzIHcPLg4uMbF63ihN3sCOcnTQ==}
     peerDependencies:
       '@my-react/react': '>=0.2.5'
     dependencies:
-      '@my-react/react': 0.2.6
+      '@my-react/react': 0.2.7
 
-  /@my-react/react-jsx@0.2.5(@my-react/react@0.2.6):
+  /@my-react/react-jsx@0.2.5(@my-react/react@0.2.7):
     resolution: {integrity: sha512-HXuSqQpdMLAVeXEo61hKUoaLdpT+y1qq59sapt8cUtystLTl803ZEoTzSawhDb5v6RZ5TuVDnIDI6z78dycTew==}
     peerDependencies:
       '@my-react/react': '>=0.2.5'
     dependencies:
-      '@my-react/react': 0.2.6
+      '@my-react/react': 0.2.7
 
-  /@my-react/react-refresh-tools@0.0.7(@my-react/react-refresh@0.2.6):
+  /@my-react/react-refresh-tools@0.0.7(@my-react/react-refresh@0.2.7):
     resolution: {integrity: sha512-wptKBn1WyZQ8QTOQ8u7pBc4XH853izWEr/XmfRXk0APXgfc55vMF/3xMrvTES6xgsBT/cb/Nh8PpKFXZiG5DEQ==}
     peerDependencies:
       '@my-react/react-refresh': '>=0.2.5'
@@ -4823,23 +4823,23 @@ packages:
       webpack:
         optional: true
     dependencies:
-      '@my-react/react-refresh': 0.2.6(@my-react/react-dom@0.2.6)(@my-react/react@0.2.6)
+      '@my-react/react-refresh': 0.2.7(@my-react/react-dom@0.2.7)(@my-react/react@0.2.7)
     dev: true
 
-  /@my-react/react-refresh@0.2.6(@my-react/react-dom@0.2.6)(@my-react/react@0.2.6):
-    resolution: {integrity: sha512-7+MJ1rlZRKVWQFdIpFk4iQhU0ksqWb91zbgy+p4Ivf5jhKWKqJDevaGZM/W5MUcPJZN0sGDHKKV9gpROgxuHiw==}
+  /@my-react/react-refresh@0.2.7(@my-react/react-dom@0.2.7)(@my-react/react@0.2.7):
+    resolution: {integrity: sha512-9QM7teM7LFKMoLvDhemMbxYU7XKdyuclK9z1iT2egosg8cLsNrkmc3DhsHDtXJkSs34tkwy2FFhOJUMMSIDwpQ==}
     peerDependencies:
       '@my-react/react': '>=0.2.5'
       '@my-react/react-dom': '>=0.2.5'
     dependencies:
-      '@my-react/react': 0.2.6
-      '@my-react/react-dom': 0.2.6(@my-react/react@0.2.6)
+      '@my-react/react': 0.2.7
+      '@my-react/react-dom': 0.2.7(@my-react/react@0.2.7)
     dev: true
 
-  /@my-react/react@0.2.6:
-    resolution: {integrity: sha512-JuYYMSw5FAXsI0JdHJVyprGNgQYIABseWnKzrXKKqwWT1Oo8PVyVUyvGMX4gFhE0LBG+3vXu6/X3oJj+Jb8mkQ==}
+  /@my-react/react@0.2.7:
+    resolution: {integrity: sha512-CYoo2pLfgU/ICszLvR3E3kEAE4KkkK4ri61BuxQN3qDPUdIbFrmxb7pvKSo/0z5uUCeTarpFEZyHZDM2bKQFFQ==}
     dependencies:
-      '@my-react/react-jsx': 0.2.5(@my-react/react@0.2.6)
+      '@my-react/react-jsx': 0.2.5(@my-react/react@0.2.7)
 
   /@next/env@12.3.4:
     resolution: {integrity: sha512-H/69Lc5Q02dq3o+dxxy5O/oNxFsZpdL6WREtOOtOM1B/weonIwDXkekr1KV5DPVPr12IHFPrMrcJQ6bgPMfn7A==}
