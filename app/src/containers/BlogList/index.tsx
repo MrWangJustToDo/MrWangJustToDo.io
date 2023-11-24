@@ -36,11 +36,13 @@ import { useGridLayout } from "@app/hooks/useGridLayout";
 import { useLeetCode } from "@app/hooks/useLeetCode";
 import { usePlayGround } from "@app/hooks/usePlayGround";
 import { useDomSize } from "@app/hooks/useSize";
+// import { useTldraw } from "@app/hooks/useTldraw";
 
 import { BlogModal } from "../BlogModal";
 import { LeetCode } from "../LeetCode";
 import { Pagination } from "../Pagination";
 import { PlayGround } from "../PlayGround";
+import { Tldraw } from "../Tldraw";
 
 const ITEM_PER_PAGE = 15;
 
@@ -69,6 +71,8 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
 
   const { state: collapse, toggle } = useCollapse();
 
+  // const { onOpen: onOpenTldraw } = useTldraw();
+
   const ref = useRef<HTMLDivElement>();
 
   const { width } = useDomSize({ ref });
@@ -95,6 +99,15 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
           >
             leetCode
           </Button>
+          {/* <Button
+            colorScheme="facebook"
+            textTransform="capitalize"
+            onClick={onOpenTldraw}
+            display={{ base: "none", lg: "block" }}
+            size={{ base: "sm", lg: "md" }}
+          >
+            tldraw
+          </Button> */}
           <GridLayoutButton />
           <Box>
             <Menu>
@@ -227,6 +240,7 @@ const _BlogListWithInfinityScroll = () => {
         </Portal>
         <PlayGround />
         <LeetCode />
+        <Tldraw />
       </>
     );
 
@@ -246,6 +260,7 @@ const _BlogListWithInfinityScroll = () => {
       <BlogModal />
       <PlayGround />
       <LeetCode />
+      <Tldraw />
     </Flex>
   );
 };

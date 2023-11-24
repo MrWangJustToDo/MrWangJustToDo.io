@@ -20,3 +20,6 @@ export const PLAYGROUND_REACT_WINDOW = "https://unpkg.com/react-window@latest/di
 // antd umd source
 export const ANTD_UMD = "https://unpkg.com/antd@latest/dist/antd-with-locales.js";
 export const DAYJS_UMD = "https://unpkg.com/dayjs@latest/dayjs.min.js";
+
+// tldraw source
+export const TLDRAW_UMD = "https://unpkg.com/@tldraw/tldraw@1.29.2/dist/index.js";
