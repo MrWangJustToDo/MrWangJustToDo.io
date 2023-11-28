@@ -1,7 +1,7 @@
 import { NetworkStatus, useApolloClient, useQuery } from "@apollo/client";
 import { GetSingleBlogDocument } from "@blog/graphql";
-import { Box, Text, SkeletonText, SkeletonCircle, useCallbackRef, Icon, IconButton, useColorModeValue } from "@chakra-ui/react";
-import { throttle } from "lodash-es";
+import { Box, Text, SkeletonText, SkeletonCircle, useCallbackRef, Icon, IconButton, useColorModeValue, HStack, Spacer } from "@chakra-ui/react";
+import { countBy, throttle } from "lodash-es";
 import { useEffect, useMemo } from "react";
 import { AiOutlineReload } from "react-icons/ai";
 
@@ -10,11 +10,12 @@ import { Card } from "@app/components/Card";
 import { Comment } from "@app/components/Comment";
 import { ErrorCom } from "@app/components/Error";
 import { useBlogSource } from "@app/hooks/useBlogSource";
+import { getTargetEmoji } from "@app/utils/emoji";
 import { mark } from "@app/utils/markdown";
 
 import { DetailProgressBar } from "./DetailProgressBar";
 
-import type { GetSingleBlogQuery } from "@blog/graphql";
+import type { GetSingleBlogQuery, ReactionContent } from "@blog/graphql";
 
 const COMMENT_LENGTH = 15;
 
@@ -96,10 +97,11 @@ export const DetailModalBody = ({ id }: { id: string }) => (
     Render={({ data }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const rendered = useMemo(() => mark.render(data?.repository?.issue?.body || ""), [data]);
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const reactions = useMemo(() => countBy(data?.repository?.issue?.reactions?.nodes, (i) => i.content), [data]);
       if (data?.repository?.issue) {
         return (
           <>
-            <DetailProgressBar />
             <Card padding="2" borderColor="Highlight" backgroundColor="initial">
               <Actor
                 marginTop="2"
@@ -113,6 +115,17 @@ export const DetailModalBody = ({ id }: { id: string }) => (
                 }}
               />
               <Box className="typo" marginTop="3.5" fontSize={{ base: "sm", lg: "md" }} dangerouslySetInnerHTML={{ __html: rendered }} />
+              <HStack gap={2}>
+                {Object.keys(reactions)
+                  .filter((i) => reactions[i])
+                  .map((i: ReactionContent) => (
+                    <HStack key={i} fontSize="14px" color="gray" borderRadius="full" border="1px" paddingX="8px" paddingY="2px" borderColor="Highlight">
+                      <Text>{getTargetEmoji(i)}</Text>
+                      <Spacer />
+                      <Text>{reactions[i]}</Text>
+                    </HStack>
+                  ))}
+              </HStack>
             </Card>
             <Comment data={data.repository.issue.comments.nodes} />
           </>
@@ -151,20 +164,23 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
         });
 
       return (
-        <Box paddingRight="3em" marginBottom="-1.5">
-          <Text as="h1" fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
-            {data?.repository?.issue?.title}
-            <IconButton
-              size="sm"
-              marginLeft="4"
-              variant="ghost"
-              colorScheme={colorScheme}
-              aria-label="reload"
-              onClick={() => refetch()}
-              icon={<Icon as={AiOutlineReload} />}
-            />
-          </Text>
-        </Box>
+        <>
+          <Box paddingRight="3em" marginBottom="-1.5">
+            <Text as="h1" fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
+              {data?.repository?.issue?.title}
+              <IconButton
+                size="sm"
+                marginLeft="4"
+                variant="ghost"
+                colorScheme={colorScheme}
+                aria-label="reload"
+                onClick={() => refetch()}
+                icon={<Icon as={AiOutlineReload} />}
+              />
+            </Text>
+          </Box>
+          <DetailProgressBar />
+        </>
       );
     }}
   />

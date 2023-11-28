@@ -66,6 +66,32 @@ query getSingleBlog($name: String!, $owner: String!, $number: Int!, $first: Int 
           createdAt
           updatedAt
           viewerDidAuthor
+          reactions(first: $first, after: $after) {
+            nodes {
+              id
+              content
+            }
+            pageInfo {
+              endCursor
+              startCursor
+              hasNextPage
+              hasPreviousPage
+            }
+            totalCount
+          }
+        }
+        pageInfo {
+          endCursor
+          startCursor
+          hasNextPage
+          hasPreviousPage
+        }
+        totalCount
+      }
+      reactions(first: $first, after: $after) {
+        nodes {
+          id
+          content
         }
         pageInfo {
           endCursor

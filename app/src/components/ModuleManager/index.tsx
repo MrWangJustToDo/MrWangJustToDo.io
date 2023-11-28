@@ -17,6 +17,7 @@ export const ModuleManager = ({ children }: { children: JSX.Element | JSX.Elemen
       [overlays],
     ),
   );
+
   return (
     <OverlayArrayContext.Provider value={overlaysObj}>
       <OverlayCloseContext.Provider value={close}>

@@ -5,7 +5,7 @@ import type * as SchemaTypes from "./schema";
 
 import type { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
 export type GetViewerQueryVariables = SchemaTypes.Exact<{
-  first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]>;
+  first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]["input"]>;
 }>;
 
 export type GetViewerQuery = {
@@ -24,13 +24,13 @@ export type GetViewerQuery = {
 };
 
 export type GetBlogListQueryVariables = SchemaTypes.Exact<{
-  name: SchemaTypes.Scalars["String"];
-  owner: SchemaTypes.Scalars["String"];
-  first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]>;
-  last?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]>;
-  after?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["String"]>;
-  before?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["String"]>;
-  labels?: SchemaTypes.InputMaybe<Array<SchemaTypes.Scalars["String"]> | SchemaTypes.Scalars["String"]>;
+  name: SchemaTypes.Scalars["String"]["input"];
+  owner: SchemaTypes.Scalars["String"]["input"];
+  first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]["input"]>;
+  last?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]["input"]>;
+  after?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["String"]["input"]>;
+  before?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["String"]["input"]>;
+  labels?: SchemaTypes.InputMaybe<Array<SchemaTypes.Scalars["String"]["input"]> | SchemaTypes.Scalars["String"]["input"]>;
   orderBy?: SchemaTypes.InputMaybe<SchemaTypes.IssueOrder>;
   states?: SchemaTypes.InputMaybe<Array<SchemaTypes.IssueState> | SchemaTypes.IssueState>;
   filterBy?: SchemaTypes.InputMaybe<SchemaTypes.IssueFilters>;
@@ -66,11 +66,11 @@ export type GetBlogListQuery = {
 };
 
 export type GetSingleBlogQueryVariables = SchemaTypes.Exact<{
-  name: SchemaTypes.Scalars["String"];
-  owner: SchemaTypes.Scalars["String"];
-  number: SchemaTypes.Scalars["Int"];
-  first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]>;
-  after?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["String"]>;
+  name: SchemaTypes.Scalars["String"]["input"];
+  owner: SchemaTypes.Scalars["String"]["input"];
+  number: SchemaTypes.Scalars["Int"]["input"];
+  first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]["input"]>;
+  after?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["String"]["input"]>;
 }>;
 
 export type GetSingleBlogQuery = {
@@ -106,7 +106,17 @@ export type GetSingleBlogQuery = {
             | { login: string; avatarUrl: any }
             | { login: string; avatarUrl: any }
             | null;
+          reactions: {
+            totalCount: number;
+            nodes?: Array<{ id: string; content: SchemaTypes.ReactionContent } | null> | null;
+            pageInfo: { endCursor?: string | null; startCursor?: string | null; hasNextPage: boolean; hasPreviousPage: boolean };
+          };
         } | null> | null;
+        pageInfo: { endCursor?: string | null; startCursor?: string | null; hasNextPage: boolean; hasPreviousPage: boolean };
+      };
+      reactions: {
+        totalCount: number;
+        nodes?: Array<{ id: string; content: SchemaTypes.ReactionContent } | null> | null;
         pageInfo: { endCursor?: string | null; startCursor?: string | null; hasNextPage: boolean; hasPreviousPage: boolean };
       };
     } | null;
@@ -459,6 +469,90 @@ export const GetSingleBlogDocument = {
                                   { kind: "Field", name: { kind: "Name", value: "createdAt" } },
                                   { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
                                   { kind: "Field", name: { kind: "Name", value: "viewerDidAuthor" } },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "reactions" },
+                                    arguments: [
+                                      {
+                                        kind: "Argument",
+                                        name: { kind: "Name", value: "first" },
+                                        value: { kind: "Variable", name: { kind: "Name", value: "first" } },
+                                      },
+                                      {
+                                        kind: "Argument",
+                                        name: { kind: "Name", value: "after" },
+                                        value: { kind: "Variable", name: { kind: "Name", value: "after" } },
+                                      },
+                                    ],
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "nodes" },
+                                          selectionSet: {
+                                            kind: "SelectionSet",
+                                            selections: [
+                                              { kind: "Field", name: { kind: "Name", value: "id" } },
+                                              { kind: "Field", name: { kind: "Name", value: "content" } },
+                                            ],
+                                          },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "pageInfo" },
+                                          selectionSet: {
+                                            kind: "SelectionSet",
+                                            selections: [
+                                              { kind: "Field", name: { kind: "Name", value: "endCursor" } },
+                                              { kind: "Field", name: { kind: "Name", value: "startCursor" } },
+                                              { kind: "Field", name: { kind: "Name", value: "hasNextPage" } },
+                                              { kind: "Field", name: { kind: "Name", value: "hasPreviousPage" } },
+                                            ],
+                                          },
+                                        },
+                                        { kind: "Field", name: { kind: "Name", value: "totalCount" } },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "pageInfo" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  { kind: "Field", name: { kind: "Name", value: "endCursor" } },
+                                  { kind: "Field", name: { kind: "Name", value: "startCursor" } },
+                                  { kind: "Field", name: { kind: "Name", value: "hasNextPage" } },
+                                  { kind: "Field", name: { kind: "Name", value: "hasPreviousPage" } },
+                                ],
+                              },
+                            },
+                            { kind: "Field", name: { kind: "Name", value: "totalCount" } },
+                          ],
+                        },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "reactions" },
+                        arguments: [
+                          { kind: "Argument", name: { kind: "Name", value: "first" }, value: { kind: "Variable", name: { kind: "Name", value: "first" } } },
+                          { kind: "Argument", name: { kind: "Name", value: "after" }, value: { kind: "Variable", name: { kind: "Name", value: "after" } } },
+                        ],
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "nodes" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  { kind: "Field", name: { kind: "Name", value: "id" } },
+                                  { kind: "Field", name: { kind: "Name", value: "content" } },
                                 ],
                               },
                             },
