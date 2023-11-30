@@ -52,6 +52,11 @@
   font-weight: 400;
 }
 
+.typo pre {
+  width: 100%;
+  overflow: auto;
+}
+
 .typo code {
   font-size: 0.9em;
 }
