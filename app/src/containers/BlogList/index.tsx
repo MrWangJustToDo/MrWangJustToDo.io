@@ -161,7 +161,9 @@ const _BlogList = () => {
   return (
     <Flex flexDirection="column" height="100%">
       <Box overflow="auto" paddingRight="4" className="tour_blogList">
-        <BlogGrid data={data.repository.issues.nodes} disableGridLayout={false} />
+        {loading && <BlogListLoading />}
+        {error && <ErrorCom error={error} />}
+        {!loading && !error && <BlogGrid data={data.repository.issues.nodes} disableGridLayout={false} />}
       </Box>
       <BlogModal />
       <Portal>
@@ -229,26 +231,20 @@ const _BlogListWithInfinityScroll = () => {
     }
   }, [onThrottleScroll, state]);
 
-  if (loading && networkStatus !== NetworkStatus.fetchMore) return <BlogListLoading />;
-
-  if (error)
-    return (
-      <>
-        <ErrorCom error={error} />
-        <Portal>
-          <BlogListButton onRefresh={() => refetch()} />
-        </Portal>
-        <PlayGround />
-        <LeetCode />
-        <Tldraw />
-      </>
+  const Com =
+    loading && networkStatus !== NetworkStatus.fetchMore ? (
+      <BlogListLoading />
+    ) : error ? (
+      <ErrorCom error={error} />
+    ) : (
+      <BlogGrid data={data.repository.issues.nodes} disableGridLayout={disableGridLayout || isMobileWidth} />
     );
 
   return (
     <Flex flexDirection="column" height="100%">
       <Box overflow="auto" paddingRight="4" onScroll={onThrottleScroll} className="tour_blogList">
-        <BlogGrid data={data.repository.issues.nodes} disableGridLayout={disableGridLayout || isMobileWidth} />
-        {loading && data.repository.issues.nodes.length && (
+        {Com}
+        {loading && data?.repository?.issues?.nodes?.length && (
           <Center height="60px">
             <Spinner />
           </Center>
