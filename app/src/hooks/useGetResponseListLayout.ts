@@ -8,7 +8,7 @@ export const BLOG_GRID_HEIGHT = 10;
 export const useListLayoutStore = createState(
   withNamespace(() => ({ data: {} as Layouts }), { namespace: "useListLayoutStore", reduxDevTool: true }),
   {
-    withActions: (s) => ({
+    withActions: (s: { data: Layouts }): { updateLayout: (n: Layouts) => void; mergeLayout: (n: Layouts) => void } => ({
       updateLayout: (newLayout: Layouts) => {
         s.data = newLayout;
       },
@@ -31,6 +31,7 @@ export const useListLayoutStore = createState(
         s.data = obj;
       },
     }),
+    withDeepSelector: false,
   },
 );
 

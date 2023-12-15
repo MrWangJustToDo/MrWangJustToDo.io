@@ -2,7 +2,7 @@
 import { ApolloProvider } from "@apollo/client";
 import { useApollo } from "@blog/graphql";
 import { ChakraProvider } from "@chakra-ui/react";
-import { NextIntlProvider } from "next-intl";
+import { IntlProvider } from "next-intl";
 import NextNProgress from "nextjs-progressbar";
 
 import { Layout } from "@app/components/Layout";

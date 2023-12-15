@@ -1,6 +1,6 @@
 import { SimpleGrid, useBreakpointValue } from "@chakra-ui/react";
 import { motion, useMotionValue, useScroll, useTransform } from "framer-motion";
-import { memo, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 
 import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, GRID_ROW_HEIGHT } from "@app/config/gridLayout";
 import { useFullScreen } from "@app/hooks/useFullScreen";
@@ -54,41 +54,41 @@ const _Item = ({
       ? number % 4 === 0
         ? x_1
         : number % 4 === 1
-        ? x_2
-        : number % 4 === 2
-        ? x_4
-        : x_3
+          ? x_2
+          : number % 4 === 2
+            ? x_4
+            : x_3
       : col === 3
-      ? number % 3 === 0
-        ? x_1
-        : number % 3 === 1
-        ? x_2
-        : plain
-      : col === 2
-      ? number % 2 === 0
-        ? x_1
-        : x_2
-      : plain;
+        ? number % 3 === 0
+          ? x_1
+          : number % 3 === 1
+            ? x_2
+            : plain
+        : col === 2
+          ? number % 2 === 0
+            ? x_1
+            : x_2
+          : plain;
   const skew =
     col === 4
       ? number % 4 === 0
         ? skew_1
         : number % 4 === 1
-        ? skew_2
-        : number % 4 === 2
-        ? skew_4
-        : skew_3
+          ? skew_2
+          : number % 4 === 2
+            ? skew_4
+            : skew_3
       : col === 3
-      ? number % 3 === 0
-        ? skew_1
-        : number % 3 === 1
-        ? skew_2
-        : plain
-      : col === 2
-      ? number % 2 === 0
-        ? skew_1
-        : skew_2
-      : plain;
+        ? number % 3 === 0
+          ? skew_1
+          : number % 3 === 1
+            ? skew_2
+            : plain
+        : col === 2
+          ? number % 2 === 0
+            ? skew_1
+            : skew_2
+          : plain;
   return (
     <MotionCard maxHeight="96" ref={ref} style={{ x, skew }} layoutId={layoutId}>
       <Item {...data} />
@@ -96,10 +96,12 @@ const _Item = ({
   );
 };
 
+const { updateLayout, mergeLayout } = useListLayoutStore.getActions();
+
 const _BlogGridWithGridLayout = ({ data, state }: { data: GetBlogListQuery["repository"]["issues"]["nodes"]; state: boolean }) => {
   const newLayout = useGetResponseListLayout(data);
 
-  const { updateLayout, data: layouts, mergeLayout } = useListLayoutStore();
+  const layouts = useListLayoutStore(useCallback((s) => s.data, []))
 
   const { width } = useDomSize({ cssSelector: ".grid-card-list" });
 
@@ -107,7 +109,7 @@ const _BlogGridWithGridLayout = ({ data, state }: { data: GetBlogListQuery["repo
 
   useEffect(() => {
     mergeLayout(newLayout);
-  }, [mergeLayout, newLayout]);
+  }, [newLayout]);
 
   const mergedLayout = useMemo(() => {
     const obj = {};
