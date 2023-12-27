@@ -4,7 +4,7 @@ import {
   Avatar,
   AvatarBadge,
   Box,
-  Button,
+  // Button,
   Divider,
   Flex,
   HStack,
@@ -24,9 +24,10 @@ import { AboutMe } from "@app/components/AboutMe";
 import { Chart } from "@app/components/Chart";
 import { ErrorCom } from "@app/components/Error";
 import { Followers } from "@app/components/Follower";
+import { MyReact, RStore, SSR } from "@app/components/Recommend";
 import { momentTo } from "@app/utils/time";
 
-const ITEM_FOLLOWER = 10;
+const ITEM_FOLLOWER = 15;
 
 const UserLoading = () => (
   <Box padding="3">
@@ -75,43 +76,12 @@ const _User = () => {
         />
         <AboutMe />
       </HStack>
-      {/* <Text fontWeight="semibold">{data.viewer.login}</Text> */}
       <Box fontSize="sm" marginY="2">
         <Text fontWeight="semibold">Recommend:</Text>
         <HStack divider={<StackDivider />} spacing="2" marginTop="1">
-          <Button
-            as="a"
-            size="sm"
-            color="red.300"
-            target="_blank"
-            variant="outline"
-            href="https://github.com/MrWangJustToDo/MyReact"
-            title="https://github.com/MrWangJustToDo/MyReact"
-          >
-            @my-react
-          </Button>
-          <Button
-            as="a"
-            size="sm"
-            color="red.300"
-            target="_blank"
-            variant="outline"
-            href="https://github.com/MrWangJustToDo/r-store"
-            title="https://github.com/MrWangJustToDo/r-store"
-          >
-            RStore
-          </Button>
-          <Button
-            as="a"
-            size="sm"
-            color="red.300"
-            target="_blank"
-            variant="outline"
-            href="https://github.com/MrWangJustToDo/react-ssr-setup"
-            title="https://github.com/MrWangJustToDo/react-ssr-setup"
-          >
-            SSR template
-          </Button>
+          <MyReact />
+          <RStore />
+          <SSR />
         </HStack>
       </Box>
       <Flex alignItems="center" marginTop="1">
