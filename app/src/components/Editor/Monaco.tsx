@@ -1,4 +1,4 @@
-import { useColorModeValue, Menu, MenuButton, MenuList, MenuItem, Button, Icon, Box, Divider, Wrap, WrapItem, Tooltip, Code, Link } from "@chakra-ui/react";
+import { useColorModeValue, Menu, MenuButton, MenuList, MenuItem, Button, Icon, Box, Divider, Wrap, WrapItem, Tooltip, Link } from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
 import { useRef } from "react";
 import { AiOutlineDown, AiOutlineFile } from "react-icons/ai";
@@ -68,12 +68,12 @@ export const Monaco = () => {
           <Tooltip
             label={
               <>
-                goto <Code>@my-react</Code> main site to see more online example
+                goto @my-react main site to see more online example
               </>
             }
             placement="bottom-start"
           >
-            <Button as={Link} className="tour_more" size="sm" variant="outline" href="https://mrwangjusttodo.github.io/MyReact/" target="_blank">
+            <Button as={Link} className="tour_more" size="sm" variant="outline" href="https://mrwangjusttodo.github.io/MyReact/#next-section" target="_blank">
               More Example
             </Button>
           </Tooltip>

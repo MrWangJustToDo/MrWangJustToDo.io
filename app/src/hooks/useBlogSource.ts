@@ -1,5 +1,7 @@
 import { createState } from "reactivity-store";
 
+import { useListLayoutStore } from "./useGetResponseListLayout";
+
 const Source = [
   {
     name: "Blog",
@@ -15,13 +17,16 @@ const Source = [
   },
 ];
 
+const { updateLayout } = useListLayoutStore.getActions();
+
 export const useBlogSource = createState(() => ({ sources: Source, source: Source[0], sourceName: Source[0].name }), {
-  withActions: (state: { sourceName: string; sources: typeof Source; source: typeof Source[number]; }) => ({
+  withActions: (state: { sourceName: string; sources: typeof Source; source: (typeof Source)[number] }) => ({
     setSource: (newSource: string) => {
       if (newSource !== state.sourceName && state.sources.some((v) => v.name === newSource)) {
         state.sourceName = newSource;
         state.source = state.sources.find((v) => v.name === newSource);
       }
+      updateLayout({});
     },
   }),
   withNamespace: "useBlogSource",

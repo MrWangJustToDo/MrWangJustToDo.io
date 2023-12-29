@@ -53,11 +53,11 @@ const Time = createStoreWithComponent({
     }
     const dayTime = dayjs(time);
     const year = dayTime.year();
-    const month = dayTime.month() + 1;
-    const date = dayTime.date();
-    const hour = dayTime.hour();
-    const minute = dayTime.minute();
-    const second = dayTime.second();
+    const month = dayTime.month() + 1 + '';
+    const date = dayTime.date() + '';
+    const hour = dayTime.hour() + '';
+    const minute = dayTime.minute() + '';
+    const second = dayTime.second() + '';
     return (
       <Flex
         justifyContent="center"
@@ -95,7 +95,7 @@ const Time = createStoreWithComponent({
               duration: 0.12,
             }}
           >
-            {month}
+            {month.length === 1 ? '0' + month : month}
           </motion.div>
         </AnimatePresence>
         -
@@ -111,7 +111,7 @@ const Time = createStoreWithComponent({
               duration: 0.12,
             }}
           >
-            {date}
+            {date.length === 1 ? '0' + date : date}
           </motion.div>
         </AnimatePresence>
         <div> </div>
@@ -127,7 +127,7 @@ const Time = createStoreWithComponent({
               duration: 0.12,
             }}
           >
-            {hour}
+            {hour.length === 1 ? '0' + hour : hour}
           </motion.div>
         </AnimatePresence>
         :
@@ -143,7 +143,7 @@ const Time = createStoreWithComponent({
               duration: 0.12,
             }}
           >
-            {minute}
+            {minute.length === 1 ? '0' + minute : minute}
           </motion.div>
         </AnimatePresence>
         :
@@ -159,7 +159,7 @@ const Time = createStoreWithComponent({
               duration: 0.12,
             }}
           >
-            {second}
+            {second.length === 1 ? '0' + second : second}
           </motion.div>
         </AnimatePresence>
       </Flex>

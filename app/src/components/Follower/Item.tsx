@@ -38,10 +38,9 @@ export const Follower = ({ isFirst, name, email, avatarUrl, bioHTML }: FollowerP
         }
         maxWidth={{ base: "200px", md: "240px" }}
         isOpen={isOpen}
-        borderRadius="4"
         placement="right"
         boxShadow="md"
-        offset={[0, 8]}
+        offset={[0, 12]}
         hasArrow
       >
         <Avatar

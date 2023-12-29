@@ -6,7 +6,7 @@ import { CONTAINER_WIDTH } from "@app/config/container";
 import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, ENABLE_INFINITY_SCROLL, GRID_ROW_HEIGHT } from "@app/config/gridLayout";
 import { BlogGridWithInfinityScroll, BlogList } from "@app/containers/BlogList";
 import { User } from "@app/containers/User";
-import { WalkMe } from "@app/containers/WalkMe";
+// import { WalkMe } from "@app/containers/WalkMe";
 import { useEffectOnce } from "@app/hooks/useEffectOnce";
 import { useFullScreen } from "@app/hooks/useFullScreen";
 import { useMainCard } from "@app/hooks/useMainCard";
@@ -75,7 +75,7 @@ export const Page = (p: { ReactType: string; ReactDOMType: string }) => {
 
   return (
     <Container maxWidth={CONTAINER_WIDTH}>
-      <WalkMe />
+      {/* <WalkMe /> */}
       {!state ? (
         <StyledResponsiveReactGridLayout
           className="layout"

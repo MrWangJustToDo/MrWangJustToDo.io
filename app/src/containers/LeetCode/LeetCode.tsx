@@ -104,7 +104,7 @@ const _LeetCodeContent = () => {
 
   return (
     <AnimatePresence>
-      <SimpleGrid width="100%" padding="2" columns={{ base: 1, lg: 2, xl: 3, "2xl": 4 }} spacing={3}>
+      <SimpleGrid width="100%" padding="2" columns={{ base: 1, lg: 2, xl: 3, "2xl": 4 }} spacing={3} onClick={() => set(undefined)}>
         {content.map((file) =>
           file.map((c) => {
             if (!c) return null;
@@ -115,14 +115,17 @@ const _LeetCodeContent = () => {
                 overflow="auto"
                 layoutId={c}
                 transition={{
-                  duration: 0.25,
+                  duration: 0.2,
                   ease: "easeInOut",
                 }}
                 cursor="pointer"
                 whileHover={{
-                  scale: 0.96,
+                  scale: 0.98,
                 }}
-                onClick={() => set(c)}
+                onClick={(e: Event) => {
+                  e.stopPropagation();
+                  set(c);
+                }}
               >
                 <Content>{c}</Content>
               </MotionCard>
