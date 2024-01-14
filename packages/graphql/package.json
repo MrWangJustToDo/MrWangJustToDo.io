@@ -35,7 +35,7 @@
     ]
   },
   "dependencies": {
-    "project-tool": "git+ssh://git@github.com:MrWangJustToDo/project-tool.git"
+    "project-tool": "https://github.com/MrWangJustToDo/project-tool.git"
   },
   "devDependencies": {
     "typescript": "^5.3.3"
