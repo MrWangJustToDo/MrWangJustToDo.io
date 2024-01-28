@@ -128,7 +128,7 @@ export type GetRepoAboutQueryVariables = SchemaTypes.Exact<{
   owner: SchemaTypes.Scalars["String"]["input"];
 }>;
 
-export type GetRepoAboutQuery = { repository?: { description?: string | null; descriptionHTML: any } | null };
+export type GetRepoAboutQuery = { repository?: { description?: string | null; url: any; homepageUrl?: any | null; descriptionHTML: any } | null };
 
 export const GetViewerDocument = {
   kind: "Document",
@@ -624,6 +624,8 @@ export const GetRepoAboutDocument = {
               kind: "SelectionSet",
               selections: [
                 { kind: "Field", name: { kind: "Name", value: "description" } },
+                { kind: "Field", name: { kind: "Name", value: "url" } },
+                { kind: "Field", name: { kind: "Name", value: "homepageUrl" } },
                 { kind: "Field", name: { kind: "Name", value: "descriptionHTML" } },
               ],
             },
