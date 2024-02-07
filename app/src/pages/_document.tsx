@@ -7,7 +7,7 @@ export default class Document extends NextDocument {
     return (
       <Html>
         <Head>
-          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jetbrains-mono@1.0.6/css/jetbrains-mono.min.css"></link>
+          <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/google-sans"></link>
           <Script
             id="baidu_track"
             strategy="afterInteractive"

@@ -11,7 +11,7 @@ const mark = new Mark({
   highlight: function (str, lang) {
     let code = "";
     try {
-      if (lang) {
+      if (lang && hljs.getLanguage(lang)) {
         code = hljs.highlight(str, {
           language: lang,
           ignoreIllegals: true,
@@ -23,17 +23,15 @@ const mark = new Mark({
       const minWidth = String(transformArr.length).length - 0.2;
       const html = transformArr.reduce(
         (p: string, c: string, idx: number) =>
-          `${p}<span class='no-select d-inline-block text-center border-right pr-2 mr-2 border-dark' style='min-width: ${minWidth}em; line-height: 1.5'>${
+          `${p}<span class='no-select code-num d-inline-block text-center border-right pr-2 mr-2 border-dark' style='min-width: ${minWidth}em; line-height: 1.5'>${
             idx + 1
           }</span>${c}\n`,
-        lang
-          ? `<div class='w-100 position-absolute' style='left: 0; top: 0; font-size: 0px'>
+        `<div class='w-100 position-absolute' style='left: 0; top: 0; font-size: 0px'>
           <b class='no-select position-absolute text-info' style='left: 10px; font-size: 12px; top: 4px;'>${lang}</b>
           <div class='position-absolute w-100 border-bottom border-dark' style='left: 0; top: 24px;'></div>
         </div>`
-          : ``,
       );
-      return `<pre class="rounded position-relative"><code class="hljs ${lang}" ${lang ? "style='padding-top: 30px;'" : ""}>${html}</code></pre>`;
+      return `<pre class="rounded position-relative"><code class="hljs ${lang}" style='padding-top: 30px;'>${html}</code></pre>`;
     } catch (__) {
       void 0;
     }
