@@ -2,8 +2,11 @@ import { NetworkStatus, useApolloClient, useQuery } from "@apollo/client";
 import { GetSingleBlogDocument } from "@blog/graphql";
 import { Box, Text, SkeletonText, SkeletonCircle, useCallbackRef, Icon, IconButton, useColorModeValue, HStack, Spacer } from "@chakra-ui/react";
 import { countBy, throttle } from "lodash-es";
-import { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { AiOutlineReload } from "react-icons/ai";
+import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 
 import { Actor } from "@app/components/Actor";
 import { Card } from "@app/components/Card";
@@ -11,7 +14,7 @@ import { Comment } from "@app/components/Comment";
 import { ErrorCom } from "@app/components/Error";
 import { useBlogSource } from "@app/hooks/useBlogSource";
 import { getTargetEmoji } from "@app/utils/emoji";
-import { mark } from "@app/utils/markdown";
+import { getHighlightHtml } from "@app/utils/highlight";
 
 import { DetailProgressBar } from "./DetailProgressBar";
 
@@ -96,8 +99,6 @@ export const DetailModalBody = ({ id }: { id: string }) => (
     }
     Render={({ data }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const rendered = useMemo(() => mark.render(data?.repository?.issue?.body || ""), [data]);
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       const reactions = useMemo(() => countBy(data?.repository?.issue?.reactions?.nodes, (i) => i.content), [data]);
       if (data?.repository?.issue) {
         return (
@@ -114,7 +115,25 @@ export const DetailModalBody = ({ id }: { id: string }) => (
                   height: 6,
                 }}
               />
-              <Box className="typo" marginTop="3.5" fontSize={{ base: "sm", lg: "md" }} dangerouslySetInnerHTML={{ __html: rendered }} />
+              <Box className="typo" marginTop="3.5" fontSize={{ base: "sm", lg: "md" }}>
+                <Markdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                  components={{
+                    code(props) {
+                      const { children, className } = props;
+                      const lang = className?.split("-")[1];
+                      if (lang) {
+                        return <div className={className} dangerouslySetInnerHTML={{ __html: getHighlightHtml(children as string, lang) }} />;
+                      } else {
+                        return <code className={className}>{children}</code>;
+                      }
+                    },
+                  }}
+                >
+                  {data?.repository?.issue?.body || ""}
+                </Markdown>
+              </Box>
               <HStack gap={2}>
                 {Object.keys(reactions)
                   .filter((i) => reactions[i])

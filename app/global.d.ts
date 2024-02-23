@@ -15,10 +15,4 @@ declare global {
 
 }
 
-declare module "markdown-it" {
-  interface MarkdownIt {
-    renderWithMemo: (item: string) => string;
-  }
-}
-
 export {};

@@ -1,9 +1,12 @@
 import { Box, HStack, Text } from "@chakra-ui/react";
 import { countBy } from "lodash-es";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
+import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 
 import { getTargetEmoji } from "@app/utils/emoji";
-import { mark } from "@app/utils/markdown";
+import { getHighlightHtml } from "@app/utils/highlight";
 
 import { Actor } from "../Actor";
 import { Card } from "../Card";
@@ -17,7 +20,6 @@ export const Item = (props: GetSingleBlogQuery["repository"]["issue"]["comments"
     updatedAt,
     reactions,
   } = props;
-  const rendered = useMemo(() => mark.render(body), [body]);
   const _reactions = useMemo(() => countBy(reactions?.nodes, (i) => i.content), [reactions]);
   return (
     <Card marginY="2" padding="2" backgroundColor="initial">
@@ -31,7 +33,25 @@ export const Item = (props: GetSingleBlogQuery["repository"]["issue"]["comments"
           height: 6,
         }}
       />
-      <Box marginTop="3.5" className="typo" fontSize="small" dangerouslySetInnerHTML={{ __html: rendered }} />
+      <Box marginTop="3.5" className="typo" fontSize="small">
+        <Markdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            code(props) {
+              const { children, className } = props;
+              const lang = className?.split("-")[1];
+              if (lang) {
+                return <div className={className} dangerouslySetInnerHTML={{ __html: getHighlightHtml(children as string, lang) }} />;
+              } else {
+                return <code className={className}>{children}</code>;
+              }
+            },
+          }}
+        >
+          {body}
+        </Markdown>
+      </Box>
       <HStack gap={2}>
         {Object.keys(_reactions)
           .filter((i) => _reactions[i])

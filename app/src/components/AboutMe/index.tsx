@@ -15,14 +15,14 @@ export const AboutMe = () => {
       <IconButton color="gray" variant="outline" aria-label="about me" title="about me" onClick={onOpen} icon={<Icon as={FaUserTie} fontSize="xl" />} />
       <Modal size={isMobile ? "full" : "4xl"} isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
         <ModalOverlay backdropFilter="blur(10px)" />
-        <ModalContent backgroundColor="cardBackgroundColor" border="1px" borderRadius="md" borderColor="cardBorderColor">
+        <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">
           <ModalCloseButton />
           <ModalBody>
             <Flex alignItems="flex-start" justifyContent="space-around" flexDirection={{ base: "column", md: "row" }}>
-              <AspectRatio ratio={11 / 16} width={{ base: "95%", md: "46%" }}>
+              <AspectRatio ratio={11 / 16} width={{ base: "95%", md: "45%" }} border="1px">
                 <Image src={resourceUri("./1.png")} width="100%" alt="about me" />
               </AspectRatio>
-              <AspectRatio ratio={12 / 16} width={{ base: "95%", md: "46%" }}>
+              <AspectRatio ratio={11 / 16} width={{ base: "95%", md: "45%" }} border="1px">
                 <Image src={resourceUri("./2.png")} width="100%" alt="about me" />
               </AspectRatio>
             </Flex>

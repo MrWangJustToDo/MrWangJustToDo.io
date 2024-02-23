@@ -1,10 +1,13 @@
 import { Text, Flex, Box, Icon, IconButton, Divider, Tooltip } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
+import React from "react";
 import { AiOutlineRight } from "react-icons/ai";
 import { VscLinkExternal } from "react-icons/vsc";
+import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 
-import { markNOLineNumber } from "@app/utils/markdown";
+import { getHighlightHtml } from "@app/utils/highlight";
 
 import { Actor } from "../Actor";
 import { Hover } from "../Hover";
@@ -56,7 +59,6 @@ export const Item = (props: GetBlogListQuery["repository"]["issues"]["nodes"][0]
     author: { avatarUrl, login },
     url,
   } = props;
-  const renderedBody = useMemo(() => (markNOLineNumber as any).renderWithMemo(body), [body]);
   return (
     <Flex flexDirection="column" height="100%">
       <Box padding="2" borderTopRadius="md">
@@ -74,14 +76,34 @@ export const Item = (props: GetBlogListQuery["repository"]["issues"]["nodes"][0]
         />
       </Box>
       <Divider />
-      <Box
+      <Box className="typo" overflow={{ base: "hidden", lg: "auto" }} padding="2" fontSize="sm" borderBottomRadius="md">
+        <Markdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            code(props) {
+              const { children, className } = props;
+              const lang = className?.split("-")[1];
+              if (lang) {
+                return <div className={className} dangerouslySetInnerHTML={{ __html: getHighlightHtml(children as string, lang) }} />;
+              } else {
+                return <code className={className}>{children}</code>;
+              }
+            },
+          }}
+        >
+          {body}
+        </Markdown>
+      </Box>
+      {/* {renderers.react(content, React)} */}
+      {/* <Box
         className="typo"
         overflow={{ base: "hidden", lg: "auto" }}
         padding="2"
         fontSize="sm"
         borderBottomRadius="md"
         dangerouslySetInnerHTML={{ __html: renderedBody }}
-      />
+      /> */}
     </Flex>
   );
 };

@@ -4,5 +4,10 @@ query getRepoAbout ($name: String!, $owner: String!) {
     url
     homepageUrl
     descriptionHTML
+    object(expression: "main:README.md") {
+      ... on Blob {
+        text
+      }
+    }
   }
 }

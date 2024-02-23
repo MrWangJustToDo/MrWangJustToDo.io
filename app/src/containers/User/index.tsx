@@ -25,6 +25,7 @@ import { AboutMe } from "@app/components/AboutMe";
 import { Chart } from "@app/components/Chart";
 import { ErrorCom } from "@app/components/Error";
 import { Followers } from "@app/components/Follower";
+// import { Project } from "@app/components/Project";
 import { GitDiffView, MyReact, RStore, SSR } from "@app/components/Recommend";
 import { momentTo } from "@app/utils/time";
 
@@ -76,6 +77,7 @@ const _User = () => {
           icon={<Icon as={SiLeetcode} fontSize="xl" />}
         />
         <AboutMe />
+        {/* <Project /> */}
       </HStack>
       <Box fontSize="sm" marginY="2">
         <Text fontWeight="semibold">Recommend:</Text>
