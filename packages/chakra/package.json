@@ -23,6 +23,7 @@
         "dir": "./dist",
         "entryFileNames": "cjs/index.js",
         "multiple": true,
+        "type": true,
         "format": "cjs",
         "sourcemap": true
       },

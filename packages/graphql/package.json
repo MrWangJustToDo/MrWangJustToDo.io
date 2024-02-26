@@ -23,6 +23,7 @@
         "dir": "./dist",
         "entryFileNames": "cjs/index.js",
         "multiple": true,
+        "type": true,
         "format": "cjs",
         "sourcemap": true
       },
@@ -41,14 +42,14 @@
     "typescript": "^5.3.3"
   },
   "peerDependencies": {
-    "@apollo/client": "^3.8.8",
-    "@graphql-codegen/add": "^5.0.0",
-    "@graphql-codegen/cli": "^5.0.0",
+    "@apollo/client": "^3.9.5",
+    "@graphql-codegen/add": "^5.0.2",
+    "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/import-types-preset": "^2.2.6",
     "@graphql-codegen/near-operation-file-preset": "^2.5.0",
-    "@graphql-codegen/typed-document-node": "^5.0.1",
-    "@graphql-codegen/typescript": "^4.0.1",
-    "@graphql-codegen/typescript-operations": "^4.0.1",
+    "@graphql-codegen/typed-document-node": "^5.0.6",
+    "@graphql-codegen/typescript": "^4.0.6",
+    "@graphql-codegen/typescript-operations": "^4.2.0",
     "@graphql-typed-document-node/core": "^3.2.0",
     "graphql": "^16.8.0",
     "lodash": "^4.17.21",

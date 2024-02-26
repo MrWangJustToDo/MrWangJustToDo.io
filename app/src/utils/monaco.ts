@@ -7,6 +7,7 @@ export const setMonacoTSXSupport = async (editor: monaco.editor.IStandaloneCodeE
   // look like not work
   const { default: traverse } = await import("@babel/traverse");
   const { parse } = await import("@babel/parser");
+  const babelParse = (code: string) => parse(code, { sourceType: "module", plugins: ["jsx", "typescript"], errorRecovery: true });
   // >>> The star of the show =P >>>
   const { default: MonacoJSXHighlighter } = await import(
     "monaco-jsx-highlighter" // Note: there is a polyfilled version alongside the regular version.
@@ -15,7 +16,7 @@ export const setMonacoTSXSupport = async (editor: monaco.editor.IStandaloneCodeE
   // Instantiate the highlighter
   const monacoJSXHighlighter = new MonacoJSXHighlighter(
     monaco, // references Range and other APIs
-    parse, // obtains an AST, internally passes to parse options: {...options, sourceType: "module",plugins: ["jsx"],errorRecovery: true}
+    babelParse, // obtains an AST, internally passes to parse options: {...options, sourceType: "module",plugins: ["jsx"],errorRecovery: true}
     traverse, // helps collecting the JSX expressions within the AST
     editor, // highlights the content of that editor via decorations
   );
