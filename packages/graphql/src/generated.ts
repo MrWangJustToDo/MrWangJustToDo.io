@@ -129,7 +129,14 @@ export type GetRepoAboutQueryVariables = SchemaTypes.Exact<{
 }>;
 
 export type GetRepoAboutQuery = {
-  repository?: { description?: string | null; url: any; homepageUrl?: any | null; descriptionHTML: any; object?: { text?: string | null } | {} | null } | null;
+  repository?: {
+    description?: string | null;
+    url: any;
+    homepageUrl?: any | null;
+    descriptionHTML: any;
+    read1?: { text?: string | null } | {} | null;
+    read2?: { text?: string | null } | {} | null;
+  } | null;
 };
 
 export const GetViewerDocument = {
@@ -631,9 +638,28 @@ export const GetRepoAboutDocument = {
                 { kind: "Field", name: { kind: "Name", value: "descriptionHTML" } },
                 {
                   kind: "Field",
+                  alias: { kind: "Name", value: "read1" },
                   name: { kind: "Name", value: "object" },
                   arguments: [
                     { kind: "Argument", name: { kind: "Name", value: "expression" }, value: { kind: "StringValue", value: "main:README.md", block: false } },
+                  ],
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "InlineFragment",
+                        typeCondition: { kind: "NamedType", name: { kind: "Name", value: "Blob" } },
+                        selectionSet: { kind: "SelectionSet", selections: [{ kind: "Field", name: { kind: "Name", value: "text" } }] },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  alias: { kind: "Name", value: "read2" },
+                  name: { kind: "Name", value: "object" },
+                  arguments: [
+                    { kind: "Argument", name: { kind: "Name", value: "expression" }, value: { kind: "StringValue", value: "main:readme.md", block: false } },
                   ],
                   selectionSet: {
                     kind: "SelectionSet",

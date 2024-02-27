@@ -1,5 +1,6 @@
 // 语法高亮
 import Hljs from "highlight.js/lib/core";
+import bash from "highlight.js/lib/languages/bash";
 import css from "highlight.js/lib/languages/css";
 import java from "highlight.js/lib/languages/java";
 import javascript from "highlight.js/lib/languages/javascript";
@@ -21,6 +22,7 @@ Hljs.registerLanguage("scss", scss);
 Hljs.registerLanguage("shell", shell);
 Hljs.registerLanguage("xml", xml);
 Hljs.registerLanguage("sql", sql);
+Hljs.registerLanguage("bash", bash);
 
 export const hljs = Hljs;
 

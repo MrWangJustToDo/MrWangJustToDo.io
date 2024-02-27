@@ -1,10 +1,15 @@
-query getRepoAbout ($name: String!, $owner: String!) {
+query getRepoAbout($name: String!, $owner: String!) {
   repository(name: $name, owner: $owner) {
     description
     url
     homepageUrl
     descriptionHTML
-    object(expression: "main:README.md") {
+    read1: object(expression: "main:README.md") {
+      ... on Blob {
+        text
+      }
+    }
+    read2: object(expression: "main:readme.md") {
       ... on Blob {
         text
       }
