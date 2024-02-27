@@ -326,15 +326,15 @@ blockquote {
   padding: 0.5em 1em;
 }
 
-.typo table th,
-.typo-table th {
-  background: #fbfbfb;
-}
+// .typo table th,
+// .typo-table th {
+//   background: #fbfbfb;
+// }
 
-.typo table thead th,
-.typo-table thead th {
-  background: #f1f1f1;
-}
+// .typo table thead th,
+// .typo-table thead th {
+//   background: #f1f1f1;
+// }
 
 .typo table caption {
   border-bottom: none;
@@ -391,6 +391,10 @@ blockquote {
 
 .mr-2 {
   margin-right: var(--chakra-sizes-2);
+}
+
+.border {
+  border: 1px solid;
 }
 
 .border-dark {

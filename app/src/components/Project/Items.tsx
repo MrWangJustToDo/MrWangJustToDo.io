@@ -1,13 +1,15 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useQuery } from "@apollo/client";
 import { GetRepoAboutDocument } from "@blog/graphql";
-import { Box, CloseButton, Divider, SkeletonText, Text } from "@chakra-ui/react";
+import { Box, CloseButton, Divider, Image, SkeletonText, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 
+import { getClass } from "@app/utils/dom";
 import { getHighlightHtml } from "@app/utils/highlight";
 
 import { Card } from "../Card";
@@ -66,6 +68,8 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
 
   const [animateDone, setAnimateDone] = useState(false);
 
+  console.log(data);
+
   return (
     <Box
       style={{
@@ -105,9 +109,28 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
                   const { children, className } = props;
                   const lang = className?.split("-")[1];
                   if (lang) {
-                    return <div className={className} dangerouslySetInnerHTML={{ __html: getHighlightHtml(children as string, lang) }} />;
+                    return (
+                      <Box
+                        className={getClass(className, "border", "rounded")}
+                        sx={{
+                          "&>pre": {
+                            margin: 0,
+                          },
+                        }}
+                        dangerouslySetInnerHTML={{ __html: getHighlightHtml(children as string, lang) }}
+                      />
+                    );
                   } else {
                     return <code className={className}>{children}</code>;
+                  }
+                },
+                img(props) {
+                  const { src, alt } = props;
+                  if (src.startsWith("http")) {
+                    return <Image {...props} alt={alt} marginY="4" />;
+                  } else {
+                    const targetSrc = `${data.repository.url}/raw/main/${src}`;
+                    return <Image {...props} src={targetSrc} alt={alt} marginY="4" />;
                   }
                 },
               }}
