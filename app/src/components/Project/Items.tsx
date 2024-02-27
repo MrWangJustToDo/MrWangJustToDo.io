@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useQuery } from "@apollo/client";
 import { GetRepoAboutDocument } from "@blog/graphql";
 import { Box, CloseButton, Divider, SkeletonText, Text } from "@chakra-ui/react";
@@ -111,6 +112,7 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
                 },
               }}
             >
+              {/* @ts-expect-error */}
               {data?.repository?.read1?.text || data?.repository?.read2?.text || ""}
             </Markdown>
           </Box>
