@@ -68,8 +68,6 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
 
   const [animateDone, setAnimateDone] = useState(false);
 
-  console.log(data);
-
   return (
     <Box
       style={{
