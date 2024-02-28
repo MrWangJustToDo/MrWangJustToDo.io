@@ -45,9 +45,10 @@ export const Item = ({ type }: { type: keyof typeof ProjectItems }) => {
       height="100%"
       padding="4px"
       paddingX="6px"
+      key={loading ? type + "loading" : type}
       paddingBottom="8px"
       boxShadow="sm"
-      layoutId={type}
+      layoutId={loading ? type + "loading" : type}
       textAlign="center"
     >
       <Text fontSize="20px" fontWeight="semibold">

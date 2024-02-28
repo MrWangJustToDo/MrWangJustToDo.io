@@ -15,7 +15,6 @@ import {
   SkeletonText,
   StackDivider,
   Text,
-  VStack,
 } from "@chakra-ui/react";
 import React, { memo } from "react";
 import { AiOutlineGithub, AiOutlineMail, AiOutlineUser } from "react-icons/ai";
@@ -26,7 +25,7 @@ import { Chart } from "@app/components/Chart";
 import { ErrorCom } from "@app/components/Error";
 import { Followers } from "@app/components/Follower";
 import { Project } from "@app/components/Project";
-import { GitDiffView, MyReact, RStore, SSR } from "@app/components/Recommend";
+import { Recommend } from "@app/components/Recommend";
 import { momentTo } from "@app/utils/time";
 
 const ITEM_FOLLOWER = 15;
@@ -81,12 +80,7 @@ const _User = () => {
       </HStack>
       <Box fontSize="sm" marginY="2">
         <Text fontWeight="semibold">Recommend:</Text>
-        <VStack divider={<StackDivider />} spacing="2" marginTop="1">
-          <MyReact />
-          <RStore />
-          <SSR />
-          <GitDiffView />
-        </VStack>
+        <Recommend />
       </Box>
       <Flex alignItems="center" marginTop="1">
         <Icon as={AiOutlineUser} />

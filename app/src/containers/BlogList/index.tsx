@@ -12,7 +12,6 @@ import {
   Spinner,
   Button,
   ButtonGroup,
-  useBreakpointValue,
   IconButton,
   Menu,
   MenuButton,
@@ -180,12 +179,10 @@ const _BlogList = () => {
   );
 };
 
-const _BlogListWithInfinityScroll = () => {
+const _BlogListWithInfinityScroll = ({ isMobileWidth }: { isMobileWidth: boolean }) => {
   const disableGridLayout = useGridLayout((s) => s.state);
 
   const state = useFullScreen((s) => s.state);
-
-  const isMobileWidth = useBreakpointValue({ base: true, md: false });
 
   const source = useBlogSource((s) => s.source);
 
@@ -263,4 +260,8 @@ const _BlogListWithInfinityScroll = () => {
 
 export const BlogList = memo(_BlogList);
 
-export const BlogGridWithInfinityScroll = memo(_BlogListWithInfinityScroll);
+export const BlogGridWithInfinityScroll = memo(({ isMobileWidth }: { isMobileWidth: boolean }) => {
+  return <_BlogListWithInfinityScroll isMobileWidth={isMobileWidth} />;
+});
+
+BlogGridWithInfinityScroll.displayName = "BlogGridWithInfinityScroll";
