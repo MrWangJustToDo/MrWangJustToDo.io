@@ -6,9 +6,15 @@ const compiler = (tsxString: string) => Babel.transform(tsxString, { filename: "
 
 const response = debounce(({ data, id }) => postMessage({ js: data, id }), 200);
 
+const error = debounce(({ error, id }) => postMessage({ error, id }), 200);
+
 addEventListener("message", (event) => {
   const id = event.data.id;
   const tsxString = event.data.tsx;
-  const js = compiler(tsxString);
-  response({ data: js.code, id });
+  try {
+    const js = compiler(tsxString);
+    response({ data: js.code, id });
+  } catch (e) {
+    error({ error: e.message, id });
+  }
 });

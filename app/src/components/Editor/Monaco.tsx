@@ -3,6 +3,7 @@ import Editor from "@monaco-editor/react";
 import { useRef } from "react";
 import { AiOutlineDown, AiOutlineFile } from "react-icons/ai";
 import { BsCheck } from "react-icons/bs";
+import { TbPackage } from "react-icons/tb";
 
 import { useEditor_v2 } from "@app/hooks/useEditor";
 import { usePlayGround } from "@app/hooks/usePlayGround";
@@ -11,6 +12,16 @@ import { useType } from "@app/hooks/useType";
 import { setMonacoTSXSupport } from "@app/utils/monaco";
 
 import type monaco from "monaco-editor";
+
+const InstallPackages = {
+  MyReact: "MyReact",
+  MyReactReactive: "MyReactReactive",
+  MyReactDOM: "MyReactDOM",
+  ReactWindow: "ReactWindow",
+  ReactGridLayout: "ReactGridLayout",
+  Antd: "Antd",
+  dayjs: "dayjs",
+};
 
 export const Monaco = () => {
   const { onClose } = usePlayGround();
@@ -65,14 +76,30 @@ export const Monaco = () => {
           </Button>
         </WrapItem>
         <WrapItem>
-          <Tooltip
-            label={
-              <>
-                goto @my-react main site to see more online example
-              </>
-            }
-            placement="bottom-start"
-          >
+          <Menu>
+            <MenuButton
+              as={Button}
+              size="sm"
+              variant="outline"
+              leftIcon={<Icon as={TbPackage} fontSize="small" />}
+              rightIcon={<Icon as={AiOutlineDown} fontSize="small" />}
+            >
+              Packages
+            </MenuButton>
+            <MenuList>
+              {Object.keys(InstallPackages)
+                .map((key) => {
+                  return (
+                    <MenuItem key={key} value={InstallPackages[key]} justifyContent="space-between">
+                      {InstallPackages[key]}
+                    </MenuItem>
+                  );
+                })}
+            </MenuList>
+          </Menu>
+        </WrapItem>
+        <WrapItem>
+          <Tooltip label={<>goto @my-react main site to see more online example</>} placement="bottom-start">
             <Button as={Link} className="tour_more" size="sm" variant="outline" href="https://mrwangjusttodo.github.io/MyReact/#next-section" target="_blank">
               More Example
             </Button>

@@ -1,3 +1,4 @@
+import { useToast } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 
 import {
@@ -12,6 +13,8 @@ import {
 import { useDebouncedState } from "@app/hooks/useDebouncedState";
 import { useEditor_v2 } from "@app/hooks/useEditor";
 import { generateIframeDOC, generateLinkElementsString, generateScriptElementsString, generateStyleElementsString, getAllFiles } from "@app/utils/preview";
+
+import type { ToastId } from "@chakra-ui/react";
 
 // const BABEL_URL = PLAYGROUND_BABEL;
 const REACT_URL = PLAYGROUND_MY_REACT;
@@ -40,6 +43,8 @@ export const IFramePreview = ({ styles = [], scripts = [], links = [], onLoad }:
 
   const content = files["script.tsx"].content;
 
+  const open = useToast();
+
   const styleElement = generateStyleElementsString(styles.concat(getAllFiles(files, "css")));
 
   const scriptElement = generateScriptElementsString(DEFAULT_SCRIPTS.concat(scripts));
@@ -61,17 +66,48 @@ export const IFramePreview = ({ styles = [], scripts = [], links = [], onLoad }:
 
   const workRef = useRef<Worker>();
 
+  const toastRef = useRef<ToastId>();
+
   const iframeRef = useRef<HTMLIFrameElement>();
 
   useEffect(() => {
     workRef.current = new Worker(new URL("@app/worker/compiler.worker", import.meta.url));
     workRef.current.addEventListener("message", ({ data }) => {
       if (data.id === idRef.current) {
-        setCompiled(data);
+        if (data.js) {
+          setCompiled(data);
+        } else if (data.error) {
+          if (toastRef.current) {
+            open.update(toastRef.current, {
+              title: "parse error",
+              isClosable: true,
+              status: "error",
+              description: (
+                <pre style={{ overflow: "scroll", fontSize: "14px" }}>
+                  <code>{data.error}</code>
+                </pre>
+              ),
+              onCloseComplete: () => (toastRef.current = null),
+            });
+          } else {
+            toastRef.current = open({
+              title: "parse error",
+              isClosable: true,
+              status: "error",
+              id: "parse-error",
+              description: (
+                <pre style={{ overflow: "scroll", fontSize: "14px" }}>
+                  <code>{data.error}</code>
+                </pre>
+              ),
+              onCloseComplete: () => (toastRef.current = null),
+            });
+          }
+        }
       }
     });
     return () => workRef.current.terminate();
-  }, []);
+  }, [open]);
 
   useEffect(() => {
     idRef.current++;
