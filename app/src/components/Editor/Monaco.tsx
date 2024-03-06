@@ -28,9 +28,13 @@ export const Monaco = () => {
 
   const boxRef = useRef<HTMLDivElement>();
 
+  const divideRef = useRef<HTMLHRElement>();
+
   const type = useType((s) => s.type);
 
   const { height } = useDomSize({ ref: boxRef });
+
+  const { height: divideHeight } = useDomSize({ ref: divideRef });
 
   const monacoInstance = useRef<monaco.editor.IStandaloneCodeEditor>();
 
@@ -41,7 +45,7 @@ export const Monaco = () => {
   const theme = useColorModeValue("vs-light", "vs-dark");
 
   return (
-    <Box height="100%">
+    <Box height="100%" overflow="hidden">
       <Wrap paddingX="2" spacing="2" ref={boxRef}>
         <WrapItem>
           <Menu>
@@ -87,14 +91,13 @@ export const Monaco = () => {
               Packages
             </MenuButton>
             <MenuList>
-              {Object.keys(InstallPackages)
-                .map((key) => {
-                  return (
-                    <MenuItem key={key} value={InstallPackages[key]} justifyContent="space-between">
-                      {InstallPackages[key]}
-                    </MenuItem>
-                  );
-                })}
+              {Object.keys(InstallPackages).map((key) => {
+                return (
+                  <MenuItem key={key} value={InstallPackages[key]} justifyContent="space-between">
+                    {InstallPackages[key]}
+                  </MenuItem>
+                );
+              })}
             </MenuList>
           </Menu>
         </WrapItem>
@@ -106,8 +109,8 @@ export const Monaco = () => {
           </Tooltip>
         </WrapItem>
       </Wrap>
-      <Divider marginY="2" />
-      <Box height={`calc(100% - ${height}px - 2px)`} width="100%" className="tour_playGround_editor">
+      <Divider marginY="2" ref={divideRef} />
+      <Box height={`calc(100% - ${height}px - ${divideHeight}px - 14px)`} width="100%" className="tour_playGround_editor">
         <Editor
           theme={theme}
           path={currentFile.name}
