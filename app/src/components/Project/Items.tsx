@@ -2,9 +2,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useQuery } from "@apollo/client";
 import { GetRepoAboutDocument } from "@blog/graphql";
-import { Box, CloseButton, Divider, Image, SkeletonText, Text } from "@chakra-ui/react";
+import { Box, CloseButton, Code, Divider, Image, SkeletonText, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { cloneElement, isValidElement, useState } from "react";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -104,6 +104,19 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw]}
               components={{
+                pre(props) {
+                  const { node, children, ...res } = props;
+                  if (node.children?.length === 1 && typeof node.children[0] === "object" && (node.children[0] as any).tagName === "code") {
+                    return (
+                      <div className="w-full overflow-auto">
+                        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                        {/* @ts-expect-error */}
+                        <pre>{isValidElement(children) ? cloneElement(children, { className: children.props.className || "lang-unknown" }) : children}</pre>
+                      </div>
+                    );
+                  }
+                  return <pre {...res}>{children}</pre>;
+                },
                 code(props) {
                   const { children, className } = props;
                   const lang = className?.split("-")[1];
@@ -120,7 +133,7 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
                       />
                     );
                   } else {
-                    return <code className={className}>{children}</code>;
+                    return <Code className={className}>{children}</Code>;
                   }
                 },
                 img(props) {

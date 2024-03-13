@@ -1,6 +1,6 @@
-import { Text, Flex, Box, Icon, IconButton, Divider, Tooltip } from "@chakra-ui/react";
+import { Text, Flex, Box, Icon, IconButton, Divider, Tooltip, Code } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { cloneElement, isValidElement } from "react";
 import { AiOutlineRight } from "react-icons/ai";
 import { VscLinkExternal } from "react-icons/vsc";
 import Markdown from "react-markdown";
@@ -81,13 +81,26 @@ export const Item = (props: GetBlogListQuery["repository"]["issues"]["nodes"][0]
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeRaw]}
           components={{
+            pre(props) {
+              const { node, children, ...res } = props;
+              if (node.children?.length === 1 && typeof node.children[0] === "object" && (node.children[0] as any).tagName === "code") {
+                return (
+                  <div className="w-full overflow-auto">
+                    {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                    {/* @ts-expect-error */}
+                    <pre>{isValidElement(children) ? cloneElement(children, { className: children.props.className || "lang-unknown" }) : children}</pre>
+                  </div>
+                );
+              }
+              return <pre {...res}>{children}</pre>;
+            },
             code(props) {
               const { children, className } = props;
               const lang = className?.split("-")[1];
               if (lang) {
                 return <div className={className} dangerouslySetInnerHTML={{ __html: getHighlightHtml(children as string, lang) }} />;
               } else {
-                return <code className={className}>{children}</code>;
+                return <Code className={className}>{children}</Code>;
               }
             },
           }}

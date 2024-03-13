@@ -65,7 +65,7 @@
   font-size: 0.9em;
 }
 
-.typo code:not(.hljs) {
+.typo code:not(.hljs):not(.chakra-code) {
   font-size: 0.94em;
   padding-left: 3px;
   padding-right: 3px;
@@ -409,7 +409,11 @@ blockquote {
   overflow: hidden;
 }
 
-.w-100 {
+.overflow-auto {
+  overflow: auto;
+}
+
+.w-100, .w-full {
   width: 100%;
 }
 

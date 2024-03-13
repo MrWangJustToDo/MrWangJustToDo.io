@@ -1,8 +1,8 @@
 import { NetworkStatus, useApolloClient, useQuery } from "@apollo/client";
 import { GetSingleBlogDocument } from "@blog/graphql";
-import { Box, Text, SkeletonText, SkeletonCircle, useCallbackRef, Icon, IconButton, useColorModeValue, HStack, Spacer } from "@chakra-ui/react";
+import { Box, Text, SkeletonText, SkeletonCircle, useCallbackRef, Icon, IconButton, useColorModeValue, HStack, Spacer, Code } from "@chakra-ui/react";
 import { countBy, throttle } from "lodash-es";
-import React, { useEffect, useMemo } from "react";
+import React, { cloneElement, isValidElement, useEffect, useMemo } from "react";
 import { AiOutlineReload } from "react-icons/ai";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -120,13 +120,26 @@ export const DetailModalBody = ({ id }: { id: string }) => (
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw]}
                   components={{
+                    pre(props) {
+                      const { node, children, ...res } = props;
+                      if (node.children?.length === 1 && typeof node.children[0] === "object" && (node.children[0] as any).tagName === "code") {
+                        return (
+                          <div className="w-full overflow-auto">
+                            {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                            {/* @ts-expect-error */}
+                            <pre>{isValidElement(children) ? cloneElement(children, { className: children.props.className || "lang-unknown" }) : children}</pre>
+                          </div>
+                        );
+                      }
+                      return <pre {...res}>{children}</pre>;
+                    },
                     code(props) {
                       const { children, className } = props;
                       const lang = className?.split("-")[1];
                       if (lang) {
                         return <div className={className} dangerouslySetInnerHTML={{ __html: getHighlightHtml(children as string, lang) }} />;
                       } else {
-                        return <code className={className}>{children}</code>;
+                        return <Code className={className}>{children}</Code>;
                       }
                     },
                   }}

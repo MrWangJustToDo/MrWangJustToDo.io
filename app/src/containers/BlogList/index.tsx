@@ -1,5 +1,5 @@
 import { NetworkStatus, useQuery } from "@apollo/client";
-import { GetBlogListDocument, IssueOrderField, OrderDirection } from "@blog/graphql";
+import { GetBlogListDocument, IssueOrderField, IssueState, OrderDirection } from "@blog/graphql";
 import {
   Flex,
   Box,
@@ -192,6 +192,7 @@ const _BlogListWithInfinityScroll = ({ isMobileWidth }: { isMobileWidth: boolean
       name: source?.repository,
       owner: source?.owner,
       first: ITEM_PER_PAGE,
+      states: IssueState.Open,
     },
     notifyOnNetworkStatusChange: true,
   });
