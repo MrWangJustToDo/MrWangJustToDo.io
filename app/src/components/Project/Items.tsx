@@ -2,9 +2,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useQuery } from "@apollo/client";
 import { GetRepoAboutDocument } from "@blog/graphql";
-import { Box, CloseButton, Code, Divider, Image, SkeletonText, Text } from "@chakra-ui/react";
+import { Badge, Box, Button, CloseButton, Code, Divider, Flex, Icon, Image, SkeletonText, Spacer, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { cloneElement, isValidElement, useState } from "react";
+import { VscStarFull } from "react-icons/vsc";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -35,7 +36,7 @@ export const ProjectItems = {
   },
 } as const;
 
-export const Item = ({ type }: { type: keyof typeof ProjectItems }) => {
+export const Item = ({ type, onOpenReadme, onOpenPreview }: { type: keyof typeof ProjectItems; onOpenReadme: () => void; onOpenPreview: () => void }) => {
   const { data, loading } = useQuery(GetRepoAboutDocument, { variables: ProjectItems[type] });
 
   return (
@@ -45,14 +46,34 @@ export const Item = ({ type }: { type: keyof typeof ProjectItems }) => {
       height="100%"
       padding="4px"
       paddingX="6px"
+      display="flex"
+      flexDirection="column"
       key={loading ? type + "loading" : type}
       paddingBottom="8px"
       boxShadow="sm"
       layoutId={loading ? type + "loading" : type}
       textAlign="center"
+      border="1px solid red"
     >
-      <Text fontSize="20px" fontWeight="semibold">
-        {type}
+      <Text fontSize="20px" fontWeight="semibold" position="relative">
+        {type}{" "}
+        {loading ? (
+          ""
+        ) : (
+          <Badge
+            colorScheme="orange"
+            display="inline-flex"
+            alignItems="center"
+            justifyContent="center"
+            position="absolute"
+            right="0"
+            top="50%"
+            transform="translateY(-50%)"
+          >
+            <Icon as={VscStarFull} marginRight="1" />
+            {data?.repository?.stargazerCount}
+          </Badge>
+        )}
       </Text>
       <Divider marginY="0.2em" />
       <SkeletonText noOfLines={5} isLoaded={!loading}>
@@ -60,6 +81,15 @@ export const Item = ({ type }: { type: keyof typeof ProjectItems }) => {
           {data?.repository?.description}
         </Text>
       </SkeletonText>
+      <Spacer marginY="2" />
+      <Flex justifySelf="right" width="full" justifyContent="space-around">
+        <Button variant="outline" colorScheme="telegram" onClick={onOpenReadme}>
+          Readme
+        </Button>
+        <Button variant="outline" colorScheme="facebook" onClick={onOpenPreview}>
+          Preview
+        </Button>
+      </Flex>
     </MotionCard>
   );
 };
@@ -94,7 +124,7 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
         boxShadow="sm"
         layoutId={type}
         overflow="auto"
-        backgroundColor="Background"
+        backgroundColor="simpleCardBackgroundColor"
         onLayoutAnimationComplete={() => setAnimateDone(true)}
       >
         <CloseButton onClick={onClose} position="absolute" right="10px" top="10px" zIndex="dropdown" />
@@ -151,6 +181,48 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
               {data?.repository?.read1?.text || data?.repository?.read2?.text || ""}
             </Markdown>
           </Box>
+        </SkeletonText>
+      </MotionCard>
+    </Box>
+  );
+};
+
+export const Preview = ({ type, onClose }: { type: keyof typeof ProjectItems; onClose: () => void }) => {
+  const { data, loading } = useQuery(GetRepoAboutDocument, { variables: ProjectItems[type] });
+
+  const [animateDone, setAnimateDone] = useState(false);
+
+  return (
+    <Box
+      style={{
+        position: "fixed",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+        borderRadius: "4px",
+        left: "50%",
+        display: "flex",
+        width: "fit-content",
+        height: "fit-content",
+        justifyContent: "center",
+        justifySelf: "center",
+        alignContent: "center",
+      }}
+      maxWidth={{ base: "100%", md: "90vw", lg: "80vw", xl: "70vw", "2xl": "60vw" }}
+    >
+      <MotionCard
+        width="100%"
+        maxHeight={{ base: "100vh", md: "90vh" }}
+        paddingX="6px"
+        paddingY="8px"
+        boxShadow="sm"
+        layoutId={type}
+        overflow="auto"
+        backgroundColor="simpleCardBackgroundColor"
+        onLayoutAnimationComplete={() => setAnimateDone(true)}
+      >
+        <CloseButton onClick={onClose} position="absolute" right="10px" top="10px" zIndex="dropdown" />
+        <SkeletonText noOfLines={40} isLoaded={!loading && animateDone}>
+          <iframe src={data.repository.homepageUrl || data.repository.url} width="1000px" height="800px" />
         </SkeletonText>
       </MotionCard>
     </Box>

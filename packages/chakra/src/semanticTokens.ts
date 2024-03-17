@@ -14,6 +14,10 @@ export const semanticTokens: ChakraTheme["semanticTokens"] = {
       default: "rgb(220, 220, 220)",
       _dark: "gray.700",
     },
+    simpleCardBackgroundColor: {
+      default: "rgb(240, 240, 240)",
+      _dark: "gray.600",
+    },
     cardBorderColor: {
       default: "gray.200",
       _dark: "gray.600",

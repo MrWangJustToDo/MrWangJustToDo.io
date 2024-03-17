@@ -134,6 +134,7 @@ export type GetRepoAboutQuery = {
     url: any;
     homepageUrl?: any | null;
     descriptionHTML: any;
+    stargazerCount: number;
     read1?: { text?: string | null } | {} | null;
     read2?: { text?: string | null } | {} | null;
   } | null;
@@ -636,6 +637,7 @@ export const GetRepoAboutDocument = {
                 { kind: "Field", name: { kind: "Name", value: "url" } },
                 { kind: "Field", name: { kind: "Name", value: "homepageUrl" } },
                 { kind: "Field", name: { kind: "Name", value: "descriptionHTML" } },
+                { kind: "Field", name: { kind: "Name", value: "stargazerCount" } },
                 {
                   kind: "Field",
                   alias: { kind: "Name", value: "read1" },

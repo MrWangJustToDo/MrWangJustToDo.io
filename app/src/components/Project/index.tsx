@@ -5,7 +5,7 @@ import { TbPackages } from "react-icons/tb";
 
 import { useProject } from "@app/hooks/useProject";
 
-import { Item, ReadMe } from "./Items";
+import { Item, Preview, ReadMe } from "./Items";
 
 import type { ProjectItems } from "./Items";
 
@@ -14,9 +14,12 @@ export const Project = () => {
 
   const [type, setType] = useState<keyof typeof ProjectItems>();
 
+  const [_type, set_Type] = useState<keyof typeof ProjectItems>();
+
   useEffect(() => {
     if (!isOpen) {
       setType(undefined);
+      set_Type(undefined);
     }
   }, [isOpen]);
 
@@ -28,7 +31,7 @@ export const Project = () => {
         <ModalContent key="project" border="1px" borderRadius="md" borderColor="cardBorderColor">
           <ModalCloseButton />
           <ModalBody overflow="auto">
-            <Heading as="h3">All Of My Projects:</Heading>
+            <Heading as="h3">Projects:</Heading>
             <Spacer marginY="2em" />
             <AnimatePresence>
               <Box
@@ -38,21 +41,15 @@ export const Project = () => {
                 rowGap="1em"
                 paddingRight="2em"
               >
-                <Box onClick={() => setType("MyReact")} cursor="pointer">
-                  <Item type="MyReact" />
-                </Box>
-                <Box onClick={() => setType("RStore")} cursor="pointer">
-                  <Item type="RStore" />
-                </Box>
-                <Box onClick={() => setType("SSR")} cursor="pointer">
-                  <Item type="SSR" />
-                </Box>
-                <Box onClick={() => setType("GitDiffView")} cursor="pointer">
-                  <Item type="GitDiffView" />
-                </Box>
+                <Item type="MyReact" onOpenReadme={() => setType("MyReact")} onOpenPreview={() => set_Type("MyReact")} />
+                <Item type="RStore" onOpenReadme={() => setType("RStore")} onOpenPreview={() => set_Type("RStore")} />
+                <Item type="SSR" onOpenReadme={() => setType("SSR")} onOpenPreview={() => set_Type("SSR")} />
+                <Item type="GitDiffView" onOpenReadme={() => setType("GitDiffView")} onOpenPreview={() => set_Type("GitDiffView")} />
               </Box>
 
               {type && <ReadMe key={type} type={type} onClose={() => setType(undefined)} />}
+
+              {_type && <Preview key={_type} type={_type} onClose={() => set_Type(undefined)} />}
             </AnimatePresence>
             <Spacer marginY="3em" />
           </ModalBody>

@@ -4,6 +4,7 @@ query getRepoAbout($name: String!, $owner: String!) {
     url
     homepageUrl
     descriptionHTML
+    stargazerCount
     read1: object(expression: "main:README.md") {
       ... on Blob {
         text
