@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { GetRepoAboutDocument } from "@blog/graphql";
-import { Link, StackDivider, Text, VStack } from "@chakra-ui/react";
+import { Badge, Icon, Link, StackDivider, Text, VStack } from "@chakra-ui/react";
+import { VscStarFull } from "react-icons/vsc";
 
 import { Card } from "../Card";
 import { ProjectItems } from "../Project/Items";
@@ -21,6 +22,10 @@ const RecommendItem = ({ type, onClick }: { type: keyof typeof ProjectItems; onC
       _firstLetter={{ fontSize: "2em" }}
       boxShadow="sm"
     >
+      <Badge colorScheme="orange" float="right" display="flex" alignItems="center">
+        <Icon as={VscStarFull} marginRight="1" />
+        {data?.repository?.stargazerCount}
+      </Badge>
       <Text as="span">{type}</Text>:{" "}
       <Link href={data?.repository?.url} target="_blank" fontWeight="500" textDecoration="underline">
         <Text as="span" color="slategrey">
