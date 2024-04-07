@@ -21,6 +21,7 @@ import { AiOutlineGithub, AiOutlineMail, AiOutlineUser } from "react-icons/ai";
 import { SiLeetcode } from "react-icons/si";
 
 import { AboutMe } from "@app/components/AboutMe";
+import { Calendar } from "@app/components/Calendar";
 import { Chart } from "@app/components/Chart";
 import { ErrorCom } from "@app/components/Error";
 import { Followers } from "@app/components/Follower";
@@ -77,6 +78,7 @@ const _User = () => {
         />
         <AboutMe />
         <Project />
+        <Calendar />
       </HStack>
       <Box fontSize="sm" marginY="2">
         <Text fontWeight="semibold">Recommend:</Text>

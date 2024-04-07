@@ -1,10 +1,27 @@
-import { /* AspectRatio, */ Box, /* Flex, */ Icon, IconButton, /* Image, */ Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay } from "@chakra-ui/react";
+import {
+  AspectRatio,
+  Box,
+  Flex,
+  Icon,
+  IconButton,
+  Modal,
+  Image,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from "@chakra-ui/react";
 import GitHubCalendar from "react-github-calendar";
 import { FaUserTie } from "react-icons/fa";
 
 import { useAboutMe } from "@app/hooks/useAboutMe";
 import { useIsMobile } from "@app/hooks/useIsMobile";
-// import { resourceUri } from "@app/utils/resourceUri";
+import { resourceUri } from "@app/utils/resourceUri";
 
 export const AboutMe = () => {
   const isMobile = useIsMobile();
@@ -19,17 +36,29 @@ export const AboutMe = () => {
         <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">
           <ModalCloseButton />
           <ModalBody>
-            {/* <Flex alignItems="flex-start" justifyContent="space-around" flexDirection={{ base: "column", md: "row" }}>
-              <AspectRatio ratio={11 / 16} width={{ base: "95%", md: "45%" }} border="1px">
-                <Image src={resourceUri("./1.png")} width="100%" alt="about me" />
-              </AspectRatio>
-              <AspectRatio ratio={11 / 16} width={{ base: "95%", md: "45%" }} border="1px">
-                <Image src={resourceUri("./2.png")} width="100%" alt="about me" />
-              </AspectRatio>
-            </Flex> */}
-            <Box marginTop="4em" />
-            <GitHubCalendar username="MrWangJustToDo" />
-            <Box marginBottom="4em" />
+            <Tabs variant="enclosed">
+              <TabList>
+                <Tab>Resume</Tab>
+                <Tab>Github</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel>
+                  <Flex alignItems="flex-start" justifyContent="space-around" flexDirection={{ base: "column", md: "row" }}>
+                    <AspectRatio ratio={11 / 16} width={{ base: "95%", md: "45%" }} border="1px">
+                      <Image src={resourceUri("./1.png")} width="100%" alt="about me" />
+                    </AspectRatio>
+                    <AspectRatio ratio={11 / 16} width={{ base: "95%", md: "45%" }} border="1px">
+                      <Image src={resourceUri("./2.png")} width="100%" alt="about me" />
+                    </AspectRatio>
+                  </Flex>
+                </TabPanel>
+                <TabPanel>
+                  <Box marginTop="4em" />
+                  <GitHubCalendar username="MrWangJustToDo" />
+                  <Box marginBottom="4em" />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
           </ModalBody>
         </ModalContent>
       </Modal>

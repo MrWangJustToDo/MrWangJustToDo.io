@@ -1,0 +1,41 @@
+import { Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay } from "@chakra-ui/react";
+import { useEffect } from "react";
+import { BiCalendar } from "react-icons/bi";
+
+import { useCalendar } from "@app/hooks/useCalendar";
+import { useIsMobile } from "@app/hooks/useIsMobile";
+
+export const Calendar = () => {
+  const isMobile = useIsMobile();
+
+  const { isOpen, onClose, onOpen } = useCalendar();
+
+  useEffect(() => {
+    if (isOpen && isMobile) {
+      onClose();
+    }
+  }, [isMobile, isOpen, onClose]);
+
+  return (
+    <>
+      <IconButton
+        color="gray"
+        display={{ base: "none", "2xl": "block" }}
+        variant="outline"
+        aria-label="about me"
+        title="about me"
+        onClick={onOpen}
+        icon={<Icon as={BiCalendar} fontSize="xl" />}
+      />
+      <Modal size="full" isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
+        <ModalOverlay backdropFilter="blur(10px)" />
+        <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">
+          <ModalCloseButton />
+          <ModalBody>
+            <iframe src="https://mrwangjusttodo.github.io/calendar-remark/" width="100%" height="1000px" />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
