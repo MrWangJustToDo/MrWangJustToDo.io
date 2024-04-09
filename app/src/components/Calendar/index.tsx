@@ -25,7 +25,7 @@ export const Calendar = () => {
         aria-label="about me"
         title="about me"
         onClick={onOpen}
-        icon={<Icon as={BiCalendar} fontSize="xl" />}
+        icon={<Icon as={BiCalendar} fontSize="2xl" />}
       />
       <Modal size="full" isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
         <ModalOverlay backdropFilter="blur(10px)" />

@@ -39,7 +39,6 @@ export const Project = () => {
                 gridTemplateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
                 columnGap="1em"
                 rowGap="1em"
-                paddingRight="2em"
               >
                 <Item type="MyReact" onOpenReadme={() => setType("MyReact")} onOpenPreview={() => set_Type("MyReact")} />
                 <Item type="RStore" onOpenReadme={() => setType("RStore")} onOpenPreview={() => set_Type("RStore")} />

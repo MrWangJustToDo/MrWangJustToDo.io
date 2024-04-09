@@ -34,7 +34,7 @@ export const AboutMe = () => {
       <Modal size={isMobile ? "full" : "4xl"} isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
         <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">
-          <ModalCloseButton />
+          <ModalCloseButton zIndex="popover" />
           <ModalBody>
             <Tabs variant="enclosed">
               <TabList>
@@ -43,11 +43,27 @@ export const AboutMe = () => {
               </TabList>
               <TabPanels>
                 <TabPanel>
-                  <Flex alignItems="flex-start" justifyContent="space-around" flexDirection={{ base: "column", md: "row" }}>
-                    <AspectRatio ratio={11 / 16} width={{ base: "95%", md: "45%" }} border="1px">
+                  <Flex alignItems="flex-start" justifyContent="space-around" flexDirection={{ base: "column", md: "row" }} rowGap="1em">
+                    <AspectRatio
+                      ratio={11 / 16}
+                      width={{ base: "95%", md: "45%" }}
+                      marginX={{ base: "auto", md: undefined }}
+                      border="1px"
+                      borderColor="gray.400"
+                      rounded="4px"
+                      overflow="clip"
+                    >
                       <Image src={resourceUri("./1.png")} width="100%" alt="about me" />
                     </AspectRatio>
-                    <AspectRatio ratio={11 / 16} width={{ base: "95%", md: "45%" }} border="1px">
+                    <AspectRatio
+                      ratio={11 / 16}
+                      width={{ base: "95%", md: "45%" }}
+                      marginX={{ base: "auto", md: undefined }}
+                      border="1px"
+                      borderColor="gray.400"
+                      rounded="4px"
+                      overflow="clip"
+                    >
                       <Image src={resourceUri("./2.png")} width="100%" alt="about me" />
                     </AspectRatio>
                   </Flex>

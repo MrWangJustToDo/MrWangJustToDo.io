@@ -115,6 +115,7 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
         alignContent: "center",
       }}
       maxWidth={{ base: "100%", md: "90vw", lg: "80vw", xl: "70vw", "2xl": "60vw" }}
+      minWidth={{ base: "100%", md: undefined }}
     >
       <MotionCard
         width="100%"
@@ -208,6 +209,7 @@ export const Preview = ({ type, onClose }: { type: keyof typeof ProjectItems; on
         alignContent: "center",
       }}
       maxWidth={{ base: "100%", md: "90vw", lg: "80vw", xl: "70vw", "2xl": "60vw" }}
+      minWidth={{ base: "100%", md: undefined }}
     >
       <MotionCard
         width="100%"
