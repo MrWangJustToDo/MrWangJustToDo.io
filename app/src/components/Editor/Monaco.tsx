@@ -1,9 +1,31 @@
-import { useColorModeValue, Menu, MenuButton, MenuList, MenuItem, Button, Icon, Box, Divider, Wrap, WrapItem, Tooltip, Link } from "@chakra-ui/react";
+import {
+  useColorModeValue,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Button,
+  Icon,
+  Box,
+  Divider,
+  Wrap,
+  WrapItem,
+  Tooltip,
+  Link,
+  ListItem,
+  OrderedList,
+  Code,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Flex,
+} from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
 import { useRef } from "react";
 import { AiOutlineDown, AiOutlineFile } from "react-icons/ai";
 import { BsCheck } from "react-icons/bs";
-import { TbPackage } from "react-icons/tb";
 
 import { useEditor_v2 } from "@app/hooks/useEditor";
 import { usePlayGround } from "@app/hooks/usePlayGround";
@@ -46,69 +68,71 @@ export const Monaco = () => {
 
   return (
     <Box height="100%" overflow="hidden">
-      <Wrap paddingX="2" spacing="2" ref={boxRef}>
-        <WrapItem>
-          <Menu>
-            <MenuButton
-              as={Button}
-              size="sm"
-              variant="outline"
-              leftIcon={<Icon as={AiOutlineFile} fontSize="small" />}
-              rightIcon={<Icon as={AiOutlineDown} fontSize="small" />}
-            >
-              {file}
-            </MenuButton>
-            <MenuList>
-              {Object.keys(files).map((key) => {
-                return (
-                  <MenuItem key={key} value={key} onClick={() => setFile(key)} justifyContent="space-between">
-                    {files[key].name} {currentFile.name === files[key]?.name && <Icon as={BsCheck} />}
-                  </MenuItem>
-                );
-              })}
-            </MenuList>
-          </Menu>
-        </WrapItem>
-        <WrapItem>
-          <Button size="sm" variant="outline" onClick={reset}>
-            Reset
-          </Button>
-        </WrapItem>
-        <WrapItem>
-          <Button className="tour_close" size="sm" variant="outline" onClick={onClose}>
-            Close
-          </Button>
-        </WrapItem>
-        <WrapItem>
-          <Menu>
-            <MenuButton
-              as={Button}
-              size="sm"
-              variant="outline"
-              leftIcon={<Icon as={TbPackage} fontSize="small" />}
-              rightIcon={<Icon as={AiOutlineDown} fontSize="small" />}
-            >
-              Packages
-            </MenuButton>
-            <MenuList>
-              {Object.keys(InstallPackages).map((key) => {
-                return (
-                  <MenuItem key={key} value={InstallPackages[key]} justifyContent="space-between">
-                    {InstallPackages[key]}
-                  </MenuItem>
-                );
-              })}
-            </MenuList>
-          </Menu>
-        </WrapItem>
-        <WrapItem>
-          <Tooltip label={<>goto @my-react main site to see more online example</>} placement="bottom-start">
-            <Button as={Link} className="tour_more" size="sm" variant="outline" href="https://mrwangjusttodo.github.io/MyReact/#next-section" target="_blank">
-              More Example
+      <Flex justifyContent="space-between">
+        <Wrap paddingX="2" spacing="2" ref={boxRef}>
+          <WrapItem>
+            <Menu>
+              <MenuButton
+                as={Button}
+                size="sm"
+                variant="outline"
+                leftIcon={<Icon as={AiOutlineFile} fontSize="small" />}
+                rightIcon={<Icon as={AiOutlineDown} fontSize="small" />}
+              >
+                {file}
+              </MenuButton>
+              <MenuList>
+                {Object.keys(files).map((key) => {
+                  return (
+                    <MenuItem key={key} value={key} onClick={() => setFile(key)} justifyContent="space-between">
+                      {files[key].name} {currentFile.name === files[key]?.name && <Icon as={BsCheck} />}
+                    </MenuItem>
+                  );
+                })}
+              </MenuList>
+            </Menu>
+          </WrapItem>
+          <WrapItem>
+            <Button size="sm" variant="outline" onClick={reset}>
+              Reset
             </Button>
-          </Tooltip>
-        </WrapItem>
-      </Wrap>
+          </WrapItem>
+          <WrapItem>
+            <Popover trigger="hover">
+              <PopoverTrigger>
+                <Button size="sm" variant="outline">
+                  Packages
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <PopoverArrow />
+                <PopoverBody>
+                  <OrderedList>
+                    {Object.keys(InstallPackages).map((key) => {
+                      return (
+                        <ListItem key={key}>
+                          <Code>{InstallPackages[key]}</Code>
+                        </ListItem>
+                      );
+                    })}
+                  </OrderedList>
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
+          </WrapItem>
+          <WrapItem>
+            <Tooltip label={<>goto @my-react main site to see more online example</>} placement="bottom-start">
+              <Button as={Link} className="tour_more" size="sm" variant="outline" href="https://mrwangjusttodo.github.io/MyReact/#next-section" target="_blank">
+                More Example
+              </Button>
+            </Tooltip>
+          </WrapItem>
+        </Wrap>
+        <Button className="tour_close" marginRight={2} size="sm" variant="outline" onClick={onClose}>
+          Close
+        </Button>
+      </Flex>
+
       <Divider marginY="2" ref={divideRef} />
       <Box height={`calc(100% - ${height}px - ${divideHeight}px - 14px)`} width="100%" className="tour_playGround_editor">
         <Editor

@@ -2,7 +2,7 @@ import { Container, useBreakpointValue } from "@chakra-ui/react";
 
 import { CONTAINER_WIDTH } from "@app/config/container";
 import { Home } from "@app/containers/Home";
-// import { WalkMe } from "@app/containers/WalkMe";
+import { WalkMe } from "@app/containers/WalkMe";
 import { useEffectOnce } from "@app/hooks/useEffectOnce";
 import { useType } from "@app/hooks/useType";
 
@@ -17,7 +17,7 @@ export const Page = (p: { ReactType: string; ReactDOMType: string }) => {
 
   return (
     <Container maxWidth={CONTAINER_WIDTH}>
-      {/* <WalkMe /> */}
+      <WalkMe />
       <Home isMobileWidth={isMobileWidth} />
     </Container>
   );
