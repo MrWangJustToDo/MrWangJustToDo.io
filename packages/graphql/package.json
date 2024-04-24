@@ -42,7 +42,7 @@
     "typescript": "^5.3.3"
   },
   "peerDependencies": {
-    "@apollo/client": "^3.9.5",
+    "@apollo/client": "^3.9.11",
     "@graphql-codegen/add": "^5.0.2",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/import-types-preset": "^2.2.6",

@@ -18,15 +18,7 @@ export const Calendar = () => {
 
   return (
     <>
-      <IconButton
-        color="gray"
-        display={{ base: "none", "2xl": "block" }}
-        variant="outline"
-        aria-label="about me"
-        title="about me"
-        onClick={onOpen}
-        icon={<Icon as={BiCalendar} fontSize="2xl" />}
-      />
+      <IconButton color="gray" variant="outline" aria-label="about me" title="about me" onClick={onOpen} icon={<Icon as={BiCalendar} fontSize="2xl" />} />
       <Modal size="full" isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
         <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">

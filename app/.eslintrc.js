@@ -1,3 +1,6 @@
 module.exports = {
-  extends: ["next", "next/core-web-vitals", "../.eslintrc.js"],
+  extends: ["next", "../.eslintrc.js"],
+  rules: {
+    "@next/next/no-html-link-for-pages": "off",
+  },
 };

@@ -1,6 +1,7 @@
 import { useCallbackRef } from "@chakra-ui/react";
 import { omit } from "lodash-es";
 import { useRouter } from "next/router";
+import { createState } from "reactivity-store";
 
 export const useProject = () => {
   const { query, push, pathname } = useRouter();
@@ -30,3 +31,17 @@ export const useProject = () => {
 
   return { isOpen: isModalOpen && isProject, onOpen, onClose };
 };
+
+export const useCurrentProject = createState(
+  () => ({
+    data: null as null | string,
+  }),
+  {
+    withActions: (s) => ({
+      setProject: (data: string | null) => {
+        s.data = data;
+      },
+    }),
+    withNamespace: "useCurrentProject",
+  },
+);

@@ -38,10 +38,15 @@ export const AboutMe = () => {
           <ModalBody>
             <Tabs variant="enclosed">
               <TabList>
-                <Tab>Resume</Tab>
                 <Tab>Github</Tab>
+                <Tab>Resume</Tab>
               </TabList>
               <TabPanels>
+                <TabPanel>
+                  <Box marginTop="4em" />
+                  <GitHubCalendar username="MrWangJustToDo" />
+                  <Box marginBottom="4em" />
+                </TabPanel>
                 <TabPanel>
                   <Flex alignItems="flex-start" justifyContent="space-around" flexDirection={{ base: "column", md: "row" }} rowGap="1em">
                     <AspectRatio
@@ -67,11 +72,6 @@ export const AboutMe = () => {
                       <Image src={resourceUri("./2.png")} width="100%" alt="about me" />
                     </AspectRatio>
                   </Flex>
-                </TabPanel>
-                <TabPanel>
-                  <Box marginTop="4em" />
-                  <GitHubCalendar username="MrWangJustToDo" />
-                  <Box marginBottom="4em" />
                 </TabPanel>
               </TabPanels>
             </Tabs>

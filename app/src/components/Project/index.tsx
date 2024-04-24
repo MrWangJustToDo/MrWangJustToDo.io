@@ -3,14 +3,18 @@ import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { TbPackages } from "react-icons/tb";
 
-import { useProject } from "@app/hooks/useProject";
+import { useCurrentProject, useProject } from "@app/hooks/useProject";
 
 import { Item, Preview, ReadMe } from "./Items";
 
 import type { ProjectItems } from "./Items";
 
+const setCurrentProject = useCurrentProject.getActions().setProject;
+
 export const Project = () => {
   const { isOpen, onClose, onOpen } = useProject();
+
+  const data = useCurrentProject((s) => s.data) as keyof typeof ProjectItems | null;
 
   const [type, setType] = useState<keyof typeof ProjectItems>();
 
@@ -26,25 +30,33 @@ export const Project = () => {
   return (
     <>
       <IconButton color="gray" variant="outline" aria-label="projects" title="projects" onClick={onOpen} icon={<Icon as={TbPackages} fontSize="xl" />} />
-      <Modal size={{ base: "full", md: "lg", lg: "2xl", xl: "3xl" }} isOpen={isOpen} onClose={onClose} scrollBehavior="inside" closeOnOverlayClick={!type}>
+      <Modal
+        size={{ base: "full", md: "lg", lg: "2xl", xl: "3xl" }}
+        isOpen={isOpen}
+        onClose={onClose}
+        scrollBehavior="inside"
+        closeOnOverlayClick={!type}
+        onCloseComplete={() => setCurrentProject(null)}
+      >
         <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent key="project" border="1px" borderRadius="md" borderColor="cardBorderColor">
           <ModalCloseButton />
           <ModalBody overflow="auto">
-            <Heading as="h3">Projects:</Heading>
+            <Heading as="h3">{data ? "Project:" : "Projects:"}</Heading>
             <Spacer marginY="2em" />
             <AnimatePresence>
-              <Box
-                display="grid"
-                gridTemplateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
-                columnGap="1em"
-                rowGap="1em"
-              >
-                <Item type="MyReact" onOpenReadme={() => setType("MyReact")} onOpenPreview={() => set_Type("MyReact")} />
-                <Item type="RStore" onOpenReadme={() => setType("RStore")} onOpenPreview={() => set_Type("RStore")} />
-                <Item type="SSR" onOpenReadme={() => setType("SSR")} onOpenPreview={() => set_Type("SSR")} />
-                <Item type="GitDiffView" onOpenReadme={() => setType("GitDiffView")} onOpenPreview={() => set_Type("GitDiffView")} />
-              </Box>
+              {!data ? (
+                <Box display="grid" gridTemplateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} columnGap="1em" rowGap="1em">
+                  <Item type="MyReact" onOpenReadme={() => setType("MyReact")} onOpenPreview={() => set_Type("MyReact")} />
+                  <Item type="RStore" onOpenReadme={() => setType("RStore")} onOpenPreview={() => set_Type("RStore")} />
+                  <Item type="SSR" onOpenReadme={() => setType("SSR")} onOpenPreview={() => set_Type("SSR")} />
+                  <Item type="GitDiffView" onOpenReadme={() => setType("GitDiffView")} onOpenPreview={() => set_Type("GitDiffView")} />
+                </Box>
+              ) : (
+                <Box maxWidth="360px" marginX="auto">
+                  <Item type={data} onOpenReadme={() => setType(data)} onOpenPreview={() => set_Type(data)} singleModel />
+                </Box>
+              )}
 
               {type && <ReadMe key={type} type={type} onClose={() => setType(undefined)} />}
 

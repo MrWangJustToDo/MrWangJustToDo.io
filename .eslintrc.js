@@ -11,9 +11,5 @@ module.exports = {
     },
   },
   plugins: ["node", "jest"],
-  extends: [
-    require.resolve('project-tool/baseLint'),
-    "plugin:jest/recommended",
-    "plugin:jest/style",
-  ],
+  extends: [require.resolve("project-tool/baseLint"), "plugin:jest/recommended", "plugin:jest/style"],
 };

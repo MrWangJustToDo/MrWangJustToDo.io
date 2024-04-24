@@ -21,16 +21,11 @@
     "purge": "pnpm -p -r -c exec rm -rf node_modules",
     "prepare": "husky install & pnpm clean"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix"
   },
   "devDependencies": {
-    "@apollo/client": "^3.9.5",
+    "@apollo/client": "^3.9.11",
     "@babel/core": "^7.23.9",
     "@chakra-ui/cli": "^2.4.1",
     "@chakra-ui/react": "^2.8.2",
@@ -45,13 +40,13 @@
     "@graphql-codegen/typescript": "^4.0.6",
     "@graphql-codegen/typescript-operations": "^4.2.0",
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@swc/core": "^1.4.2",
+    "@swc/core": "^1.5.0",
     "@types/jest": "^29.5.12",
-    "@types/lodash": "^4.14.202",
-    "@types/node": "^20.11.20",
-    "@types/react": "18.2.58",
+    "@types/lodash": "^4.17.0",
+    "@types/node": "^20.12.7",
+    "@types/react": "18.2.79",
     "eslint": "^8.57.0",
-    "eslint-plugin-jest": "^27.9.0",
+    "eslint-plugin-jest": "^28.2.0",
     "eslint-plugin-node": "^11.1.0",
     "framer-motion": "^6.5.1",
     "graphql": "^16.8.0",

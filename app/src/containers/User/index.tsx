@@ -27,6 +27,7 @@ import { ErrorCom } from "@app/components/Error";
 import { Followers } from "@app/components/Follower";
 import { Project } from "@app/components/Project";
 import { Recommend } from "@app/components/Recommend";
+import { useIsMobile } from "@app/hooks/useIsMobile";
 import { momentTo } from "@app/utils/time";
 
 const ITEM_FOLLOWER = 15;
@@ -45,6 +46,8 @@ const _User = () => {
       first: ITEM_FOLLOWER,
     },
   });
+
+  const isMobile = useIsMobile();
 
   if (loading) return <UserLoading />;
 
@@ -78,7 +81,7 @@ const _User = () => {
         />
         <AboutMe />
         <Project />
-        <Calendar />
+        {!isMobile && <Calendar />}
       </HStack>
       <Box fontSize="sm" marginY="2">
         <Text fontWeight="semibold">Recommend:</Text>

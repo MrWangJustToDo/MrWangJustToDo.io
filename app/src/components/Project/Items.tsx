@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useQuery } from "@apollo/client";
 import { GetRepoAboutDocument } from "@blog/graphql";
-import { Badge, Box, Button, CloseButton, Code, Divider, Flex, Icon, Image, SkeletonText, Spacer, Text } from "@chakra-ui/react";
+import { Badge, Box, Button, CloseButton, Code, Divider, Flex, Icon, Image, Link, SkeletonText, Spacer, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { cloneElement, isValidElement, useState } from "react";
 import { VscStarFull } from "react-icons/vsc";
@@ -36,7 +36,17 @@ export const ProjectItems = {
   },
 } as const;
 
-export const Item = ({ type, onOpenReadme, onOpenPreview }: { type: keyof typeof ProjectItems; onOpenReadme: () => void; onOpenPreview: () => void }) => {
+export const Item = ({
+  type,
+  onOpenReadme,
+  onOpenPreview,
+  singleModel,
+}: {
+  type: keyof typeof ProjectItems;
+  onOpenReadme: () => void;
+  onOpenPreview: () => void;
+  singleModel?: boolean;
+}) => {
   const { data, loading } = useQuery(GetRepoAboutDocument, { variables: ProjectItems[type] });
 
   return (
@@ -86,6 +96,11 @@ export const Item = ({ type, onOpenReadme, onOpenPreview }: { type: keyof typeof
         <Button variant="outline" colorScheme="telegram" onClick={onOpenReadme}>
           Readme
         </Button>
+        {singleModel && (
+          <Button variant="outline" colorScheme="whatsapp" as={Link} href={data?.repository?.url} target="_blank">
+            Github
+          </Button>
+        )}
         <Button variant="outline" colorScheme="facebook" onClick={onOpenPreview}>
           Preview
         </Button>
@@ -115,7 +130,7 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
         alignContent: "center",
       }}
       maxWidth={{ base: "100%", md: "90vw", lg: "80vw", xl: "70vw", "2xl": "60vw" }}
-      minWidth={{ base: "100%", md: 'initial' }}
+      minWidth={{ base: "100%", md: "initial" }}
     >
       <MotionCard
         width="100%"
@@ -209,7 +224,7 @@ export const Preview = ({ type, onClose }: { type: keyof typeof ProjectItems; on
         alignContent: "center",
       }}
       maxWidth={{ base: "100%", md: "90vw", lg: "80vw", xl: "70vw", "2xl": "60vw" }}
-      minWidth={{ base: "100%", md: 'initial' }}
+      minWidth={{ base: "100%", md: "initial" }}
     >
       <MotionCard
         width="100%"

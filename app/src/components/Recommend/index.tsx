@@ -1,13 +1,19 @@
 import { useQuery } from "@apollo/client";
 import { GetRepoAboutDocument } from "@blog/graphql";
-import { Badge, Icon, Link, StackDivider, Text, VStack } from "@chakra-ui/react";
+import { Badge, Icon, StackDivider, Text, VStack } from "@chakra-ui/react";
 import { VscStarFull } from "react-icons/vsc";
+
+import { useCurrentProject, useProject } from "@app/hooks/useProject";
 
 import { Card } from "../Card";
 import { ProjectItems } from "../Project/Items";
 
+const setCurrentProject = useCurrentProject.getActions().setProject;
+
 const RecommendItem = ({ type, onClick }: { type: keyof typeof ProjectItems; onClick?: () => void }) => {
   const { data } = useQuery(GetRepoAboutDocument, { variables: ProjectItems[type] });
+
+  const { onOpen } = useProject();
 
   return (
     <Card
@@ -17,7 +23,10 @@ const RecommendItem = ({ type, onClick }: { type: keyof typeof ProjectItems; onC
       padding="4px"
       paddingX="6px"
       paddingBottom="8px"
-      onClick={onClick}
+      onClick={() => {
+        onClick();
+        onOpen();
+      }}
       cursor="pointer"
       _firstLetter={{ fontSize: "2em" }}
       boxShadow="sm"
@@ -27,11 +36,9 @@ const RecommendItem = ({ type, onClick }: { type: keyof typeof ProjectItems; onC
         {data?.repository?.stargazerCount}
       </Badge>
       <Text as="span">{type}</Text>:{" "}
-      <Link href={data?.repository?.url} target="_blank" fontWeight="500" textDecoration="underline">
-        <Text as="span" color="slategrey">
-          {data?.repository?.description}
-        </Text>
-      </Link>
+      <Text as="span" color="slategrey" textDecoration="underline">
+        {data?.repository?.description}
+      </Text>
     </Card>
   );
 };
@@ -39,10 +46,10 @@ const RecommendItem = ({ type, onClick }: { type: keyof typeof ProjectItems; onC
 export const Recommend = () => {
   return (
     <VStack divider={<StackDivider />} spacing="2" marginTop="1">
-      <RecommendItem type="MyReact" />
-      <RecommendItem type="RStore" />
-      <RecommendItem type="SSR" />
-      <RecommendItem type="GitDiffView" />
+      <RecommendItem type="MyReact" onClick={() => setCurrentProject("MyReact")} />
+      <RecommendItem type="RStore" onClick={() => setCurrentProject("RStore")} />
+      <RecommendItem type="SSR" onClick={() => setCurrentProject("SSR")} />
+      <RecommendItem type="GitDiffView" onClick={() => setCurrentProject("GitDiffView")} />
     </VStack>
   );
 };
