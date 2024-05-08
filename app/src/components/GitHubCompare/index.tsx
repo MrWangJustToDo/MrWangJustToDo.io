@@ -2,8 +2,7 @@ import { Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, Mod
 import { IoMdGitCompare } from "react-icons/io";
 
 import { useGitHubCompare } from "@app/hooks/useGitHubCompare";
-
-import { GitHubCompareContent } from "./Item";
+import { Page } from "@app/views/compare";
 
 export const GitHubCompare = () => {
   const { isOpen, onClose, onOpen } = useGitHubCompare();
@@ -25,8 +24,8 @@ export const GitHubCompare = () => {
         <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">
           <ModalCloseButton />
-          <ModalBody>
-            <GitHubCompareContent />
+          <ModalBody paddingY="0">
+            <Page />
           </ModalBody>
         </ModalContent>
       </Modal>

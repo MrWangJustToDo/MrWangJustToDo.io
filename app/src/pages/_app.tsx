@@ -48,9 +48,13 @@ function MyApp({ Component, pageProps }: NextAppProps) {
       {/* <NextIntlProvider messages={_i18nMessage} onError={onError}> */}
       <ApolloProvider client={apolloClient}>
         <NextNProgress />
-        <Layout>
+        {Component.disableLayout ? (
           <Component {...restProps} />
-        </Layout>
+        ) : (
+          <Layout>
+            <Component {...restProps} />
+          </Layout>
+        )}
       </ApolloProvider>
       {/* </NextIntlProvider> */}
     </ChakraProvider>

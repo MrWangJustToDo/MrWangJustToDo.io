@@ -23,7 +23,7 @@ import { Calendar } from "@app/components/Calendar";
 import { Chart } from "@app/components/Chart";
 import { ErrorCom } from "@app/components/Error";
 import { Followers } from "@app/components/Follower";
-// import { GitHubCompare } from "@app/components/GitHubCompare";
+import { GitHubCompare } from "@app/components/GitHubCompare";
 import { LeetCode } from "@app/components/LeetCode";
 import { PlayGround } from "@app/components/PlayGround";
 import { Project } from "@app/components/Project";
@@ -76,7 +76,7 @@ const _User = () => {
         />
         <LeetCode />
         <PlayGround />
-        {/* {!isMobile && <GitHubCompare />} */}
+        {!isMobile && <GitHubCompare />}
         <AboutMe />
         <Project />
         {!isMobile && <Calendar />}

@@ -1,5 +1,6 @@
 import {
   Button,
+  ButtonGroup,
   Flex,
   FormControl,
   FormLabel,
@@ -18,23 +19,29 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
+import { AiOutlineReload } from "react-icons/ai";
 import { BiEdit } from "react-icons/bi";
 
 import { useGitHubCompareSource } from "@app/hooks/useGitHubCompareSource";
 
+useGitHubCompareSource.getLifeCycle().syncUpdateComponent = true;
+
 export const DiffLink = ({ url }: { url: string }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { owner, setOwner, repo, setRepo, sourceCommit, setSourceCommit, targetCommit, setTargetCommit, setDirty, restore } = useGitHubCompareSource();
+  const { owner, setOwner, repo, setRepo, sourceCommit, setSourceCommit, targetCommit, setTargetCommit, setDirty, restore, refresh } = useGitHubCompareSource();
 
   return (
     <Flex alignItems="center">
       <Tooltip label={url}>
-        <Text width="360px" noOfLines={1}>
+        <Text width="360px" noOfLines={1} as="div">
           {url ? url : <SkeletonText noOfLines={1} />}
         </Text>
       </Tooltip>
-      <IconButton aria-label="edit url" icon={<Icon as={BiEdit} />} size="sm" onClick={onOpen} />
+      <ButtonGroup gap="2" variant="outline">
+        <IconButton aria-label="edit url" icon={<Icon as={BiEdit} />} size="sm" onClick={onOpen} />
+        <IconButton aria-label="refresh" icon={<Icon as={AiOutlineReload} />} size="sm" onClick={refresh} />
+      </ButtonGroup>
       <Modal size="2xl" isOpen={isOpen} onClose={onClose} scrollBehavior="inside" onCloseComplete={restore}>
         <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">

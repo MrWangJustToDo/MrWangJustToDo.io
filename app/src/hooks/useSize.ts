@@ -9,7 +9,7 @@ import type { RefObject } from "react";
 
 const temp = [];
 
-type DOMRectType = {
+export type DOMRectType = {
   top: number;
   bottom: number;
   left: number;
@@ -31,13 +31,25 @@ const INITIAL_RECT: DOMRectType = {
   y: 0,
 };
 
-export function useDomSize({ ref, cssSelector }: { ref: RefObject<HTMLElement> | null; cssSelector?: string }): DOMRectType;
-export function useDomSize({ ref, cssSelector }: { ref?: RefObject<HTMLElement>; cssSelector: string }): DOMRectType;
-export function useDomSize({ ref, cssSelector }: { ref?: RefObject<HTMLElement> | null; cssSelector?: string }) {
+export function useDomSize({
+  ref,
+  cssSelector,
+  getEle,
+  deps,
+}: {
+  ref?: RefObject<HTMLElement> | null;
+  cssSelector?: string;
+  getEle?: () => HTMLElement;
+  deps?: any[];
+}): DOMRectType {
+  const getEleRef = useRef(getEle);
+
+  getEleRef.current = getEle;
+
   const [rect, setRect] = useDebouncedState<DOMRectType>(INITIAL_RECT, 100);
 
   useEffect(() => {
-    const domElement = ref ? ref.current : cssSelector ? document.querySelector(cssSelector) : null;
+    const domElement = ref ? ref.current : cssSelector ? document.querySelector(cssSelector) : getEleRef.current?.() || null;
     if (domElement) {
       if (window.ResizeObserver) {
         const resizeObserver = new ResizeObserver(() => {
@@ -57,26 +69,10 @@ export function useDomSize({ ref, cssSelector }: { ref?: RefObject<HTMLElement> 
         return () => window.removeEventListener("resize", handleResize);
       }
     }
-  }, [ref, cssSelector, setRect]);
-
-  return rect;
-}
-
-export const useStaticDomSize = ({ ref, cssSelector, deps }: { ref?: RefObject<HTMLElement>; cssSelector?: string; deps?: any[] }) => {
-  const [rect, setRect] = useState<DOMRectType>(INITIAL_RECT);
-
-  useEffect(() => {
-    const domElement = ref ? ref.current : cssSelector ? document.querySelector(cssSelector) : null;
-    if (domElement) {
-      setRect(domElement.getBoundingClientRect());
-    }
-    return () => {
-      setRect(INITIAL_RECT);
-    };
   }, [ref, cssSelector, setRect, ...(deps || temp)]);
 
   return rect;
-};
+}
 
 export const useTourTargetSize = (target: string, highlightSelectors: string[], action?: () => void) => {
   const [sizes, setSizes] = useState(INITIAL_RECT);

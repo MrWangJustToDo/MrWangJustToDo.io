@@ -18,9 +18,9 @@ export const DiffContent = () => {
 
   return (
     <Flex display="flex" flexDirection="column" rowGap="4">
-      {list.map((item) => {
-        return <DiffItem key={item.filename} item={item} workRef={workRef} />;
-      })}
+      {list.map((item) => (
+        <DiffItem key={item.filename} item={item} workRef={workRef} />
+      ))}
     </Flex>
   );
 };
