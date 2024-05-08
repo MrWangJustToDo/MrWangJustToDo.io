@@ -15,6 +15,7 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Tooltip,
 } from "@chakra-ui/react";
 import GitHubCalendar from "react-github-calendar";
 import { FaUserTie } from "react-icons/fa";
@@ -30,14 +31,24 @@ export const AboutMe = () => {
 
   return (
     <>
-      <IconButton color="gray" variant="outline" aria-label="about me" title="about me" onClick={onOpen} icon={<Icon as={FaUserTie} fontSize="xl" />} />
+      <Tooltip label="AboutMe">
+        <IconButton
+          color="gray"
+          variant="outline"
+          aria-label="AboutMe"
+          title="AboutMe"
+          size="sm"
+          onClick={onOpen}
+          icon={<Icon as={FaUserTie} fontSize="xl" />}
+        />
+      </Tooltip>
       <Modal size={isMobile ? "full" : "4xl"} isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
         <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">
           <ModalCloseButton zIndex="popover" />
           <ModalBody>
             <Tabs variant="enclosed">
-              <TabList>
+              <TabList position="sticky" top="0" zIndex="sticky" backgroundColor="var(--modal-bg)">
                 <Tab>Github</Tab>
                 <Tab>Resume</Tab>
               </TabList>

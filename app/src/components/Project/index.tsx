@@ -1,4 +1,4 @@
-import { Box, Heading, Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Spacer } from "@chakra-ui/react";
+import { Box, Heading, Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Spacer, Tooltip } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { TbPackages } from "react-icons/tb";
@@ -29,9 +29,19 @@ export const Project = () => {
 
   return (
     <>
-      <IconButton color="gray" variant="outline" aria-label="projects" title="projects" onClick={onOpen} icon={<Icon as={TbPackages} fontSize="xl" />} />
+      <Tooltip label="Projects">
+        <IconButton
+          color="gray"
+          variant="outline"
+          aria-label="projects"
+          title="projects"
+          size="sm"
+          onClick={onOpen}
+          icon={<Icon as={TbPackages} fontSize="xl" />}
+        />
+      </Tooltip>
       <Modal
-        size={{ base: "full", md: "lg", lg: "2xl", xl: "3xl" }}
+        size={data ? { base: "lg" } : { base: "full", md: "lg", lg: "2xl", xl: "3xl" }}
         isOpen={isOpen}
         onClose={onClose}
         scrollBehavior="inside"

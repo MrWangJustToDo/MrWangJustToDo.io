@@ -1,3 +1,5 @@
+@import url('@git-diff-view/react/styles/diff-view.css');
+
 .no-select {
   user-select: none;
 }
@@ -449,4 +451,8 @@ blockquote {
 .code-num {
   color: var(--chakra-colors-gray-600);
   font-style: initial;
+}
+
+.hljs-keyword {
+  font-weight: 600;
 }

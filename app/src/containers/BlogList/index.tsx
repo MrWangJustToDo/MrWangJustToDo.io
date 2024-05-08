@@ -32,16 +32,10 @@ import { useCollapse } from "@app/hooks/useCollapse";
 import { useFullScreen } from "@app/hooks/useFullScreen";
 import { useGetListParams } from "@app/hooks/useGetListParams";
 import { useGridLayout } from "@app/hooks/useGridLayout";
-import { useLeetCode } from "@app/hooks/useLeetCode";
-import { usePlayGround } from "@app/hooks/usePlayGround";
 import { useDomSize } from "@app/hooks/useSize";
-// import { useTldraw } from "@app/hooks/useTldraw";
 
 import { BlogModal } from "../BlogModal";
-import { LeetCode } from "../LeetCode";
 import { Pagination } from "../Pagination";
-import { PlayGround } from "../PlayGround";
-import { Tldraw } from "../Tldraw";
 
 const ITEM_PER_PAGE = 15;
 
@@ -64,13 +58,7 @@ const BASIC_VARIABLE = {
 };
 
 const BlogListButton = (props: { onRefresh: () => void }) => {
-  const { onOpen } = usePlayGround();
-
-  const { onOpen: onOpenLeetCode } = useLeetCode();
-
   const { state: collapse, toggle } = useCollapse();
-
-  // const { onOpen: onOpenTldraw } = useTldraw();
 
   const ref = useRef<HTMLDivElement>();
 
@@ -86,27 +74,6 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
           <Button colorScheme="facebook" textTransform="capitalize" onClick={() => props.onRefresh()} size={{ base: "sm", lg: "md" }}>
             refresh
           </Button>
-          <Button colorScheme="facebook" textTransform="capitalize" onClick={onOpen} size={{ base: "sm", lg: "md" }}>
-            playGround
-          </Button>
-          <Button
-            colorScheme="facebook"
-            textTransform="capitalize"
-            onClick={onOpenLeetCode}
-            display={{ base: "none", lg: "block" }}
-            size={{ base: "sm", lg: "md" }}
-          >
-            leetCode
-          </Button>
-          {/* <Button
-            colorScheme="facebook"
-            textTransform="capitalize"
-            onClick={onOpenTldraw}
-            display={{ base: "none", lg: "block" }}
-            size={{ base: "sm", lg: "md" }}
-          >
-            tldraw
-          </Button> */}
           <GridLayoutButton />
           <Box>
             <Menu>
@@ -252,9 +219,6 @@ const _BlogListWithInfinityScroll = ({ isMobileWidth }: { isMobileWidth: boolean
         <BlogListButton onRefresh={() => refetch()} />
       </Portal>
       <BlogModal />
-      <PlayGround />
-      <LeetCode />
-      <Tldraw />
     </Flex>
   );
 };

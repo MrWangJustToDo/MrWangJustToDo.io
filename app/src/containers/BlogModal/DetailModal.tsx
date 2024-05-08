@@ -2,7 +2,7 @@ import { NetworkStatus, useApolloClient, useQuery } from "@apollo/client";
 import { GetSingleBlogDocument } from "@blog/graphql";
 import { Box, Text, SkeletonText, SkeletonCircle, useCallbackRef, Icon, IconButton, useColorModeValue, HStack, Spacer, Code } from "@chakra-ui/react";
 import { countBy, throttle } from "lodash-es";
-import React, { cloneElement, isValidElement, useEffect, useMemo } from "react";
+import React, { cloneElement, isValidElement, useDeferredValue, useEffect, useMemo } from "react";
 import { AiOutlineReload } from "react-icons/ai";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -190,6 +190,9 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const colorScheme = useColorModeValue("blackAlpha", "gray");
 
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const isLoaded = useDeferredValue(data?.repository?.issue?.title)
+
       const refetch = () =>
         client.refetchQueries({
           include: [GetSingleBlogDocument],
@@ -211,7 +214,7 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
               />
             </Text>
           </Box>
-          <DetailProgressBar />
+          <DetailProgressBar isLoad={!!isLoaded} />
         </>
       );
     }}

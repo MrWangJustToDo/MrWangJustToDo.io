@@ -43,7 +43,7 @@
     "@swc/core": "^1.5.0",
     "@types/jest": "^29.5.12",
     "@types/lodash": "^4.17.0",
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.12.10",
     "@types/react": "18.2.79",
     "eslint": "^8.57.0",
     "eslint-plugin-jest": "^28.2.0",

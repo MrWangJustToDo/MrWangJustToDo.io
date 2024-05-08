@@ -4,7 +4,6 @@ import {
   Avatar,
   AvatarBadge,
   Box,
-  // Button,
   Divider,
   Flex,
   HStack,
@@ -18,13 +17,15 @@ import {
 } from "@chakra-ui/react";
 import React, { memo } from "react";
 import { AiOutlineGithub, AiOutlineMail, AiOutlineUser } from "react-icons/ai";
-import { SiLeetcode } from "react-icons/si";
 
 import { AboutMe } from "@app/components/AboutMe";
 import { Calendar } from "@app/components/Calendar";
 import { Chart } from "@app/components/Chart";
 import { ErrorCom } from "@app/components/Error";
 import { Followers } from "@app/components/Follower";
+// import { GitHubCompare } from "@app/components/GitHubCompare";
+import { LeetCode } from "@app/components/LeetCode";
+import { PlayGround } from "@app/components/PlayGround";
 import { Project } from "@app/components/Project";
 import { Recommend } from "@app/components/Recommend";
 import { useIsMobile } from "@app/hooks/useIsMobile";
@@ -62,23 +63,20 @@ const _User = () => {
       </Flex>
       <Chart marginY="2" className="tour_commit" />
       <Divider marginY="2" />
-      <HStack divider={<StackDivider />} spacing="2">
+      <HStack divider={<StackDivider />} spacing="2" rowGap="2" wrap="wrap">
         <IconButton
           as="a"
           color="gray"
           variant="outline"
+          size="sm"
+          target="_blank"
           aria-label="github"
           href="https://github.com/MrWangJustToDo/"
           icon={<Icon as={AiOutlineGithub} fontSize="xl" />}
         />
-        <IconButton
-          as="a"
-          color="gray"
-          variant="outline"
-          aria-label="leetcode"
-          href="https://leetcode.com/MrWangSay/"
-          icon={<Icon as={SiLeetcode} fontSize="xl" />}
-        />
+        <LeetCode />
+        <PlayGround />
+        {/* {!isMobile && <GitHubCompare />} */}
         <AboutMe />
         <Project />
         {!isMobile && <Calendar />}

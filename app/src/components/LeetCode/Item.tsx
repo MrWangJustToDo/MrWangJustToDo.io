@@ -1,6 +1,7 @@
-import { Box, CloseButton, SimpleGrid, SkeletonText, useUnmountEffect } from "@chakra-ui/react";
+import { Box, CloseButton, Link, List, ListIcon, ListItem, SimpleGrid, SkeletonText, useUnmountEffect } from "@chakra-ui/react";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 import { memo, useEffect, useRef, useState } from "react";
+import { BiLinkExternal } from "react-icons/bi";
 
 import { Card } from "@app/components/Card";
 import { useFetchLeetCode } from "@app/hooks/useFetchLeetCode";
@@ -103,41 +104,57 @@ const _LeetCodeContent = () => {
   if (loading) return <LeetCodeListLoading />;
 
   return (
-    <AnimatePresence>
-      <SimpleGrid width="100%" padding="2" columns={{ base: 1, lg: 2, xl: 3, "2xl": 4 }} spacing={3} onClick={() => set(undefined)}>
-        {content.map((file) =>
-          file.map((c) => {
-            if (!c) return null;
-            return (
-              <MotionCard
-                key={c}
-                maxHeight={{ base: "96", lg: "400px" }}
-                overflow="auto"
-                layoutId={c}
-                transition={{
-                  duration: 0.2,
-                  ease: "easeInOut",
-                }}
-                cursor="pointer"
-                whileHover={{
-                  scale: 0.98,
-                }}
-                onClick={(e: Event) => {
-                  e.stopPropagation();
-                  set(c);
-                }}
-              >
-                <Content>{c}</Content>
-              </MotionCard>
-            );
-          }),
-        )}
-      </SimpleGrid>
+    <>
+      <List spacing={3} marginX="2">
+        <ListItem color="blue.300">
+          <ListIcon as={BiLinkExternal} />
+          <Link href="https://github.com/MrWangJustToDo/leetcode" target="_blank" textDecoration="underline">
+            Source
+          </Link>
+        </ListItem>
+        <ListItem color="blue.300">
+          <ListIcon as={BiLinkExternal} />
+          <Link href="https://leetcode.com/MrWangSay/" target="_blank" textDecoration="underline">
+            Site
+          </Link>
+        </ListItem>
+      </List>
+      <AnimatePresence>
+        <SimpleGrid width="100%" padding="2" columns={{ base: 1, lg: 2, xl: 3, "2xl": 4 }} spacing={3} onClick={() => set(undefined)}>
+          {content.map((file) =>
+            file.map((c) => {
+              if (!c) return null;
+              return (
+                <MotionCard
+                  key={c}
+                  maxHeight={{ base: "96", lg: "400px" }}
+                  overflow="auto"
+                  layoutId={c}
+                  transition={{
+                    duration: 0.2,
+                    ease: "easeInOut",
+                  }}
+                  cursor="pointer"
+                  whileHover={{
+                    scale: 0.98,
+                  }}
+                  onClick={(e: Event) => {
+                    e.stopPropagation();
+                    set(c);
+                  }}
+                >
+                  <Content>{c}</Content>
+                </MotionCard>
+              );
+            }),
+          )}
+        </SimpleGrid>
 
-      {selectContent && <Box key="mask" position="fixed" top="0" left="0" width="full" height="full" backdropFilter="blur(1px)" pointerEvents="none" />}
+        {selectContent && <Box key="mask" position="fixed" top="0" left="0" width="full" height="full" backdropFilter="blur(1px)" pointerEvents="none" />}
 
-      {selectContent && <ModalCard key={selectContent} content={selectContent} />}
-    </AnimatePresence>
+        {selectContent && <ModalCard key={selectContent} content={selectContent} />}
+      </AnimatePresence>
+    </>
   );
 };
 

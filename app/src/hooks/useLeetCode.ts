@@ -6,7 +6,7 @@ export const useLeetCode = () => {
   const { query, push, pathname } = useRouter();
 
   const isModalOpen = query.overlay === "open";
-  const isPlayGround = query.playGround === "LeetCode";
+  const isLeetCode = query.playGround === "LeetCode";
 
   const onOpen = useCallbackRef(() => {
     push(
@@ -36,5 +36,5 @@ export const useLeetCode = () => {
     );
   });
 
-  return { isOpen: isModalOpen && isPlayGround, onOpen, onClose };
+  return { isOpen: isModalOpen && isLeetCode, onOpen, onClose };
 };

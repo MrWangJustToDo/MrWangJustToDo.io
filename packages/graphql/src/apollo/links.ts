@@ -1,7 +1,7 @@
 import { HttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
-import { generateFetchWithTimeout } from "project-tool/request";
+import { createRequest, generateFetchWithTimeout } from "project-tool/request";
 
 const BLOG_API = "https://api.github.com/graphql";
 
@@ -41,8 +41,13 @@ export const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization: `token ${isBrowser ? atob(tokenString as string) : Buffer.from(tokenString as string, "base64").toString()
-        }`,
+      Authorization: `token ${isBrowser ? atob(tokenString as string) : Buffer.from(tokenString as string, "base64").toString()}`,
     },
   };
 });
+
+export const axiosClient = createRequest({
+  headers: { Authorization: `token ${isBrowser ? atob(tokenString as string) : Buffer.from(tokenString as string, "base64").toString()}` },
+});
+
+export type axiosClientType = typeof axiosClient;

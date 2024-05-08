@@ -94,7 +94,6 @@ const nextConfig = {
   basePath: isProd ? "/MrWangJustToDo.io" : undefined,
   // custom webpack config
   webpack: (config, { isServer, webpack }) => {
-
     config.plugins.push(
       new webpack.DefinePlugin({
         __SERVER__: isServer,
@@ -105,11 +104,11 @@ const nextConfig = {
 
     return config;
   },
-}
+};
 
 // TODO not work for worker loader
 // export default withNext(nextConfig);
 
-const config = process.env.FRAMEWORK === 'myreact' ? nextConfigWithMyReact : nextConfig;
+const config = process.env.FRAMEWORK === "myreact" ? nextConfigWithMyReact : nextConfig;
 
 export default config;

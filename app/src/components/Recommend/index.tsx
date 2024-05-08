@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { GetRepoAboutDocument } from "@blog/graphql";
-import { Badge, Icon, StackDivider, Text, VStack } from "@chakra-ui/react";
+import { Badge, Icon, StackDivider, Text, VStack, Flex } from "@chakra-ui/react";
 import { VscStarFull } from "react-icons/vsc";
 
 import { useCurrentProject, useProject } from "@app/hooks/useProject";
@@ -27,18 +27,22 @@ const RecommendItem = ({ type, onClick }: { type: keyof typeof ProjectItems; onC
         onClick();
         onOpen();
       }}
+      position="relative"
       cursor="pointer"
-      _firstLetter={{ fontSize: "2em" }}
       boxShadow="sm"
     >
-      <Badge colorScheme="orange" float="right" display="flex" alignItems="center">
+      <Badge colorScheme="orange" display="flex" alignItems="center" position="absolute" right="6px">
         <Icon as={VscStarFull} marginRight="1" />
         {data?.repository?.stargazerCount}
       </Badge>
-      <Text as="span">{type}</Text>:{" "}
-      <Text as="span" color="slategrey" textDecoration="underline">
-        {data?.repository?.description}
-      </Text>
+      <Flex alignItems="baseline" marginTop="2">
+        <Text _firstLetter={{ fontSize: "2em" }} marginRight="1">
+          {type}:
+        </Text>
+        <Text color="slategrey" textDecoration="underline" noOfLines={1} title={data?.repository?.description}>
+          {data?.repository?.description}
+        </Text>
+      </Flex>
     </Card>
   );
 };

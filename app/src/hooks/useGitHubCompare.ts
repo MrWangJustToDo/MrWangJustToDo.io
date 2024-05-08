@@ -2,11 +2,11 @@ import { useCallbackRef } from "@chakra-ui/react";
 import { omit } from "lodash-es";
 import { useRouter } from "next/router";
 
-export const useTldraw = () => {
+export const useGitHubCompare = () => {
   const { query, push, pathname } = useRouter();
 
   const isModalOpen = query.overlay === "open";
-  const isTldraw = query.playGround === "Tldraw";
+  const isGitHub = query.playGround === "GitHub";
 
   const onOpen = useCallbackRef(() => {
     push(
@@ -15,7 +15,7 @@ export const useTldraw = () => {
         query: {
           ...query,
           overlay: "open",
-          playGround: "Tldraw",
+          playGround: "GitHub",
         },
       },
       undefined,
@@ -36,5 +36,6 @@ export const useTldraw = () => {
     );
   });
 
-  return { isOpen: isModalOpen && isTldraw, onOpen, onClose };
+  return { isOpen: isModalOpen && isGitHub, onOpen, onClose };
 };
+

@@ -1,10 +1,12 @@
 import { chakra } from "@chakra-ui/react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, motionValue, useScroll, useTransform } from "framer-motion";
 import { useLayoutEffect, useRef } from "react";
 
 const CDiv = chakra(motion.div);
 
-export const DetailProgressBar = () => {
+const initialMotionValue = motionValue(0);
+
+export const DetailProgressBar = ({ isLoad }: { isLoad: boolean }) => {
   const ref = useRef<HTMLDivElement>();
 
   useLayoutEffect(() => {
@@ -23,7 +25,12 @@ export const DetailProgressBar = () => {
       top={0}
       marginY={2}
       zIndex="dropdown"
-      style={{ opacity, borderBottom: "2px solid rgba(160, 160, 160, .4)", transformOrigin: "0%", scaleX: scrollYProgress }}
+      style={{
+        opacity: isLoad ? opacity : initialMotionValue,
+        borderBottom: "2px solid rgba(160, 160, 160, .4)",
+        transformOrigin: "0%",
+        scaleX: scrollYProgress,
+      }}
     />
   );
 };

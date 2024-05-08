@@ -54,8 +54,8 @@ export const Item = ({
       backgroundColor={{ base: "mobileCardBackgroundColor", sm: "transparent" }}
       width="100%"
       height="100%"
-      padding="4px"
-      paddingX="6px"
+      padding={singleModel ? "8px" : "4px"}
+      paddingX={singleModel ? "10px" : "6px"}
       display="flex"
       flexDirection="column"
       key={loading ? type + "loading" : type}
@@ -92,7 +92,7 @@ export const Item = ({
         </Text>
       </SkeletonText>
       <Spacer marginY="2" />
-      <Flex justifySelf="right" width="full" justifyContent="space-around">
+      <Flex justifySelf="right" width="full" justifyContent={singleModel ? "space-between" : "space-around"}>
         <Button variant="outline" colorScheme="telegram" onClick={onOpenReadme}>
           Readme
         </Button>

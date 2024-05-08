@@ -1,4 +1,4 @@
-import { Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay } from "@chakra-ui/react";
+import { Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Tooltip } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { BiCalendar } from "react-icons/bi";
 
@@ -18,7 +18,17 @@ export const Calendar = () => {
 
   return (
     <>
-      <IconButton color="gray" variant="outline" aria-label="about me" title="about me" onClick={onOpen} icon={<Icon as={BiCalendar} fontSize="2xl" />} />
+      <Tooltip label="Calendar">
+        <IconButton
+          color="gray"
+          variant="outline"
+          aria-label="Calendar"
+          title="Calendar"
+          size="sm"
+          onClick={onOpen}
+          icon={<Icon as={BiCalendar} fontSize="xl" />}
+        />
+      </Tooltip>
       <Modal size="full" isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
         <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">
