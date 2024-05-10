@@ -10,7 +10,7 @@ export const useTruncateText = ({ text, container, fontSize = "14px" }: { text: 
   const [state, setState] = useState(() => ({ textToDisplay: cache.get(text) || text, maxWidth: Infinity }));
 
   useLayoutEffect(() => {
-    const width = 30;
+    const width = 20;
     let maxWidth = Infinity;
     if (container.width !== 0) {
       const targetWidth = container.right - width;

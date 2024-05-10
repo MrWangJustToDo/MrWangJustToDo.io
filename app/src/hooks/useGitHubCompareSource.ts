@@ -23,6 +23,7 @@ export type GitHubCompareFileListType = {
   previous_filename?: string;
   patch: string;
   raw_url: string;
+  contents_url: string;
   additions: number;
   changes: number;
   deletions: number;
