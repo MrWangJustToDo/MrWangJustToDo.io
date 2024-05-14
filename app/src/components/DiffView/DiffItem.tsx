@@ -1,6 +1,7 @@
 import { axiosClient } from "@blog/graphql";
 import { Box, ButtonGroup, Flex, Icon, IconButton, Skeleton, StatDownArrow, Text, useDisclosure, useOutsideClick, usePrevious } from "@chakra-ui/react";
 import { DiffFile } from "@git-diff-view/core";
+import { DiffView } from "@git-diff-view/react";
 import { smoothScroll } from "@reactour/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
@@ -10,7 +11,7 @@ import { useGitHubCompareSourceSelect, type GitHubCompareFileListType } from "@a
 import { useDomSize } from "@app/hooks/useSize";
 
 import type { MessageData } from "@app/worker/diffView.worker";
-import type { DiffView, DiffViewProps } from "@git-diff-view/react";
+import type { DiffViewProps } from "@git-diff-view/react";
 import type { RefObject } from "react";
 
 const loadContent = async (url: string) => {
@@ -41,8 +42,6 @@ export const DiffItem = ({ item, workRef }: { item: GitHubCompareFileListType; w
 
   const boxRef = useRef<HTMLDivElement>();
 
-  const [Ele, setEle] = useState<typeof DiffView>();
-
   const { height } = useDomSize({ ref, deps: [diffFile] });
 
   const currentIsSelect = key === item.filename;
@@ -63,15 +62,6 @@ export const DiffItem = ({ item, workRef }: { item: GitHubCompareFileListType; w
     _onOpen();
     scrollToCurrent();
   }, [_onOpen, scrollToCurrent]);
-
-  useEffect(() => {
-    // TODO! fix this import error
-    const load = async () => {
-      const { DiffView } = await import("@git-diff-view/react");
-      setEle(DiffView);
-    };
-    load();
-  }, []);
 
   useEffect(() => {
     if (isOpen && !content && item.patch) {
@@ -143,7 +133,7 @@ export const DiffItem = ({ item, workRef }: { item: GitHubCompareFileListType; w
     }
   }, [previousExpand, expandAll, diffFile]);
 
-  if (item.patch && (!diffFile || !Ele)) {
+  if (item.patch && (!diffFile)) {
     return <Skeleton height="50px" width="100%" />;
   }
 
@@ -213,7 +203,7 @@ export const DiffItem = ({ item, workRef }: { item: GitHubCompareFileListType; w
       >
         <div ref={ref} data-height={height}>
           {diffFile ? (
-            <Ele diffFile={diffFile} diffViewHighlight diffViewWrap diffViewFontSize={12} />
+            <DiffView diffFile={diffFile} diffViewHighlight diffViewWrap diffViewFontSize={12} />
           ) : (
             <Text textAlign="center" padding="2">
               Empty

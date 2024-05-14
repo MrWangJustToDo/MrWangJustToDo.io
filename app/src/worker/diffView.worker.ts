@@ -36,7 +36,7 @@ onmessage = (event: MessageEvent<MessageData>) => {
   const bundle = file._getFullBundle();
 
   // TODO! @git-diff-view 0.0.14 release will fix this issue
-  bundle.fileLineLength = Math.max(bundle.splitLineLength, bundle.unifiedLineLength, bundle.newFileResult?.maxLineNumber);
+  // bundle.fileLineLength = Math.max(bundle.splitLineLength, bundle.unifiedLineLength, bundle.newFileResult?.maxLineNumber);
 
   const res: MessageData = {
     id: _data.id,

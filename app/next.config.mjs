@@ -109,6 +109,9 @@ const nextConfig = {
 // TODO not work for worker loader
 // export default withNext(nextConfig);
 
+// waiting fix
+// SEE https://github.com/vercel/next.js/issues/19303
+
 const config = process.env.FRAMEWORK === "myreact" ? nextConfigWithMyReact : nextConfig;
 
 export default config;
