@@ -28,8 +28,6 @@ export const DiffItem = ({ item, workRef }: { item: GitHubCompareFileListType; w
 
   const [loading, setLoading] = useState(true);
 
-  // useState();
-
   const [expandAll, setExpandAll] = useState(false);
 
   const previousExpand = usePrevious(expandAll);

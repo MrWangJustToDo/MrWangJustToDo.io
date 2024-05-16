@@ -1,11 +1,11 @@
 import { Flex } from "@chakra-ui/react";
-import { useLayoutEffect, useRef } from "react";
+import { memo, useLayoutEffect, useRef } from "react";
 
 import { useGitHubCompareSourceList } from "@app/hooks/useGitHubCompareSource";
 
 import { DiffItem } from "./DiffItem";
 
-export const DiffContent = () => {
+const _DiffContent = memo(() => {
   const list = useGitHubCompareSourceList((s) => s.list);
 
   const workRef = useRef<Worker>();
@@ -23,4 +23,8 @@ export const DiffContent = () => {
       ))}
     </Flex>
   );
-};
+});
+
+_DiffContent.displayName = "_DiffContent";
+
+export const DiffContent = _DiffContent;
