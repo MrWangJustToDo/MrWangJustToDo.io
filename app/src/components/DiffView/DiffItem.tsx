@@ -28,6 +28,8 @@ export const DiffItem = ({ item, workRef }: { item: GitHubCompareFileListType; w
 
   const [loading, setLoading] = useState(true);
 
+  // useState();
+
   const [expandAll, setExpandAll] = useState(false);
 
   const previousExpand = usePrevious(expandAll);
@@ -133,7 +135,7 @@ export const DiffItem = ({ item, workRef }: { item: GitHubCompareFileListType; w
     }
   }, [previousExpand, expandAll, diffFile]);
 
-  if (item.patch && (!diffFile)) {
+  if (item.patch && !diffFile) {
     return <Skeleton height="50px" width="100%" />;
   }
 
@@ -179,7 +181,11 @@ export const DiffItem = ({ item, workRef }: { item: GitHubCompareFileListType; w
                   aria-label="expand"
                   icon={<Icon as={expandAll ? PiArrowsInLineVerticalBold : PiArrowsOutLineVerticalBold} color="gray.500" />}
                   size="sm"
-                  onClick={() => setExpandAll((l) => !l)}
+                  display={diffFile.hasSomeLineCollapsed ? "block" : "none"}
+                  onClick={() => {
+                    setExpandAll((l) => !l);
+                    scrollToCurrent();
+                  }}
                 />
               )
             ) : null}
