@@ -12,7 +12,7 @@ export const Page = () => {
   return (
     <Container maxWidth={CONTAINER_WIDTH} padding="4">
       <Flex marginTop="2" alignItems="baseline">
-        <Heading as="h3">GitHub Compare</Heading>
+        <Heading as="h3">GitHub Commit Compare</Heading>
         <small>
           <Text marginX="2">power by</Text>
         </small>

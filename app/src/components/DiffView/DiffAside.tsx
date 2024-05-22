@@ -5,7 +5,7 @@ import { Tree } from "react-arborist";
 import { FaFile, FaFolder, FaFolderOpen } from "react-icons/fa";
 import { VscDiffAdded, VscDiffModified, VscDiffRemoved, VscDiffRenamed } from "react-icons/vsc";
 
-import { useGitHubCompareSourceList, useGitHubCompareSourceSelect } from "@app/hooks/useGitHubCompareSource";
+import { useGitHubCompareSourceInView, useGitHubCompareSourceList, useGitHubCompareSourceSelect } from "@app/hooks/useGitHubCompareSource";
 import { useDomSize } from "@app/hooks/useSize";
 import { useTruncateText } from "@app/hooks/useTruncateText";
 
@@ -104,11 +104,15 @@ const RenderItem = ({ node, select }: { node: NodeApi<TreeViewData>; select?: No
 };
 
 export const DiffAside = () => {
-  const data = useGitHubCompareSourceList((s) => s.data);
+  const data = useGitHubCompareSourceList((s) => s.data) as TreeViewData[];
+
+  const id = useGitHubCompareSourceInView((s) => s.id);
 
   const [select, setSelect] = useState<NodeApi<TreeViewData>>();
 
   const selectRef = useRef(select);
+
+  const treeRef = useRef<TreeApi<TreeViewData>>();
 
   const ref = useRef<HTMLDivElement>();
 
@@ -124,11 +128,18 @@ export const DiffAside = () => {
     }
   }, [select]);
 
+  useEffect(() => {
+    if (id) {
+      treeRef.current?.scrollTo(id);
+    }
+  }, [id]);
+
   const render = useCallback(({ node, style }: { node: NodeApi; style: CSSProperties }) => {
     if (node.data.isLeaf) {
       return (
         <Box
           id={node.data.id}
+          data-id={node.data.id}
           style={style}
           whiteSpace="nowrap"
           height="100%"
@@ -145,6 +156,7 @@ export const DiffAside = () => {
       return (
         <Box
           id={node.data.id}
+          data-id={node.data.id}
           style={style}
           whiteSpace="nowrap"
           height="100%"
@@ -164,8 +176,9 @@ export const DiffAside = () => {
 
   return (
     <Card boxShadow="none" padding="2" className="group" position="sticky" top="2" overflow="hidden">
-      <div ref={ref} data-width={width}>
-        <Tree
+      <Box ref={ref} data-width={width} sx={{ [`& [data-id="${id}"]`]: { backgroundColor: "blackAlpha.200" } }}>
+        <Tree<TreeViewData>
+          ref={treeRef}
           initialData={data}
           disableDrag
           disableDrop
@@ -184,7 +197,7 @@ export const DiffAside = () => {
         >
           {render}
         </Tree>
-      </div>
+      </Box>
     </Card>
   );
 };

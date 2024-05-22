@@ -9,12 +9,12 @@ export const GitHubCompare = () => {
 
   return (
     <>
-      <Tooltip label="GitHubCompare">
+      <Tooltip label="GitHub Commit Compare">
         <IconButton
           color="gray"
           variant="outline"
           aria-label="GitHubCompare"
-          title="GitHubCompare"
+          title="GitHub Commit Compare"
           size="sm"
           onClick={onOpen}
           icon={<Icon as={IoMdGitCompare} fontSize="xl" />}
@@ -24,7 +24,7 @@ export const GitHubCompare = () => {
         <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">
           <ModalCloseButton />
-          <ModalBody paddingY="0">
+          <ModalBody paddingY="0" data-id="diff-view-body">
             <Page />
           </ModalBody>
         </ModalContent>

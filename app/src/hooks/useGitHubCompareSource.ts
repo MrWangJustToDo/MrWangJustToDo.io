@@ -135,3 +135,9 @@ export const useGitHubCompareSourceSelect = createState(() => ({}) as { key?: st
   withDeepSelector: false,
   withNamespace: "useGitHubCompareSourceSelect",
 });
+
+export const useGitHubCompareSourceInView = createState(() => ({ id: "" }), {
+  withActions: (s) => ({ setId: (id: string) => (s.id = id) }),
+  withDeepSelector: false,
+  withNamespace: "useGitHubCompareSourceInView",
+});
