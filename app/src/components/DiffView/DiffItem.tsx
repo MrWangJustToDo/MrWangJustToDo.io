@@ -78,24 +78,31 @@ export const DiffItem = ({
 
   const scrollToCurrent = useCallback(() => {
     const ele = boxRef.current;
-    ele && smoothScroll(boxRef.current, { behavior: "smooth", block: 'start' });
+    ele && smoothScroll(boxRef.current, { behavior: "smooth", block: "start" });
   }, []);
 
   const onToggle = useCallback(() => {
     // setDone(false);
-    _onToggle();
+    scrollToCurrent();
     setTimeout(() => {
-      scrollToCurrent();
+      _onToggle();
     }, 16);
   }, [_onToggle, scrollToCurrent]);
 
   const onOpen = useCallback(() => {
     // setDone(false);
-    _onOpen();
+    scrollToCurrent();
     setTimeout(() => {
-      scrollToCurrent();
+      _onOpen();
     }, 16);
   }, [_onOpen, scrollToCurrent]);
+
+  const onExpandToggle = useCallback(() => {
+    scrollToCurrent();
+    setTimeout(() => {
+      setExpandAll((l) => !l);
+    }, 16);
+  }, [scrollToCurrent]);
 
   useEffect(() => {
     if (isOpen && !content && item.patch) {
@@ -219,12 +226,7 @@ export const DiffItem = ({
                     icon={<Icon as={expandAll ? PiArrowsInLineVerticalBold : PiArrowsOutLineVerticalBold} color="gray.500" />}
                     size="sm"
                     display={diffFile.hasSomeLineCollapsed ? "block" : "none"}
-                    onClick={() => {
-                      setExpandAll((l) => !l);
-                      setTimeout(() => {
-                        scrollToCurrent();
-                      }, 60);
-                    }}
+                    onClick={onExpandToggle}
                   />
                 )
               ) : null}
