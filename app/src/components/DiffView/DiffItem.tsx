@@ -78,19 +78,23 @@ export const DiffItem = ({
 
   const scrollToCurrent = useCallback(() => {
     const ele = boxRef.current;
-    ele && smoothScroll(boxRef.current, { behavior: "smooth" });
+    ele && smoothScroll(boxRef.current, { behavior: "smooth", block: 'start' });
   }, []);
 
   const onToggle = useCallback(() => {
     // setDone(false);
     _onToggle();
-    scrollToCurrent();
+    setTimeout(() => {
+      scrollToCurrent();
+    }, 16);
   }, [_onToggle, scrollToCurrent]);
 
   const onOpen = useCallback(() => {
     // setDone(false);
     _onOpen();
-    scrollToCurrent();
+    setTimeout(() => {
+      scrollToCurrent();
+    }, 16);
   }, [_onOpen, scrollToCurrent]);
 
   useEffect(() => {
@@ -217,7 +221,9 @@ export const DiffItem = ({
                     display={diffFile.hasSomeLineCollapsed ? "block" : "none"}
                     onClick={() => {
                       setExpandAll((l) => !l);
-                      scrollToCurrent();
+                      setTimeout(() => {
+                        scrollToCurrent();
+                      }, 60);
                     }}
                   />
                 )
