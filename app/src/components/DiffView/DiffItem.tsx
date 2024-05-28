@@ -78,30 +78,28 @@ export const DiffItem = ({
 
   const scrollToCurrent = useCallback(() => {
     const ele = boxRef.current;
-    ele && smoothScroll(boxRef.current, { behavior: "smooth", block: "start" });
+    const a = new Promise<void>((r) => {
+      if (ele) {
+        smoothScroll(ele, { behavior: "smooth", block: "start" }).then(r);
+      } else {
+        r();
+      }
+    });
+    return a;
   }, []);
 
   const onToggle = useCallback(() => {
     // setDone(false);
-    scrollToCurrent();
-    setTimeout(() => {
-      _onToggle();
-    }, 16);
+    scrollToCurrent().then(() => _onToggle());
   }, [_onToggle, scrollToCurrent]);
 
   const onOpen = useCallback(() => {
     // setDone(false);
-    scrollToCurrent();
-    setTimeout(() => {
-      _onOpen();
-    }, 16);
+    scrollToCurrent().then(() => _onOpen());
   }, [_onOpen, scrollToCurrent]);
 
   const onExpandToggle = useCallback(() => {
-    scrollToCurrent();
-    setTimeout(() => {
-      setExpandAll((l) => !l);
-    }, 16);
+    scrollToCurrent().then(() => setExpandAll((l) => !l));
   }, [scrollToCurrent]);
 
   useEffect(() => {
