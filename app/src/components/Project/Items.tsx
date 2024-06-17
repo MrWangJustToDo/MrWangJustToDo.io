@@ -34,6 +34,10 @@ export const ProjectItems = {
     owner: "mrwangjusttodo",
     name: "git-diff-view",
   },
+  DevTools: {
+    owner: "mrwangjusttodo",
+    name: "myreact-devtools",
+  }
 } as const;
 
 export const Item = ({

@@ -41,7 +41,7 @@ const UserLoading = () => (
   </Box>
 );
 
-const _User = () => {
+const _User = memo(() => {
   const { data, loading, error } = useQuery(GetViewerDocument, {
     variables: {
       first: ITEM_FOLLOWER,
@@ -123,6 +123,8 @@ const _User = () => {
       </Flex>
     </Flex>
   );
-};
+});
 
-export const User = memo(_User);
+_User.displayName = "_User";
+
+export const User = _User;

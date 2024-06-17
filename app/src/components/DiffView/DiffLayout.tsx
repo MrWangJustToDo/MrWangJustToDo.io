@@ -3,6 +3,7 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 import type { ReactNode } from "react";
 
+// 兼容性不太好，最新的chrome也存在问题
 const isLegacyBrowser = () => {
   if (typeof window !== "undefined") {
     if (navigator?.userAgent?.includes?.("Firefox")) {
