@@ -6,6 +6,8 @@ import type * as SchemaTypes from "./schema";
 import type { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
 export type GetViewerQueryVariables = SchemaTypes.Exact<{
   first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]["input"]>;
+  from?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["DateTime"]["input"]>;
+  to?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["DateTime"]["input"]>;
 }>;
 
 export type GetViewerQuery = {
@@ -18,6 +20,11 @@ export type GetViewerQuery = {
     avatarUrl: any;
     websiteUrl?: any | null;
     projectsUrl: any;
+    contributionsCollection: {
+      commitContributionsByRepository: Array<{
+        contributions: { nodes?: Array<{ occurredAt: any; commitCount: number; repository: { name: string } } | null> | null };
+      }>;
+    };
     followers: { nodes?: Array<{ id: string; name?: string | null; login: string; email: string; bioHTML: any; avatarUrl: any } | null> | null };
     following: { nodes?: Array<{ id: string; name?: string | null; login: string; email: string; bioHTML: any; avatarUrl: any } | null> | null };
   };
@@ -154,6 +161,16 @@ export const GetViewerDocument = {
           type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
           defaultValue: { kind: "IntValue", value: "10" },
         },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "from" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "DateTime" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "to" } },
+          type: { kind: "NamedType", name: { kind: "Name", value: "DateTime" } },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -172,6 +189,60 @@ export const GetViewerDocument = {
                 { kind: "Field", name: { kind: "Name", value: "avatarUrl" } },
                 { kind: "Field", name: { kind: "Name", value: "websiteUrl" } },
                 { kind: "Field", name: { kind: "Name", value: "projectsUrl" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "contributionsCollection" },
+                  arguments: [
+                    { kind: "Argument", name: { kind: "Name", value: "from" }, value: { kind: "Variable", name: { kind: "Name", value: "from" } } },
+                    { kind: "Argument", name: { kind: "Name", value: "to" }, value: { kind: "Variable", name: { kind: "Name", value: "to" } } },
+                  ],
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "commitContributionsByRepository" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "contributions" },
+                              arguments: [
+                                {
+                                  kind: "Argument",
+                                  name: { kind: "Name", value: "first" },
+                                  value: { kind: "Variable", name: { kind: "Name", value: "first" } },
+                                },
+                              ],
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "nodes" },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        { kind: "Field", name: { kind: "Name", value: "occurredAt" } },
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "repository" },
+                                          selectionSet: { kind: "SelectionSet", selections: [{ kind: "Field", name: { kind: "Name", value: "name" } }] },
+                                        },
+                                        { kind: "Field", name: { kind: "Name", value: "commitCount" } },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "followers" },

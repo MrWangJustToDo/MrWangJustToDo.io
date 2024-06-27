@@ -55,7 +55,7 @@ export const getHighlightHtml = (str: string, lang: string) => {
           <div class='position-absolute w-100 border-bottom border-dark' style='left: 0; top: 24px;'></div>
         </div>`,
     );
-    return `<pre class="rounded position-relative"><code class="hljs ${language}" style='padding-top: 30px;'>${html}</code></pre>`;
+    return `<pre class="rounded position-relative mb-0"><code class="hljs ${language}" style='padding-top: 30px;'>${html}</code></pre>`;
   } catch (__) {
     void 0;
   }

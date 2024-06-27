@@ -1,4 +1,4 @@
-query getViewer($first: Int = 10) {
+query getViewer($first: Int = 10, $from: DateTime, $to: DateTime) {
   viewer {
     id
     name
@@ -8,6 +8,19 @@ query getViewer($first: Int = 10) {
     avatarUrl
     websiteUrl
     projectsUrl
+    contributionsCollection(from: $from, to: $to) {
+      commitContributionsByRepository {
+        contributions(first: $first) {
+          nodes {
+            occurredAt
+            repository {
+              name
+            }
+            commitCount
+          }
+        }
+      }
+    }
     followers(first: $first) {
       nodes {
         id

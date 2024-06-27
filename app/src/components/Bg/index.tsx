@@ -1,7 +1,6 @@
 import { Box, useColorMode, usePrevious } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo, useEffect } from "react";
-import { Lumiflex } from "uvcanvas";
 
 import { useAnimateVariant } from "@app/hooks/useAnimateVariant";
 import { useIsMounted } from "@app/hooks/useIsMounted";
@@ -19,7 +18,7 @@ const _Bg = () => {
   return (
     <Box width="full" height="full" position="fixed" left="0" top="0" zIndex="-1">
       {isMounted && <AnimateBg colorMode={colorMode} prevColorMode={prevColorMode} />}
-      <Box width="full" height="full" backdropFilter="blur(2px)" position="absolute" left="0" top="0" />
+      <Box width="full" height="full" backdropFilter="blur(3px)" position="absolute" left="0" top="0" />
     </Box>
   );
 };
@@ -44,8 +43,8 @@ const AnimateBg = ({ colorMode, prevColorMode }: { colorMode: ColorMode; prevCol
         .map((_, index) => {
           const open = value.entryVariants[index];
           const close = value.leaveVariants[index];
-          // const backgroundColor = colorMode === "dark" ? "red" : "green";
-          const backgroundColor = undefined;
+          const backgroundColor = colorMode === "dark" ? "red" : "green";
+          // const backgroundColor = undefined;
           const openSize = open.size * 10;
           const closeSize = close.size * 10;
           const openVariant = { x: open.x * width, y: open.y * height, backgroundColor, width: openSize, height: openSize };
@@ -58,10 +57,8 @@ const AnimateBg = ({ colorMode, prevColorMode }: { colorMode: ColorMode; prevCol
                 initial="close"
                 exit="close"
                 variants={{ open: openVariant, close: closeVariant }}
-                style={{ borderRadius: "50%", overflow: "hidden" }}
-              >
-                <Lumiflex />
-              </motion.div>
+                style={{ borderRadius: "100%", overflow: "hidden" }}
+              />
             </AnimatePresence>
           );
         })}

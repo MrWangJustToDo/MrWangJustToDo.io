@@ -13,13 +13,17 @@ import {
   SkeletonCircle,
   SkeletonText,
   StackDivider,
+  Tag,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { memo } from "react";
 import { AiOutlineGithub, AiOutlineMail, AiOutlineUser } from "react-icons/ai";
+import { Tranquiluxe, Zenitho } from "uvcanvas";
 
 import { AboutMe } from "@app/components/AboutMe";
 import { Calendar } from "@app/components/Calendar";
+import { Card } from "@app/components/Card";
 import { Chart } from "@app/components/Chart";
 import { ErrorCom } from "@app/components/Error";
 import { Followers } from "@app/components/Follower";
@@ -29,7 +33,7 @@ import { PlayGround } from "@app/components/PlayGround";
 import { Project } from "@app/components/Project";
 import { Recommend } from "@app/components/Recommend";
 import { useIsMobile } from "@app/hooks/useIsMobile";
-import { momentTo } from "@app/utils/time";
+import { dayjs, momentTo } from "@app/utils/time";
 
 const ITEM_FOLLOWER = 15;
 
@@ -41,12 +45,19 @@ const UserLoading = () => (
   </Box>
 );
 
+const from = dayjs().subtract(4, "day").toISOString();
+const to = dayjs().toISOString();
+
 const _User = memo(() => {
   const { data, loading, error } = useQuery(GetViewerDocument, {
     variables: {
       first: ITEM_FOLLOWER,
+      from,
+      to,
     },
   });
+
+  const Ele = useColorModeValue(Tranquiluxe, Zenitho);
 
   const isMobile = useIsMobile();
 
@@ -54,12 +65,41 @@ const _User = memo(() => {
 
   if (error) return <ErrorCom error={error} />;
 
+  const commit: Array<{ repo: string; commit: number }> = [];
+
+  data.viewer.contributionsCollection.commitContributionsByRepository.forEach((i) => {
+    const validCommit = i.contributions.nodes?.filter((_i) => dayjs(_i.occurredAt).isAfter(dayjs(to).subtract(1, "day")));
+    validCommit?.forEach((i) => {
+      commit.push({ repo: i.repository.name, commit: i.commitCount });
+    });
+  });
+
   return (
     <Flex flexDirection="column" padding="3" height={{ md: "100%" }} className="tour_about">
-      <Flex padding="2" alignItems="flex-end">
-        <Avatar name={data.viewer.name} src={data.viewer.avatarUrl} size="xl">
+      <Flex padding="2" justifyContent="space-between" alignItems="center">
+        <Avatar name={data.viewer.name} src={data.viewer.avatarUrl} size="xl" boxShadow="md">
           <AvatarBadge bg="green.500" boxSize="0.8em" />
         </Avatar>
+        <Card height="100%" width="60%" overflow="hidden" position="relative">
+          <Box position="absolute" width="100%" height="100%" zIndex="-1">
+            <Ele />
+          </Box>
+          {commit.length ? (
+            commit.map((i) => {
+              return (
+                <Flex key={i.repo} justifyContent="space-between" padding="2" fontSize="smaller">
+                  <Text lineHeight="1.8">
+                    Create <Tag size="sm">{i.commit}</Tag> commit to <Tag size="sm">{i.repo}</Tag>
+                  </Text>
+                </Flex>
+              );
+            })
+          ) : (
+            <Flex alignItems="center" justifyContent="center" height="100%" fontSize="sm">
+              No Recent Commit
+            </Flex>
+          )}
+        </Card>
       </Flex>
       <Chart marginY="2" className="tour_commit" />
       <Divider marginY="2" />

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useQuery } from "@apollo/client";
 import { GetRepoAboutDocument } from "@blog/graphql";
-import { Badge, Box, Button, CloseButton, Code, Divider, Flex, Icon, Image, Link, SkeletonText, Spacer, Text } from "@chakra-ui/react";
+import { Badge, Box, Button, CloseButton, Code, Divider, Flex, Icon, Image, Link, Skeleton, SkeletonText, Spacer, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { cloneElement, isValidElement, useState } from "react";
 import { VscStarFull } from "react-icons/vsc";
@@ -37,7 +37,7 @@ export const ProjectItems = {
   DevTools: {
     owner: "mrwangjusttodo",
     name: "myreact-devtools",
-  }
+  },
 } as const;
 
 export const Item = ({
@@ -134,7 +134,8 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
         alignContent: "center",
       }}
       maxWidth={{ base: "100%", md: "90vw", lg: "80vw", xl: "70vw", "2xl": "60vw" }}
-      minWidth={{ base: "100%", md: "initial" }}
+      minWidth={{ base: "100%", md: "40vw" }}
+      minHeight="10vh"
     >
       <MotionCard
         width="100%"
@@ -242,9 +243,9 @@ export const Preview = ({ type, onClose }: { type: keyof typeof ProjectItems; on
         onLayoutAnimationComplete={() => setAnimateDone(true)}
       >
         <CloseButton onClick={onClose} position="absolute" right="10px" top="10px" zIndex="dropdown" />
-        <SkeletonText noOfLines={40} isLoaded={!loading && animateDone}>
-          <iframe src={data.repository.homepageUrl || data.repository.url} width="1000px" height="800px" />
-        </SkeletonText>
+        <Skeleton isLoaded={!loading && animateDone} width="800px" minHeight="20vh" overflow="auto">
+          <iframe src={data.repository.homepageUrl || data.repository.url} width="1200px" height="800px" />
+        </Skeleton>
       </MotionCard>
     </Box>
   );

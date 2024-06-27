@@ -7,7 +7,7 @@ const getRandom = (min: number, max: number) => {
 };
 
 const getVariant = () => {
-  const length = 20;
+  const length = 14;
   const array = Array(length).fill(0);
   const leaveVariants = array.map((_, i) => {
     if (i < length / 2) {
