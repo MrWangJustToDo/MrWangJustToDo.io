@@ -13,18 +13,15 @@ import {
   SkeletonCircle,
   SkeletonText,
   StackDivider,
-  Tag,
   Text,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { memo } from "react";
 import { AiOutlineGithub, AiOutlineMail, AiOutlineUser } from "react-icons/ai";
-import { Tranquiluxe, Zenitho } from "uvcanvas";
 
 import { AboutMe } from "@app/components/AboutMe";
 import { Calendar } from "@app/components/Calendar";
-import { Card } from "@app/components/Card";
 import { Chart } from "@app/components/Chart";
+import { Commit } from "@app/components/Commit";
 import { ErrorCom } from "@app/components/Error";
 import { Followers } from "@app/components/Follower";
 import { GitHubCompare } from "@app/components/GitHubCompare";
@@ -57,8 +54,6 @@ const _User = memo(() => {
     },
   });
 
-  const Ele = useColorModeValue(Tranquiluxe, Zenitho);
-
   const isMobile = useIsMobile();
 
   if (loading) return <UserLoading />;
@@ -76,30 +71,11 @@ const _User = memo(() => {
 
   return (
     <Flex flexDirection="column" padding="3" height={{ md: "100%" }} className="tour_about">
-      <Flex padding="2" justifyContent="space-between" alignItems="center">
+      <Flex paddingY="2" justifyContent="space-between" alignItems="center">
         <Avatar name={data.viewer.name} src={data.viewer.avatarUrl} size="xl" boxShadow="md">
           <AvatarBadge bg="green.500" boxSize="0.8em" />
         </Avatar>
-        <Card height="100%" width="60%" overflow="hidden" position="relative">
-          <Box position="absolute" width="100%" height="100%" zIndex="-1">
-            <Ele />
-          </Box>
-          {commit.length ? (
-            commit.map((i) => {
-              return (
-                <Flex key={i.repo} justifyContent="space-between" padding="2" fontSize="smaller">
-                  <Text lineHeight="1.8">
-                    Create <Tag size="sm">{i.commit}</Tag> commit to <Tag size="sm">{i.repo}</Tag>
-                  </Text>
-                </Flex>
-              );
-            })
-          ) : (
-            <Flex alignItems="center" justifyContent="center" height="100%" fontSize="sm">
-              No Recent Commit
-            </Flex>
-          )}
-        </Card>
+        <Commit data={commit} />
       </Flex>
       <Chart marginY="2" className="tour_commit" />
       <Divider marginY="2" />
