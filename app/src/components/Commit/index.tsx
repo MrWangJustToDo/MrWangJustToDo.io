@@ -1,7 +1,7 @@
 import { Box, Flex, useColorModeValue, Text, Tag } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Tranquiluxe, Zenitho } from "uvcanvas";
+import { Lumiflex, Zenitho } from "uvcanvas";
 
 import { Card } from "../Card";
 
@@ -21,7 +21,7 @@ const variants = {
 };
 
 export const Commit = ({ data }: { data: Array<{ repo: string; commit: number }> }) => {
-  const Ele = useColorModeValue(Tranquiluxe, Zenitho);
+  const Ele = useColorModeValue(Lumiflex, Zenitho);
 
   const [index, setIndex] = useState(0);
 
@@ -46,7 +46,7 @@ export const Commit = ({ data }: { data: Array<{ repo: string; commit: number }>
         </Flex>
       )}
       {data.length === 1 && (
-        <Flex justifyContent="space-between" fontSize="smaller" alignContent="center" height="100%">
+        <Flex justifyContent="space-between" fontSize="smaller" alignItems="center" height="100%">
           <Text lineHeight="1.8">
             Create <Tag size="sm">{data[0].commit}</Tag> commit to <Tag size="sm">{data[0].repo}</Tag>
           </Text>
