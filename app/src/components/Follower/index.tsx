@@ -6,8 +6,8 @@ import type { GetViewerQuery } from "@blog/graphql";
 
 const _Followers = ({ data }: { data: GetViewerQuery["viewer"]["followers"]["nodes"] }) => (
   <>
-    {data.map(({ login, name, avatarUrl, id, email, bioHTML }, index) => {
-      return <Follower key={id} id={id} isFirst={index === 0} name={name || login} email={email} bioHTML={bioHTML} avatarUrl={avatarUrl} />;
+    {data.map(({ login, name, avatarUrl, id, email, url, bioHTML }, index) => {
+      return <Follower key={id} id={id} isFirst={index === 0} name={name || login} url={url} email={email} bioHTML={bioHTML} avatarUrl={avatarUrl} />;
     })}
   </>
 );

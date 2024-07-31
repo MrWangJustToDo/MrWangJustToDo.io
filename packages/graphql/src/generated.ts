@@ -25,8 +25,8 @@ export type GetViewerQuery = {
         contributions: { nodes?: Array<{ occurredAt: any; commitCount: number; repository: { name: string } } | null> | null };
       }>;
     };
-    followers: { nodes?: Array<{ id: string; name?: string | null; login: string; email: string; bioHTML: any; avatarUrl: any } | null> | null };
-    following: { nodes?: Array<{ id: string; name?: string | null; login: string; email: string; bioHTML: any; avatarUrl: any } | null> | null };
+    followers: { nodes?: Array<{ id: string; name?: string | null; login: string; email: string; bioHTML: any; url: any; avatarUrl: any } | null> | null };
+    following: { nodes?: Array<{ id: string; name?: string | null; login: string; email: string; bioHTML: any; url: any; avatarUrl: any } | null> | null };
   };
 };
 
@@ -263,6 +263,7 @@ export const GetViewerDocument = {
                             { kind: "Field", name: { kind: "Name", value: "login" } },
                             { kind: "Field", name: { kind: "Name", value: "email" } },
                             { kind: "Field", name: { kind: "Name", value: "bioHTML" } },
+                            { kind: "Field", name: { kind: "Name", value: "url" } },
                             { kind: "Field", name: { kind: "Name", value: "avatarUrl" } },
                           ],
                         },
@@ -290,6 +291,7 @@ export const GetViewerDocument = {
                             { kind: "Field", name: { kind: "Name", value: "login" } },
                             { kind: "Field", name: { kind: "Name", value: "email" } },
                             { kind: "Field", name: { kind: "Name", value: "bioHTML" } },
+                            { kind: "Field", name: { kind: "Name", value: "url" } },
                             { kind: "Field", name: { kind: "Name", value: "avatarUrl" } },
                           ],
                         },

@@ -28,6 +28,7 @@ query getViewer($first: Int = 10, $from: DateTime, $to: DateTime) {
         login
         email
         bioHTML
+        url
         avatarUrl
       }
     }
@@ -38,6 +39,7 @@ query getViewer($first: Int = 10, $from: DateTime, $to: DateTime) {
         login
         email
         bioHTML
+        url
         avatarUrl
       }
     }

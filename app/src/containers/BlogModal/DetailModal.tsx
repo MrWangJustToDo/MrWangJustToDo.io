@@ -2,6 +2,7 @@ import { NetworkStatus, useApolloClient, useQuery } from "@apollo/client";
 import { GetSingleBlogDocument } from "@blog/graphql";
 import { Box, Text, SkeletonText, SkeletonCircle, useCallbackRef, Icon, IconButton, useColorModeValue, HStack, Spacer, Code } from "@chakra-ui/react";
 import { countBy, throttle } from "lodash-es";
+import Head from "next/head";
 import React, { cloneElement, isValidElement, useDeferredValue, useEffect, useMemo } from "react";
 import { AiOutlineReload } from "react-icons/ai";
 import Markdown from "react-markdown";
@@ -100,6 +101,15 @@ export const DetailModalBody = ({ id }: { id: string }) => (
     Render={({ data }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const reactions = useMemo(() => countBy(data?.repository?.issue?.reactions?.nodes, (i) => i.content), [data]);
+
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const theme = useColorModeValue("light", "dark");
+
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const sourceName = useBlogSource((s) => s.sourceName);
+
+      const isBlog = sourceName === "Blog";
+
       if (data?.repository?.issue) {
         return (
           <>
@@ -160,6 +170,32 @@ export const DetailModalBody = ({ id }: { id: string }) => (
               </HStack>
             </Card>
             <Comment data={data.repository.issue.comments.nodes} />
+            {isBlog && (
+              <>
+                <Head>
+                  <meta property="og:title" content={`blog=${id}`} />
+                </Head>
+                <Card padding="2" marginY="2" backgroundColor="initial">
+                  <script
+                    src="https://giscus.app/client.js"
+                    data-repo="MrWangJustToDo/MrWangJustToDo.io"
+                    data-repo-id="MDEwOlJlcG9zaXRvcnkzODg0MDA4ODM="
+                    data-category="Announcements"
+                    data-category-id="DIC_kwDOFyaG884ChSrZ"
+                    data-mapping="og:title"
+                    data-strict="0"
+                    data-reactions-enabled="1"
+                    data-emit-metadata="0"
+                    data-input-position="top"
+                    data-theme={theme}
+                    data-lang="zh-CN"
+                    data-loading="lazy"
+                    crossOrigin="anonymous"
+                    async
+                  />
+                </Card>
+              </>
+            )}
           </>
         );
       } else {
@@ -191,7 +227,7 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
       const colorScheme = useColorModeValue("blackAlpha", "gray");
 
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const isLoaded = useDeferredValue(data?.repository?.issue?.title)
+      const isLoaded = useDeferredValue(data?.repository?.issue?.title);
 
       const refetch = () =>
         client.refetchQueries({

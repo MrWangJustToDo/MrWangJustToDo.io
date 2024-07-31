@@ -5,6 +5,7 @@ import { Hover } from "../Hover";
 
 type FollowerProps = {
   id: string;
+  url: string;
   name: string;
   email?: string;
   isFirst: boolean;
@@ -12,7 +13,7 @@ type FollowerProps = {
   avatarUrl: string;
 };
 
-export const Follower = ({ isFirst, name, email, avatarUrl, bioHTML }: FollowerProps) => {
+export const Follower = ({ isFirst, url, name, email, avatarUrl, bioHTML }: FollowerProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Hover>
@@ -51,6 +52,8 @@ export const Follower = ({ isFirst, name, email, avatarUrl, bioHTML }: FollowerP
           onMouseLeave={onClose}
           border="4px solid white"
           boxShadow="md"
+          cursor="pointer"
+          onClick={() => window.open(url, "_blank")}
           marginTop={!isFirst ? "-3" : "0"}
         />
       </Tooltip>

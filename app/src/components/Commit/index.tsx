@@ -1,7 +1,9 @@
 import { Box, Flex, useColorModeValue, Text, Tag } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Lumiflex, Zenitho } from "uvcanvas";
+
+import { useDomSize } from "@app/hooks/useSize";
 
 import { Card } from "../Card";
 
@@ -23,6 +25,10 @@ const variants = {
 export const Commit = ({ data }: { data: Array<{ repo: string; commit: number }> }) => {
   const Ele = useColorModeValue(Lumiflex, Zenitho);
 
+  const ref = useRef<HTMLDivElement>();
+
+  const { width, height } = useDomSize({ ref });
+
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -37,8 +43,8 @@ export const Commit = ({ data }: { data: Array<{ repo: string; commit: number }>
 
   return (
     <Card height="100%" width="60%" overflow="hidden" transform="translateZ(0px)" px="2">
-      <Box position="fixed" width="100%" height="100%" zIndex="-1" top="0" left="0">
-        <Ele />
+      <Box position="fixed" width="100%" height="100%" zIndex="-1" top="0" left="0" ref={ref}>
+        <Ele key={width + ":" + height} />
       </Box>
       {data.length === 0 && (
         <Flex alignItems="center" justifyContent="center" height="100%" fontSize="sm">
