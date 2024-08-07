@@ -11,8 +11,6 @@ import { DiffLayout } from "./DiffLayout";
 export const DiffView = () => {
   const { loading, list } = useGitHubCompareSourceList((s) => ({ list: s.list, data: s.data, loading: s.loading }));
 
-  console.log(loading, list);
-
   if (loading) {
     return <Skeleton height="300px" />;
   }

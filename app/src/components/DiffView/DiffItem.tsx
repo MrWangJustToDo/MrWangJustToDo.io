@@ -80,7 +80,7 @@ export const DiffItem = ({
     const ele = boxRef.current;
     const a = new Promise<void>((r) => {
       if (ele) {
-        smoothScroll(ele, { behavior: "smooth", block: "start" }).then(r);
+        smoothScroll(ele, { behavior: "instant", block: "start" }).then(r);
       } else {
         r();
       }

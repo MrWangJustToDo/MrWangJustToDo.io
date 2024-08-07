@@ -123,7 +123,7 @@ export const DiffAside = () => {
   useEffect(() => {
     if (select) {
       const ele = document.querySelector(`[data-file="${select.data.id}"]`) as HTMLElement;
-      ele && smoothScroll(ele, { behavior: "smooth", block: "start" });
+      ele && smoothScroll(ele, { behavior: "instant", block: "start" });
       ele && setSelectKey(select.data.id);
     }
   }, [select]);
