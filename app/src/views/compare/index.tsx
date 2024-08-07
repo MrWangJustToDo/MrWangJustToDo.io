@@ -1,4 +1,5 @@
 import { Container, Text, Link, Flex, Heading, Box, Tooltip } from "@chakra-ui/react";
+import { version } from "@git-diff-view/react";
 
 import { Card } from "@app/components/Card";
 import { DiffLink } from "@app/components/DiffLink";
@@ -17,7 +18,7 @@ export const Page = () => {
           <Text marginX="2">power by</Text>
         </small>
         <small>
-          <Tooltip label={`Go to @git-diff-view project`} placement="top" hasArrow>
+          <Tooltip label={`Go to @git-diff-view project, version: ${version}`} placement="top" hasArrow>
             <Link color="purple.500" href="https://github.com/MrWangJustToDo/git-diff-view" target="_blank" textDecoration="underline" textUnderlineOffset={4}>
               @git-diff-view
             </Link>

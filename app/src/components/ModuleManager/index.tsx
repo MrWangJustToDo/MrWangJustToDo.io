@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { OverlayArrayContext, OverlayCloseContext, OverlayOpenContext, useOverlaysProps } from "@app/hooks/useOverlay";
 
 import { DesktopOverlay } from "./DesktopOverlay";
+import { GlobalModal } from "./GlobalModal";
 import { MobileOverlay } from "./MobileOverlay";
 
 export const ModuleManager = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
@@ -22,7 +23,7 @@ export const ModuleManager = ({ children }: { children: JSX.Element | JSX.Elemen
     <OverlayArrayContext.Provider value={overlaysObj}>
       <OverlayCloseContext.Provider value={close}>
         <OverlayOpenContext.Provider value={open}>
-          {children}
+          <GlobalModal>{children}</GlobalModal>
           <Portal>
             <MobileOverlay />
             <DesktopOverlay />

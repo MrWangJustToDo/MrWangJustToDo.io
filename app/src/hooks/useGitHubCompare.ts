@@ -1,11 +1,17 @@
 import { useCallbackRef } from "@chakra-ui/react";
 import { omit } from "lodash-es";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+
+import { useIsMobile } from "./useIsMobile";
 
 export const useGitHubCompare = () => {
   const { query, push, pathname } = useRouter();
 
+  const isMobile = useIsMobile();
+
   const isModalOpen = query.overlay === "open";
+  
   const isGitHub = query.playGround === "GitHub";
 
   const onOpen = useCallbackRef(() => {
@@ -36,6 +42,13 @@ export const useGitHubCompare = () => {
     );
   });
 
-  return { isOpen: isModalOpen && isGitHub, onOpen, onClose };
-};
+  const isOpen = isModalOpen && isGitHub;
 
+  useEffect(() => {
+    if (isMobile && isOpen) {
+      onClose();
+    }
+  }, [isMobile, isOpen, onClose]);
+
+  return { isOpen, onOpen, onClose };
+};
