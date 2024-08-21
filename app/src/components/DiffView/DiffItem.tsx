@@ -12,6 +12,7 @@ import {
   useOutsideClick,
   usePrevious,
   useSafeLayoutEffect,
+  useToast,
 } from "@chakra-ui/react";
 import { DiffFile } from "@git-diff-view/core";
 import { DiffView } from "@git-diff-view/react";
@@ -19,7 +20,7 @@ import { smoothScroll } from "@reactour/utils";
 import { useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
-import { PiArrowsInLineVerticalBold, PiArrowsOutLineVerticalBold } from "react-icons/pi";
+import { PiArrowsInLineVerticalBold, PiArrowsOutLineVerticalBold, PiShareNetworkBold } from "react-icons/pi";
 
 import { useGitHubCompareSourceSelect, type GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
 import { useDomSize } from "@app/hooks/useSize";
@@ -30,7 +31,7 @@ import type { RefObject } from "react";
 
 const loadContent = async (url: string) => {
   const res = await axiosClient.get(url);
-  return res?.data?.content;
+  return res?.data;
 };
 
 export const DiffItem = ({
@@ -44,6 +45,8 @@ export const DiffItem = ({
 }) => {
   const [diffFile, setDiffFile] = useState<DiffFile>();
 
+  const toast = useToast();
+
   const { isOpen, onToggle: _onToggle, onOpen: _onOpen } = useDisclosure({ defaultIsOpen: true });
 
   const { key, setKey } = useGitHubCompareSourceSelect();
@@ -55,6 +58,8 @@ export const DiffItem = ({
   const previousExpand = usePrevious(expandAll);
 
   const [content, setContent] = useState<string>();
+
+  const [link, setLink] = useState("");
 
   // const [done, setDone] = useState(false);
 
@@ -104,9 +109,16 @@ export const DiffItem = ({
 
   useEffect(() => {
     if (isOpen && !content && item.patch) {
-      loadContent(item.contents_url).then((res: string) => setContent(atob(res)));
+      loadContent(item.contents_url).then((res: { content: string; html_url: string; encoding: string }) => {
+        if (res.encoding === "base64") {
+          setContent(atob(res.content));
+        } else {
+          toast({ title: "Error", description: "Not support encoding", status: "error" });
+        }
+        setLink(res.html_url);
+      });
     }
-  }, [item, isOpen, content]);
+  }, [item.patch, item.contents_url, isOpen, content, toast]);
 
   useEffect(() => {
     const id = Math.random();
@@ -223,11 +235,12 @@ export const DiffItem = ({
                     aria-label="expand"
                     icon={<Icon as={expandAll ? PiArrowsInLineVerticalBold : PiArrowsOutLineVerticalBold} color="gray.500" />}
                     size="sm"
-                    display={diffFile.hasSomeLineCollapsed ? "block" : "none"}
+                    display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
                     onClick={onExpandToggle}
                   />
                 )
               ) : null}
+              {link && <IconButton aria-label="open" icon={<Icon as={PiShareNetworkBold} color="gray.500" />} size="sm" onClick={() => window.open(link, "_blank")} />}
             </ButtonGroup>
             <Text as="span" color="gray.500">
               {item.status === "renamed" ? `${item.previous_filename} -> ${item.filename}` : item.filename}
