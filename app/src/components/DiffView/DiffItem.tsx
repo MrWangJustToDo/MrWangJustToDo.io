@@ -139,16 +139,17 @@ export const DiffItem = ({
       hunks: [`--- a \n+++ b \n` + (item.patch.endsWith("\n") ? item.patch : item.patch + "\n")],
     };
 
+    setLoading(true);
+
     workRef.current.postMessage({ id, data });
   }, [item, workRef, content]);
 
   useEffect(() => {
     const cb = (event: MessageEvent<MessageData>) => {
       if (event.data.id === idRef.current) {
+        setLoading(false);
+
         setDiffFile(DiffFile.createInstance(event.data.data, event.data.bundle));
-        if (event.data.data.newFile.fileName) {
-          setLoading(false);
-        }
       }
     };
 
