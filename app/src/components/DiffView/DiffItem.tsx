@@ -108,7 +108,7 @@ export const DiffItem = ({
   }, [scrollToCurrent]);
 
   useEffect(() => {
-    if (isOpen && !content && item.patch) {
+    if (isOpen && !content && item.patch && inView) {
       loadContent(item.contents_url).then((res: { content: string; html_url: string; encoding: string }) => {
         if (res.encoding === "base64") {
           setContent(atob(res.content));
@@ -118,7 +118,7 @@ export const DiffItem = ({
         setLink(res.html_url);
       });
     }
-  }, [item.patch, item.contents_url, isOpen, content, toast]);
+  }, [item.patch, item.contents_url, isOpen, content, toast, inView]);
 
   useEffect(() => {
     const id = Math.random();
@@ -134,7 +134,7 @@ export const DiffItem = ({
     const data: DiffViewProps<unknown>["data"] = {
       newFile: {
         fileName: item.filename,
-        content: content,
+        content: item.status !== "removed" ? content : "",
       },
       hunks: [`--- a \n+++ b \n` + (item.patch.endsWith("\n") ? item.patch : item.patch + "\n")],
     };
@@ -146,7 +146,7 @@ export const DiffItem = ({
     const cb = (event: MessageEvent<MessageData>) => {
       if (event.data.id === idRef.current) {
         setDiffFile(DiffFile.createInstance(event.data.data, event.data.bundle));
-        if (event.data.data.newFile.content) {
+        if (event.data.data.newFile.fileName) {
           setLoading(false);
         }
       }
@@ -240,7 +240,9 @@ export const DiffItem = ({
                   />
                 )
               ) : null}
-              {link && <IconButton aria-label="open" icon={<Icon as={PiShareNetworkBold} color="gray.500" />} size="sm" onClick={() => window.open(link, "_blank")} />}
+              {link && (
+                <IconButton aria-label="open" icon={<Icon as={PiShareNetworkBold} color="gray.500" />} size="sm" onClick={() => window.open(link, "_blank")} />
+              )}
             </ButtonGroup>
             <Text as="span" color="gray.500">
               {item.status === "renamed" ? `${item.previous_filename} -> ${item.filename}` : item.filename}
