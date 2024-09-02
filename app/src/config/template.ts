@@ -2,9 +2,6 @@
 export const tsxTemplate = {
   "script.tsx": `
 
-// MyReact dev highlight
-(window as any).__highlight__ = true;
-
 const { useState, useEffect, memo } = React;
 
 // ==== reactive api, more api see “https://github.com/MrWangJustToDo/MyReact” ==== //
