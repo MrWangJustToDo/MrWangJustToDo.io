@@ -33,7 +33,7 @@
     "lodash-es": "^4.17.21",
     "monaco-editor": "^0.46.0",
     "monaco-jsx-highlighter": "^2.77.77",
-    "next": "^14.2.6",
+    "next": "^12.3.4",
     "next-intl": "^3.19.0",
     "nextjs-progressbar": "^0.0.16",
     "react": "18.2.0",

@@ -6,7 +6,7 @@ import { useGitHubCompareSourceInView, useGitHubCompareSourceList } from "@app/h
 
 import { DiffItem } from "./DiffItem";
 
-import type { GitHubCompareFileListType} from "@app/hooks/useGitHubCompareSource";
+import type { GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
 
 const { setId } = useGitHubCompareSourceInView.getActions();
 

@@ -93,7 +93,6 @@ const nextConfig = {
   // Use the prefix in production and not development.
   assetPrefix: isProd ? "/MrWangJustToDo.io/" : undefined,
   basePath: isProd ? "/MrWangJustToDo.io" : undefined,
-  output: 'export',
   // custom webpack config
   webpack: (config, { isServer, webpack }) => {
     config.plugins.push(
@@ -106,6 +105,7 @@ const nextConfig = {
 
     return config;
   },
+
 };
 
 // TODO not work for worker loader
