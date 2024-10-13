@@ -15,7 +15,6 @@ import {
   ModalHeader,
   ModalOverlay,
   SkeletonText,
-  Tag,
   Text,
   Tooltip,
   useDisclosure,
@@ -23,14 +22,12 @@ import {
 import { AiOutlineReload } from "react-icons/ai";
 import { BiEdit } from "react-icons/bi";
 
-import { useGitHubCompareSource, useGitHubCompareSourceList } from "@app/hooks/useGitHubCompareSource";
+import { useGitHubCompareSource } from "@app/hooks/useGitHubCompareSource";
 
 useGitHubCompareSource.getLifeCycle().syncUpdateComponent = true;
 
 export const DiffLink = ({ url }: { url: string }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const { list, loading } = useGitHubCompareSourceList((s) => ({ list: s.list, loading: s.loading }));
 
   const { owner, setOwner, repo, setRepo, sourceCommit, setSourceCommit, targetCommit, setTargetCommit, setDirty, restore, refresh } = useGitHubCompareSource();
 
@@ -45,11 +42,6 @@ export const DiffLink = ({ url }: { url: string }) => {
         <IconButton aria-label="edit url" icon={<Icon as={BiEdit} />} size="sm" onClick={onOpen} />
         <IconButton aria-label="refresh" icon={<Icon as={AiOutlineReload} />} size="sm" onClick={refresh} />
       </ButtonGroup>
-      {!loading && (
-        <Text marginLeft="10">
-          Total <Tag colorScheme="gray">{list.length}</Tag> files
-        </Text>
-      )}
       <Modal size="2xl" isOpen={isOpen} onClose={onClose} scrollBehavior="inside" onCloseComplete={restore}>
         <ModalOverlay backdropFilter="blur(10px)" />
         <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">

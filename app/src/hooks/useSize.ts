@@ -1,4 +1,4 @@
-import { useCallbackRef } from "@chakra-ui/react";
+import { useCallbackRef, useSafeLayoutEffect } from "@chakra-ui/react";
 import { getRect, inView, smoothScroll } from "@reactour/utils";
 import { debounce } from "lodash-es";
 import { useEffect, useRef, useState, useMemo } from "react";
@@ -35,20 +35,66 @@ export function useDomSize({
   ref,
   cssSelector,
   getEle,
+  delay = 100,
   deps,
 }: {
   ref?: RefObject<HTMLElement> | null;
   cssSelector?: string;
   getEle?: () => HTMLElement;
+  delay?: number;
   deps?: any[];
 }): DOMRectType {
   const getEleRef = useRef(getEle);
 
   getEleRef.current = getEle;
 
-  const [rect, setRect] = useDebouncedState<DOMRectType>(INITIAL_RECT, 100);
+  const [rect, setRect] =  useDebouncedState<DOMRectType>(INITIAL_RECT, delay);
 
   useEffect(() => {
+    const domElement = ref ? ref.current : cssSelector ? document.querySelector(cssSelector) : getEleRef.current?.() || null;
+    if (domElement) {
+      if (window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver(() => {
+          setRect(domElement.getBoundingClientRect());
+        });
+
+        resizeObserver.observe(domElement);
+
+        return () => resizeObserver.disconnect();
+      } else {
+        const handleResize = () => setRect(domElement.getBoundingClientRect());
+
+        handleResize();
+
+        window.addEventListener("resize", handleResize, { passive: true });
+
+        return () => window.removeEventListener("resize", handleResize);
+      }
+    }
+  }, [ref, cssSelector, setRect, ...(deps || temp)]);
+
+  return rect;
+}
+
+export function useSyncDomSize({
+  ref,
+  cssSelector,
+  getEle,
+  deps,
+}: {
+  ref?: RefObject<HTMLElement> | null;
+  cssSelector?: string;
+  getEle?: () => HTMLElement;
+  layout?: boolean;
+  deps?: any[];
+}): DOMRectType {
+  const getEleRef = useRef(getEle);
+
+  getEleRef.current = getEle;
+
+  const [rect, setRect] = useState(INITIAL_RECT);
+
+  useSafeLayoutEffect(() => {
     const domElement = ref ? ref.current : cssSelector ? document.querySelector(cssSelector) : getEleRef.current?.() || null;
     if (domElement) {
       if (window.ResizeObserver) {

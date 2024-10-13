@@ -6,7 +6,7 @@ import { FaFile, FaFolder, FaFolderOpen } from "react-icons/fa";
 import { VscDiffAdded, VscDiffModified, VscDiffRemoved, VscDiffRenamed } from "react-icons/vsc";
 
 import { useGitHubCompareSourceInView, useGitHubCompareSourceList, useGitHubCompareSourceSelect } from "@app/hooks/useGitHubCompareSource";
-import { useDomSize } from "@app/hooks/useSize";
+import { useDomSize, useSyncDomSize } from "@app/hooks/useSize";
 import { useTruncateText } from "@app/hooks/useTruncateText";
 
 import { Card } from "../Card";
@@ -64,7 +64,7 @@ const RenderStateIcon = ({ data }: { data: GitHubCompareFileListType }) => {
 const RenderItem = ({ node, select }: { node: NodeApi<TreeViewData>; select?: NodeApi<TreeViewData> }) => {
   const ref = useRef<HTMLDivElement>();
 
-  const container = useDomSize({ ref });
+  const container = useSyncDomSize({ ref });
 
   const { textToDisplay, maxWidth } = useTruncateText({ text: node.data.name, container });
 
@@ -116,7 +116,7 @@ export const DiffAside = () => {
 
   const ref = useRef<HTMLDivElement>();
 
-  const { width } = useDomSize({ ref });
+  const { width } = useDomSize({ ref, delay: 16 });
 
   selectRef.current = select;
 
@@ -175,7 +175,7 @@ export const DiffAside = () => {
   }, []);
 
   return (
-    <Card boxShadow="none" padding="2" className="group" position="sticky" top="2" overflow="hidden">
+    <Card boxShadow="none" padding="2" marginTop="2" className="group" position="sticky" top="2" overflow="hidden">
       <Box ref={ref} data-width={width} sx={{ [`& [data-id="${id}"]`]: { backgroundColor: "blackAlpha.200" } }}>
         <Tree<TreeViewData>
           ref={treeRef}

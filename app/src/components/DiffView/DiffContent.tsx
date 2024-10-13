@@ -1,10 +1,15 @@
-import { Flex, useCallbackRef } from "@chakra-ui/react";
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { Flex, HStack, useCallbackRef } from "@chakra-ui/react";
 import { debounce } from "lodash";
 import { memo, useLayoutEffect, useMemo, useRef } from "react";
 
 import { useGitHubCompareSourceInView, useGitHubCompareSourceList } from "@app/hooks/useGitHubCompareSource";
+import { useDomSize } from "@app/hooks/useSize";
 
+import { DiffAsideCompose } from "./DiffAsideCompose";
+import { DiffFileCount } from "./DiffFileCount";
 import { DiffItem } from "./DiffItem";
+import { DiffViewSetting } from "./DIffViewSetting";
 
 import type { GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
 
@@ -14,6 +19,10 @@ const _DiffContent = memo(() => {
   const list = useGitHubCompareSourceList((s) => s.list);
 
   const workRef = useRef<Worker>();
+
+  const ref = useRef<HTMLDivElement>();
+
+  const { height } = useDomSize({ ref });
 
   useLayoutEffect(() => {
     workRef.current = new Worker(new URL("@app/worker/diffView.worker", import.meta.url));
@@ -46,11 +55,31 @@ const _DiffContent = memo(() => {
   const autoSetCurrentInView = useMemo(() => debounce(autoSetCurrent, 60), [autoSetCurrent]);
 
   return (
-    <Flex display="flex" flexDirection="column" rowGap="4">
-      {list.map((item) => (
-        <DiffItem key={item.filename} item={item} workRef={workRef} autoSetCurrentInView={autoSetCurrentInView} />
-      ))}
-    </Flex>
+    <>
+      <Flex
+        position="sticky"
+        top="0"
+        justifyContent="space-between"
+        ref={ref}
+        paddingY="2"
+        paddingX="2px"
+        alignItems="center"
+        zIndex="banner"
+        backgroundColor="mobileCardBackgroundColor"
+      >
+        <HStack spacing="2">
+          <DiffAsideCompose />
+          <DiffFileCount />
+        </HStack>
+        <DiffViewSetting />
+      </Flex>
+      {/* @ts-ignore */}
+      <Flex display="flex" flexDirection="column" rowGap="4" style={{ ["--sticky-top"]: `${height}px` }}>
+        {list.map((item) => (
+          <DiffItem key={item.filename} item={item} workRef={workRef} autoSetCurrentInView={autoSetCurrentInView} />
+        ))}
+      </Flex>
+    </>
   );
 });
 

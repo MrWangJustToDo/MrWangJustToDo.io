@@ -3,6 +3,8 @@ import { css, Global } from "@emotion/react";
 import { useEffect, useState, type ReactNode } from "react";
 import ReactSplit from "react-split";
 
+import { useDiffAsideCompose } from "@app/hooks/useDiffAsideCompose";
+
 const style = css`
   .split {
     display: flex;
@@ -11,6 +13,7 @@ const style = css`
     flex: 1;
     flex-shrink: 0;
     margin-left: 2px;
+    margin-top: var(--chakra-space-2);
     border-radius: 9999px;
     background-color: rgba(100, 145, 240, 0.05);
     transition: background-color 200ms;
@@ -31,11 +34,15 @@ const style = css`
 export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: ReactNode }) => {
   const [el, setEl] = useState<HTMLDivElement>();
 
+  const state = useDiffAsideCompose((s) => s.state);
+
   useEffect(() => {
     if (el) {
       el.classList.add("gutter");
     }
   }, [el]);
+
+  if (state) return content;
 
   return (
     <>

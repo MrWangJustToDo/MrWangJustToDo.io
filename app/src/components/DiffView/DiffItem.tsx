@@ -23,6 +23,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { PiArrowsInLineVerticalBold, PiArrowsOutLineVerticalBold, PiShareNetworkBold } from "react-icons/pi";
 
+import { DiffViewSize, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 import { useGitHubCompareSourceSelect, type GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
 import { useDomSize } from "@app/hooks/useSize";
 
@@ -192,6 +193,10 @@ export const DiffItem = ({
     autoSetCurrentInView();
   }, [inView, autoSetCurrentInView]);
 
+  const { wrap, highlight, mode, size } = useDiffViewConfig();
+
+  const diffSize = size === DiffViewSize.Small ? 11.5 : size === DiffViewSize.Medium ? 13 : 15;
+
   let Ele = null;
 
   if (item.patch && !diffFile) {
@@ -199,7 +204,21 @@ export const DiffItem = ({
   } else {
     Ele = (
       <>
-        <Box position="sticky" top="0" zIndex="sticky">
+        <Box
+          position="sticky"
+          top={"var(--sticky-top)"}
+          zIndex="sticky"
+          _before={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            content: '""',
+            top: 0,
+            left: 0,
+            pointerEvents: "none",
+            backgroundColor: "mobileCardBackgroundColor",
+          }}
+        >
           <Flex
             paddingX="4"
             paddingY="1"
@@ -208,6 +227,8 @@ export const DiffItem = ({
             overflow="hidden"
             alignItems="center"
             border="1px"
+            position="relative"
+            zIndex="1"
             borderColor="cardBorderColor"
             backgroundColor="mobileCardBackgroundColor"
           >
@@ -272,7 +293,7 @@ export const DiffItem = ({
         >
           <div ref={ref} data-height={height}>
             {diffFile ? (
-              <DiffView diffFile={diffFile} diffViewHighlight diffViewWrap diffViewFontSize={12} />
+              <DiffView diffFile={diffFile} diffViewHighlight={highlight} diffViewWrap={wrap} diffViewMode={mode} diffViewFontSize={diffSize} />
             ) : (
               <Text textAlign="center" padding="2">
                 Empty

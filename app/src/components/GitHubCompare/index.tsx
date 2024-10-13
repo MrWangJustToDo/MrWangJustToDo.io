@@ -29,7 +29,7 @@ export const GitHubCompareModal = () => {
     <Modal size="full" isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
       <ModalOverlay backdropFilter="blur(10px)" />
       <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">
-        <ModalCloseButton />
+        <ModalCloseButton zIndex="overlay" />
         <ModalBody paddingY="0" data-id="diff-view-body">
           <Page />
         </ModalBody>
