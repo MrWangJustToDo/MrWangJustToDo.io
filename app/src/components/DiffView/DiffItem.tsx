@@ -8,6 +8,7 @@ import {
   Skeleton,
   StatDownArrow,
   Text,
+  useColorModeValue,
   useDisclosure,
   useOutsideClick,
   usePrevious,
@@ -70,6 +71,8 @@ export const DiffItem = ({
   const boxRef = useRef<HTMLDivElement>();
 
   const containerRef = useRef<HTMLDivElement>();
+
+  const theme = useColorModeValue("light", "dark");
 
   useSafeLayoutEffect(() => {
     containerRef.current = document.querySelector("[data-id=diff-view-body]");
@@ -141,8 +144,8 @@ export const DiffItem = ({
 
     setLoading(true);
 
-    workRef.current.postMessage({ id, data });
-  }, [item, workRef, content]);
+    workRef.current.postMessage({ id, data, theme });
+  }, [item, workRef, content, theme]);
 
   useEffect(() => {
     const cb = (event: MessageEvent<MessageData>) => {
@@ -200,13 +203,13 @@ export const DiffItem = ({
           <Flex
             paddingX="4"
             paddingY="1"
-            backgroundColor="white"
             borderTopRadius="md"
             borderRadius={isOpen ? undefined : "md"}
             overflow="hidden"
             alignItems="center"
             border="1px"
-            borderColor="gray.200"
+            borderColor="cardBorderColor"
+            backgroundColor="mobileCardBackgroundColor"
           >
             <ButtonGroup variant="ghost" marginRight="3" spacing="1">
               <IconButton
@@ -214,7 +217,7 @@ export const DiffItem = ({
                 icon={
                   <Icon
                     as={StatDownArrow}
-                    color="gray.500"
+                    color="lightTextColor"
                     transformOrigin="center"
                     transition="transform 0.2s ease-in-out"
                     transform={isOpen ? "rotate(0deg)" : "rotate(-90deg)"}
@@ -226,7 +229,7 @@ export const DiffItem = ({
               {item.patch ? (
                 loading ? (
                   <IconButton
-                    icon={<Icon as={AiOutlineLoading} color="gray.500" animation="1s linear 0s infinite loading" />}
+                    icon={<Icon as={AiOutlineLoading} color="lightTextColor" animation="1s linear 0s infinite loading" />}
                     aria-label="loading"
                     as="div"
                     size="sm"
@@ -234,7 +237,7 @@ export const DiffItem = ({
                 ) : (
                   <IconButton
                     aria-label="expand"
-                    icon={<Icon as={expandAll ? PiArrowsInLineVerticalBold : PiArrowsOutLineVerticalBold} color="gray.500" />}
+                    icon={<Icon as={expandAll ? PiArrowsInLineVerticalBold : PiArrowsOutLineVerticalBold} color="lightTextColor" />}
                     size="sm"
                     display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
                     onClick={onExpandToggle}
@@ -242,10 +245,15 @@ export const DiffItem = ({
                 )
               ) : null}
               {link && (
-                <IconButton aria-label="open" icon={<Icon as={PiShareNetworkBold} color="gray.500" />} size="sm" onClick={() => window.open(link, "_blank")} />
+                <IconButton
+                  aria-label="open"
+                  icon={<Icon as={PiShareNetworkBold} color="lightTextColor" />}
+                  size="sm"
+                  onClick={() => window.open(link, "_blank")}
+                />
               )}
             </ButtonGroup>
-            <Text as="span" color="gray.500">
+            <Text as="span" color="lightTextColor">
               {item.status === "renamed" ? `${item.previous_filename} -> ${item.filename}` : item.filename}
             </Text>
           </Flex>
@@ -258,7 +266,7 @@ export const DiffItem = ({
           marginTop="-1px"
           border="1px"
           borderTop="none"
-          borderColor="gray.200"
+          borderColor="cardBorderColor"
           overflow="hidden"
           // onTransitionEndCapture={() => setDone(true)}
         >

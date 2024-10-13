@@ -97,15 +97,15 @@ export const Item = ({
       </SkeletonText>
       <Spacer marginY="2" />
       <Flex justifySelf="right" width="full" justifyContent={singleModel ? "space-between" : "space-around"}>
-        <Button variant="outline" colorScheme="telegram" onClick={onOpenReadme}>
+        <Button variant="outline" colorScheme="blue" onClick={onOpenReadme}>
           Readme
         </Button>
         {singleModel && (
-          <Button variant="outline" colorScheme="whatsapp" as={Link} href={data?.repository?.url} target="_blank">
+          <Button variant="outline" colorScheme="cyan" as={Link} href={data?.repository?.url} target="_blank">
             Github
           </Button>
         )}
-        <Button variant="outline" colorScheme="facebook" onClick={onOpenPreview}>
+        <Button variant="outline" colorScheme="green" onClick={onOpenPreview}>
           Preview
         </Button>
       </Flex>

@@ -4,6 +4,7 @@ import type { DiffViewProps } from "@git-diff-view/react";
 
 export type MessageData = {
   id: number;
+  theme?: 'light' | 'dark';
   data: DiffViewProps<any>["data"];
   bundle: ReturnType<DiffFile["_getFullBundle"]>;
 };
@@ -26,6 +27,8 @@ onmessage = (event: MessageEvent<MessageData>) => {
     data?.oldFile?.fileLang || "",
     data?.newFile?.fileLang || "",
   );
+
+  file.initTheme(_data.theme);
 
   file.init();
 

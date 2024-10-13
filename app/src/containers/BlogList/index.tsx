@@ -71,14 +71,14 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
       <IconButton icon={collapse ? <FaChevronLeft /> : <FaChevronRight />} aria-label="collapse" onClick={toggle} size={{ base: "sm", lg: "md" }} />
       <Box transitionProperty="width" transitionDuration="0.3s" width={collapse ? "0px" : width} overflow="hidden">
         <ButtonGroup ref={ref}>
-          <Button colorScheme="facebook" textTransform="capitalize" onClick={() => props.onRefresh()} size={{ base: "sm", lg: "md" }}>
+          <Button colorScheme="teal" textTransform="capitalize" onClick={() => props.onRefresh()} size={{ base: "sm", lg: "md" }}>
             refresh
           </Button>
           <GridLayoutButton />
           <Box>
             <Menu>
               <MenuButton
-                colorScheme="facebook"
+                colorScheme="blue"
                 textTransform="capitalize"
                 as={Button}
                 minWidth="14em"

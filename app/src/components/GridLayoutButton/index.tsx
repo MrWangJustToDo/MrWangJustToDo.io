@@ -5,7 +5,7 @@ import { useGridLayout } from "@app/hooks/useGridLayout";
 export const GridLayoutButton = () => {
   const { state, toggle } = useGridLayout();
   return (
-    <Button colorScheme="facebook" textTransform="capitalize" display={{ base: "none", lg: "block" }} minWidth="12em" onClick={toggle}>
+    <Button colorScheme="cyan" textTransform="capitalize" display={{ base: "none", lg: "block" }} minWidth="12em" onClick={toggle}>
       {!state ? "disable gridLayout" : "enable gridLayout"}
     </Button>
   );

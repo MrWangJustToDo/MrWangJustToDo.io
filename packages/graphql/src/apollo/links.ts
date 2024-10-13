@@ -32,7 +32,7 @@ export const onErrorLink = onError(({ networkError, graphQLErrors }) => {
   }
   if (graphQLErrors?.length) {
     graphQLErrors.forEach((error) => {
-      console.error(`graphql error \n[message]: ${error.message} \n[stack]: ${error.stack}`);
+      console.error(`graphql error \n[message]: ${error.message} \n[path]: ${error.path}`);
     });
   }
 });

@@ -1,5 +1,5 @@
-import { Box, CloseButton, Link, List, ListIcon, ListItem, SimpleGrid, SkeletonText, useUnmountEffect } from "@chakra-ui/react";
-import { AnimatePresence, motion, useInView } from "framer-motion";
+import { Box, CloseButton, Link, List, ListIcon, ListItem, SimpleGrid, SkeletonText } from "@chakra-ui/react";
+import { AnimatePresence, motion, useInView, useUnmountEffect } from "framer-motion";
 import { memo, useEffect, useRef, useState } from "react";
 import { BiLinkExternal } from "react-icons/bi";
 
@@ -99,7 +99,7 @@ const _LeetCodeContent = () => {
 
   const selectContent = useLeetCodeSelectId((s) => s.state);
 
-  useUnmountEffect(() => set(undefined), []);
+  useUnmountEffect(() => set(undefined));
 
   if (loading) return <LeetCodeListLoading />;
 
