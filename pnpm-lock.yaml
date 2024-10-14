@@ -153,11 +153,11 @@ importers:
         specifier: ^11.13.0
         version: 11.13.0(@emotion/react@11.13.3)(@types/react@18.2.79)(react@18.2.0)
       '@git-diff-view/core':
-        specifier: ^0.0.17
-        version: 0.0.17
+        specifier: ^0.0.18
+        version: 0.0.18
       '@git-diff-view/react':
-        specifier: ^0.0.17
-        version: 0.0.17(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^0.0.18
+        version: 0.0.18(react-dom@18.2.0)(react@18.2.0)
       '@monaco-editor/react':
         specifier: ^4.6.0
         version: 4.6.0(monaco-editor@0.46.0)(react-dom@18.2.0)(react@18.2.0)
@@ -2835,30 +2835,30 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@git-diff-view/core@0.0.17:
-    resolution: {integrity: sha512-aEdH+4FBgp8trEzgbwpRDKVV+T6VE4tHNlzH4X4WXWQSru99pv3ZK7JPEunjpFL2RpjYwlv12XTo60Q8YJQ9bQ==}
+  /@git-diff-view/core@0.0.18:
+    resolution: {integrity: sha512-JGUbI1CugxWFGvNl1LEtz0PY+5GOHtubJejj6h2JwWTnKCq0qOv0cN0d0DcCp+Fb9pSMh20vu6V30DitffvEiw==}
     dependencies:
-      '@git-diff-view/lowlight': 0.0.17
+      '@git-diff-view/lowlight': 0.0.18
       fast-diff: 1.3.0
       highlight.js: 11.9.0
       lowlight: 3.1.0
     dev: false
 
-  /@git-diff-view/lowlight@0.0.17:
-    resolution: {integrity: sha512-NEKz3+O8x59tJRPxv9ky43LPAyYFy8JjvNRDxc4JIyYt993zg4O14vqCa1ZJ5LegHY/ZrtgmaWXQFZbhG+G0IQ==}
+  /@git-diff-view/lowlight@0.0.18:
+    resolution: {integrity: sha512-ykZ/5K9dAmqIegmABNwtpUIOj9beD5Y6qceysfnDqjq75czoirkDTWs0rFNuz5F9a/G2yupafHgXijHa6LNvlg==}
     dependencies:
       '@types/hast': 3.0.4
       highlight.js: 11.9.0
       lowlight: 3.1.0
     dev: false
 
-  /@git-diff-view/react@0.0.17(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-7DnD61z+n7dVK+28Mt/e5m7K/GideONFwr8iQq92E88J0nuoPyi1ejAVQ43RJxREAcg4tUQRg+XeF8jgxe72aw==}
+  /@git-diff-view/react@0.0.18(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-gSyiSUpbEhe5GFjklyMf50xkcKXu5+w+5oGLybh9tHJX6VZubG/wHU6ruLqGoMrU+k85nXd/uA4gz8H4pVzsAg==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
-      '@git-diff-view/core': 0.0.17
+      '@git-diff-view/core': 0.0.18
       '@types/hast': 3.0.4
       fast-diff: 1.3.0
       highlight.js: 11.9.0
@@ -7027,7 +7027,7 @@ packages:
       eslint: '*'
       eslint-plugin-import: '*'
     dependencies:
-      debug: 4.3.4
+      debug: 4.3.6
       enhanced-resolve: 5.15.0
       eslint: 8.57.0
       eslint-module-utils: 2.8.0(@typescript-eslint/parser@6.21.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
