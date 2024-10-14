@@ -17,7 +17,6 @@ import {
 } from "@chakra-ui/react";
 import { DiffFile } from "@git-diff-view/core";
 import { DiffView } from "@git-diff-view/react";
-import { smoothScroll } from "@reactour/utils";
 import { useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
@@ -26,6 +25,7 @@ import { PiArrowsInLineVerticalBold, PiArrowsOutLineVerticalBold, PiShareNetwork
 import { DiffViewSize, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 import { useGitHubCompareSourceSelect, type GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
 import { useDomSize } from "@app/hooks/useSize";
+import { base64ToString } from "@app/utils/text";
 
 import type { MessageData } from "@app/worker/diffView.worker";
 import type { DiffViewProps } from "@git-diff-view/react";
@@ -39,10 +39,12 @@ const loadContent = async (url: string) => {
 export const DiffItem = ({
   item,
   workRef,
+  stickyHeight,
   autoSetCurrentInView,
 }: {
   item: GitHubCompareFileListType;
   workRef: RefObject<Worker>;
+  stickyHeight: number;
   autoSetCurrentInView: () => void;
 }) => {
   const [diffFile, setDiffFile] = useState<DiffFile>();
@@ -79,7 +81,7 @@ export const DiffItem = ({
     containerRef.current = document.querySelector("[data-id=diff-view-body]");
   }, []);
 
-  const inView = useInView(boxRef, { root: containerRef, amount: "some" });
+  const inView = useInView(boxRef, { root: containerRef, amount: "some", margin: `-${stickyHeight}px 0px 0px 0px` });
 
   const { height } = useDomSize({ ref, deps: [diffFile] });
 
@@ -89,13 +91,14 @@ export const DiffItem = ({
     const ele = boxRef.current;
     const a = new Promise<void>((r) => {
       if (ele) {
-        smoothScroll(ele, { behavior: "instant", block: "start" }).then(r);
+        containerRef.current.scrollTo({ top: ele.offsetTop - stickyHeight - 2 });
+        r();
       } else {
         r();
       }
     });
     return a;
-  }, []);
+  }, [stickyHeight]);
 
   const onToggle = useCallback(() => {
     // setDone(false);
@@ -115,7 +118,7 @@ export const DiffItem = ({
     if (isOpen && !content && item.patch && inView) {
       loadContent(item.contents_url).then((res: { content: string; html_url: string; encoding: string }) => {
         if (res.encoding === "base64") {
-          setContent(atob(res.content));
+          setContent(base64ToString(res.content));
         } else {
           toast({ title: "Error", description: "Not support encoding", status: "error" });
         }
@@ -311,8 +314,20 @@ export const DiffItem = ({
       data-file={item.filename}
       data-in-view={inView}
       margin="2px"
+      position="relative"
       borderRadius="md"
-      boxShadow={key === item.filename ? "0 0 2px rgba(60, 200, 255, 1)" : undefined}
+      _after={{
+        content: '""',
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        top: 0,
+        left: 0,
+        zIndex: "sticky",
+        pointerEvents: "none",
+        borderRadius: "md",
+        boxShadow: key === item.filename ? "0 0 2px rgba(60, 200, 255, 1)" : undefined,
+      }}
     >
       {Ele}
     </Box>

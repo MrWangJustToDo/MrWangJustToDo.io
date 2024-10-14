@@ -7,11 +7,11 @@ function truncateMid(value: string, length: number) {
   }
 
   if (length <= 0) {
-    return '';
+    return "";
   }
 
   if (length === 1) {
-    return '…';
+    return "…";
   }
 
   const mid = (length - 1) / 2;
@@ -27,14 +27,14 @@ function truncatePath(path: string, length: number) {
   }
 
   if (length <= 0) {
-    return '';
+    return "";
   }
 
   if (length === 1) {
-    return '…';
+    return "…";
   }
 
-  const lastSeparator = path.lastIndexOf('/');
+  const lastSeparator = path.lastIndexOf("/");
 
   // No directory prefix, fall back to middle ellipsis
   if (lastSeparator === -1) {
@@ -56,12 +56,12 @@ function truncatePath(path: string, length: number) {
 }
 
 class TruncateText {
-  private key: string = '';
+  private key: string = "";
 
   private map: Record<string, string> = {};
 
   getInstance(): CanvasRenderingContext2D {
-    canvasCtx = canvasCtx || document.createElement('canvas').getContext('2d');
+    canvasCtx = canvasCtx || document.createElement("canvas").getContext("2d");
     return canvasCtx!;
   }
 
@@ -75,10 +75,10 @@ class TruncateText {
       const currentFontKey = `${font.fontFamily}-${font.fontStyle}-${font.fontSize}`;
       if (this.key !== currentFontKey) {
         this.key = currentFontKey;
-        instance.font = `${font.fontStyle || ''} ${font.fontSize || ''} ${font.fontFamily || ''}`;
+        instance.font = `${font.fontStyle || ""} ${font.fontSize || ""} ${font.fontFamily || ""}`;
       }
     } else {
-      instance.font = '';
+      instance.font = "";
     }
     const textWidth = instance.measureText(text).width;
     const textLength = text.length;
@@ -100,10 +100,10 @@ class TruncateText {
       const currentFontKey = `${font.fontFamily}-${font.fontStyle}-${font.fontSize}`;
       if (this.key !== currentFontKey) {
         this.key = currentFontKey;
-        instance.font = `${font.fontStyle || ''} ${font.fontSize || ''} ${font.fontFamily || ''}`;
+        instance.font = `${font.fontStyle || ""} ${font.fontSize || ""} ${font.fontFamily || ""}`;
       }
     } else {
-      instance.font = '';
+      instance.font = "";
     }
     const textWidth = instance.measureText(text).width;
 
@@ -112,3 +112,13 @@ class TruncateText {
 }
 
 export const TruncateInstance = new TruncateText();
+
+// https://juejin.cn/post/7246747232997621816
+
+export const stringToBase64 = (str: string) => {
+  return btoa(String.fromCharCode(...new TextEncoder().encode(str)));
+};
+
+export const base64ToString = (base64: string) => {
+  return new TextDecoder().decode(Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)));
+};

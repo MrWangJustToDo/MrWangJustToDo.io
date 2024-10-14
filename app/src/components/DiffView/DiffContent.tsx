@@ -76,7 +76,7 @@ const _DiffContent = memo(() => {
       {/* @ts-ignore */}
       <Flex display="flex" flexDirection="column" rowGap="4" style={{ ["--sticky-top"]: `${height}px` }}>
         {list.map((item) => (
-          <DiffItem key={item.filename} item={item} workRef={workRef} autoSetCurrentInView={autoSetCurrentInView} />
+          <DiffItem key={item.filename} item={item} workRef={workRef} autoSetCurrentInView={autoSetCurrentInView} stickyHeight={height} />
         ))}
       </Flex>
     </>
