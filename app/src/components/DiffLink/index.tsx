@@ -17,14 +17,41 @@ import {
   SkeletonText,
   Text,
   Tooltip,
+  useCallbackRef,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useDeferredValue, useEffect, useState } from "react";
 import { AiOutlineReload } from "react-icons/ai";
 import { BiEdit } from "react-icons/bi";
 
 import { useGitHubCompareSource } from "@app/hooks/useGitHubCompareSource";
 
+import type { InputProps } from "@chakra-ui/react";
+
 useGitHubCompareSource.getLifeCycle().syncUpdateComponent = true;
+
+const WrapperInput = ({ value, onValueChange, ...last }: { value: string; onValueChange: (v: string) => void } & InputProps) => {
+  const [v, setV] = useState(() => value);
+
+  const onValueChangeRef = useCallbackRef(onValueChange);
+
+  const targetV = useDeferredValue(v);
+
+  useEffect(() => {
+    onValueChangeRef?.(targetV);
+  }, [onValueChangeRef, targetV]);
+
+  return (
+    <Input
+      value={v}
+      onChange={(e) => {
+        setV(e.target.value);
+        last.onChange?.(e);
+      }}
+      {...last}
+    />
+  );
+};
 
 export const DiffLink = ({ url }: { url: string }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -54,21 +81,21 @@ export const DiffLink = ({ url }: { url: string }) => {
               <Flex width="45%" flexDirection="column" rowGap="4">
                 <FormControl>
                   <FormLabel>Owner: </FormLabel>
-                  <Input value={owner} onChange={(e) => setOwner(e.target.value)} size="sm" />
+                  <WrapperInput value={owner} onValueChange={setOwner} size="sm" />
                 </FormControl>
                 <FormControl>
                   <FormLabel>Repo: </FormLabel>
-                  <Input value={repo} onChange={(e) => setRepo(e.target.value)} size="sm" />
+                  <WrapperInput value={repo} onValueChange={setRepo} size="sm" />
                 </FormControl>
               </Flex>
               <Flex width="45%" flexDirection="column" rowGap="4">
                 <FormControl>
                   <FormLabel>Source Commit: </FormLabel>
-                  <Input value={sourceCommit} onChange={(e) => setSourceCommit(e.target.value)} size="sm" />
+                  <WrapperInput value={sourceCommit} onValueChange={setSourceCommit} size="sm" />
                 </FormControl>
                 <FormControl>
                   <FormLabel>Target Commit: </FormLabel>
-                  <Input value={targetCommit} onChange={(e) => setTargetCommit(e.target.value)} size="sm" />
+                  <WrapperInput value={targetCommit} onValueChange={setTargetCommit} size="sm" />
                 </FormControl>
               </Flex>
             </Flex>

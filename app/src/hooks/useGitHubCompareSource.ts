@@ -72,6 +72,7 @@ export const useGitHubCompareSource = createState(() => ({ ...temp }) as GitHubC
       refresh: () => state.key++,
     };
   },
+  withStableSelector: true,
 });
 
 export const useGitHubCompareSourceList = createState(

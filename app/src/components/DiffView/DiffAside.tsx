@@ -1,8 +1,10 @@
-import { Box, Flex, Icon, SkeletonText, Text, Tooltip } from "@chakra-ui/react";
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { Box, Flex, Icon, IconButton, Input, InputGroup, InputRightAddon, SkeletonText, Text, Tooltip } from "@chakra-ui/react";
 import { smoothScroll } from "@reactour/utils";
 import { Children, useCallback, useEffect, useRef, useState } from "react";
 import { Tree } from "react-arborist";
 import { FaFile, FaFolder, FaFolderOpen } from "react-icons/fa";
+import { GoSearch } from "react-icons/go";
 import { VscDiffAdded, VscDiffModified, VscDiffRemoved, VscDiffRenamed } from "react-icons/vsc";
 
 import { useGitHubCompareSourceInView, useGitHubCompareSourceList, useGitHubCompareSourceSelect } from "@app/hooks/useGitHubCompareSource";
@@ -79,11 +81,11 @@ const RenderItem = ({ node, select }: { node: NodeApi<TreeViewData>; select?: No
 
   if (node.data.isLeaf) {
     return (
-      <Flex alignItems="center" height="100%" paddingX="2" width="100%">
+      <Flex alignItems="center" height="100%" paddingX="2">
         {node.id === select?.id && <RenderSelect />}
         <RenderIndent node={node} tree={node.tree as TreeApi<TreeViewData>} />
         <Icon as={FaFile} color="gray.400" />
-        <Box marginLeft="2" width="100%" ref={ref} data-width={container.width} data-max-width={maxWidth}>
+        <Box marginLeft="2" width="calc(var(--tree-item-width) - 2.5em)" ref={ref} data-width={container.width} data-max-width={maxWidth}>
           {maxWidth === Infinity ? <SkeletonText noOfLines={1} /> : Ele}
         </Box>
         <RenderStateIcon data={node.data as unknown as GitHubCompareFileListType} />
@@ -95,7 +97,7 @@ const RenderItem = ({ node, select }: { node: NodeApi<TreeViewData>; select?: No
         {node.id === select?.id && <RenderSelect />}
         <RenderIndent node={node} tree={node.tree as TreeApi<TreeViewData>} />
         <Icon as={node.isOpen ? FaFolderOpen : FaFolder} color="blue.500" />
-        <Box marginLeft="2" width="100%" ref={ref} data-width={container.width} data-max-width={maxWidth}>
+        <Box marginLeft="2" width="calc(var(--tree-item-width) - 2.5em)" ref={ref} data-width={container.width} data-max-width={maxWidth}>
           {maxWidth === Infinity ? <SkeletonText noOfLines={1} /> : Ele}
         </Box>
       </Flex>
@@ -140,7 +142,8 @@ export const DiffAside = () => {
         <Box
           id={node.data.id}
           data-id={node.data.id}
-          style={style}
+          // @ts-ignore
+          style={{ ...style, ["--tree-item-width"]: `calc(var(--tree-container-width) - ${style.paddingLeft}px)` }}
           whiteSpace="nowrap"
           height="100%"
           cursor="pointer"
@@ -157,7 +160,8 @@ export const DiffAside = () => {
         <Box
           id={node.data.id}
           data-id={node.data.id}
-          style={style}
+          // @ts-ignore
+          style={{ ...style, ["--tree-item-width"]: `calc(var(--tree-container-width) - ${style.paddingLeft}px)` }}
           whiteSpace="nowrap"
           height="100%"
           cursor="pointer"
@@ -175,29 +179,41 @@ export const DiffAside = () => {
   }, []);
 
   return (
-    <Card boxShadow="none" padding="2" marginTop="2" className="group" position="sticky" top="2" overflow="hidden">
-      <Box ref={ref} data-width={width} sx={{ [`& [data-id="${id}"]`]: { backgroundColor: "blackAlpha.200" } }}>
-        <Tree<TreeViewData>
-          ref={treeRef}
-          initialData={data}
-          disableDrag
-          disableDrop
-          disableEdit
-          indent={16}
-          overscanCount={20}
-          width={width || undefined}
-          disableMultiSelection
-          rowHeight={26}
-          onSelect={(s) => {
-            const item = s[0];
-            if (item?.data?.isLeaf) {
-              setSelect(item as NodeApi<TreeViewData>);
-            }
-          }}
+    <Box position="sticky" top="0">
+      <InputGroup>
+        <Input placeholder="Search" marginY="2" disabled />
+        <InputRightAddon as={IconButton} marginY="2" color="lightTextColor" fontSize="xl" variant="ghost" aria-label="Search" icon={<GoSearch />} />
+      </InputGroup>
+      <Card boxShadow="none" padding="2" className="group" overflow="hidden">
+        <Box
+          ref={ref}
+          data-width={width}
+          sx={{ [`& [data-id="${id}"]`]: { backgroundColor: "blackAlpha.200" } }}
+          // @ts-ignore
+          style={{ ["--tree-container-width"]: `${width}px` }}
         >
-          {render}
-        </Tree>
-      </Box>
-    </Card>
+          <Tree<TreeViewData>
+            ref={treeRef}
+            initialData={data}
+            disableDrag
+            disableDrop
+            disableEdit
+            indent={16}
+            overscanCount={40}
+            width={width || undefined}
+            disableMultiSelection
+            rowHeight={26}
+            onSelect={(s) => {
+              const item = s[0];
+              if (item?.data?.isLeaf) {
+                setSelect(item as NodeApi<TreeViewData>);
+              }
+            }}
+          >
+            {render}
+          </Tree>
+        </Box>
+      </Card>
+    </Box>
   );
 };

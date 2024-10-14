@@ -85,7 +85,6 @@ export function useSyncDomSize({
   ref?: RefObject<HTMLElement> | null;
   cssSelector?: string;
   getEle?: () => HTMLElement;
-  layout?: boolean;
   deps?: any[];
 }): DOMRectType {
   const getEleRef = useRef(getEle);
