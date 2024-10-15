@@ -103,9 +103,9 @@ const _BlogGridWithGridLayout = ({ data, state }: { data: GetBlogListQuery["repo
 
   const layouts = useListLayoutStore(useCallback((s) => s.data, []))
 
-  const { width } = useDomSize({ cssSelector: ".grid-card-list" });
+  const { width } = useDomSize({ cssSelector: ".grid-card-list", delay: 800 });
 
-  const { width: bodyWidth } = useDomSize({ cssSelector: ".tour_blogList" });
+  const { width: bodyWidth } = useDomSize({ cssSelector: ".tour_blogList", delay: 800 });
 
   useEffect(() => {
     mergeLayout(newLayout);

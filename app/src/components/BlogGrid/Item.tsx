@@ -1,6 +1,6 @@
 import { Text, Flex, Box, Icon, IconButton, Divider, Tooltip, Code } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React, { cloneElement, isValidElement } from "react";
+import React, { cloneElement, isValidElement, memo } from "react";
 import { AiOutlineRight } from "react-icons/ai";
 import { VscLinkExternal } from "react-icons/vsc";
 import Markdown from "react-markdown";
@@ -50,7 +50,7 @@ const ItemHeader = ({ title, externalUrl, detailNumber }: { title: string; exter
   );
 };
 
-export const Item = (props: GetBlogListQuery["repository"]["issues"]["nodes"][0]) => {
+export const Item = memo((props: GetBlogListQuery["repository"]["issues"]["nodes"][0]) => {
   const {
     title,
     number,
@@ -59,6 +59,7 @@ export const Item = (props: GetBlogListQuery["repository"]["issues"]["nodes"][0]
     author: { avatarUrl, login },
     url,
   } = props;
+  
   return (
     <Flex flexDirection="column" height="100%">
       <Box padding="2" borderTopRadius="md">
@@ -119,4 +120,6 @@ export const Item = (props: GetBlogListQuery["repository"]["issues"]["nodes"][0]
       /> */}
     </Flex>
   );
-};
+});
+
+Item.displayName = 'Item';

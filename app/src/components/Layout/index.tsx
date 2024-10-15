@@ -1,4 +1,4 @@
-import { Bg } from "../Bg";
+// import { Bg } from "../Bg";
 import { Footer } from "../Footer";
 import { Head } from "../Head";
 import { Header } from "../Header";
@@ -11,7 +11,7 @@ export const Layout = ({ children }: { children: JSX.Element }) => {
       <Head />
       <LockBody />
       <div id="page-bg">
-        <Bg />
+        {/* <Bg /> */}
       </div>
       <ModuleManager>
         <div id="page-header">

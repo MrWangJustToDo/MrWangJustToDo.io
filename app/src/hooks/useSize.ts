@@ -48,7 +48,7 @@ export function useDomSize({
 
   getEleRef.current = getEle;
 
-  const [rect, setRect] =  useDebouncedState<DOMRectType>(INITIAL_RECT, delay);
+  const [rect, setRect] = useDebouncedState<DOMRectType>(INITIAL_RECT, delay);
 
   useEffect(() => {
     const domElement = ref ? ref.current : cssSelector ? document.querySelector(cssSelector) : getEleRef.current?.() || null;

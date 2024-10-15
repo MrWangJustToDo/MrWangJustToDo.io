@@ -1,6 +1,8 @@
-import { Box } from "@chakra-ui/react";
+import { Box, IconButton, useSafeLayoutEffect } from "@chakra-ui/react";
 import { css, Global } from "@emotion/react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useScroll } from "framer-motion";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { IoIosArrowUp } from "react-icons/io";
 import ReactSplit from "react-split";
 
 import { useDiffAsideCompose } from "@app/hooks/useDiffAsideCompose";
@@ -34,7 +36,27 @@ const style = css`
 export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: ReactNode }) => {
   const [el, setEl] = useState<HTMLDivElement>();
 
+  const ref = useRef<HTMLDivElement>();
+
+  const [scrollY, setScrollY] = useState(false);
+
+  useSafeLayoutEffect(() => {
+    ref.current = document.querySelector("[data-id=diff-view-body]");
+  }, []);
+
+  const { scrollYProgress } = useScroll({ container: ref });
+
   const state = useDiffAsideCompose((s) => s.state);
+
+  useEffect(() => {
+    scrollYProgress.onChange((v) => {
+      if (v < 0.1) {
+        setScrollY(false);
+      } else {
+        setScrollY(true);
+      }
+    });
+  }, [scrollYProgress]);
 
   useEffect(() => {
     if (el) {
@@ -66,6 +88,17 @@ export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: Reac
         <Box flexShrink={0}>{aside}</Box>
         <Box>{content}</Box>
       </ReactSplit>
+      <IconButton
+        icon={<IoIosArrowUp />}
+        fontSize="xl"
+        display={scrollY ? "flex" : "none"}
+        position="fixed"
+        onClick={() => ref.current.scrollTo({ top: 0 })}
+        bottom="6"
+        zIndex="modal"
+        right="10"
+        aria-label="scroll top"
+      />
     </>
   );
 };

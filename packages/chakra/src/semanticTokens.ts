@@ -27,8 +27,8 @@ export const semanticTokens: ChakraTheme["semanticTokens"] = {
       _dark: "gray.400",
     },
     siteBackgroundColor: {
-      default: "rgb(255, 255, 255)",
-      _dark: "rgba(10, 10, 10, 0.8)",
+      default: "white",
+      _dark: "black",
     },
   },
 };
