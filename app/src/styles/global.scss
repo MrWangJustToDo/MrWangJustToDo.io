@@ -1,5 +1,10 @@
 @import url('@git-diff-view/react/styles/diff-view.css');
 
+@font-face {
+  font-family: 'myFont';
+  src: url('./LXGWNeoXiHei.ttf') format('truetype');
+}
+
 .no-select {
   user-select: none;
 }
