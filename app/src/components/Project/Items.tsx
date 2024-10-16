@@ -5,7 +5,7 @@ import { GetRepoAboutDocument } from "@blog/graphql";
 import { Badge, Box, Button, CloseButton, Code, Divider, Flex, Icon, Image, Link, Skeleton, SkeletonText, Spacer, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { cloneElement, isValidElement, useState } from "react";
-import { VscStarFull } from "react-icons/vsc";
+import { GoStarFill } from "react-icons/go";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -84,7 +84,7 @@ export const Item = ({
             top="50%"
             transform="translateY(-50%)"
           >
-            <Icon as={VscStarFull} marginRight="1" />
+            <Icon as={GoStarFill} marginRight="1" />
             {data?.repository?.stargazerCount}
           </Badge>
         )}

@@ -1,7 +1,7 @@
 import { Box, CloseButton, Link, List, ListIcon, ListItem, SimpleGrid, SkeletonText } from "@chakra-ui/react";
 import { AnimatePresence, motion, useInView, useUnmountEffect } from "framer-motion";
 import { memo, useEffect, useRef, useState } from "react";
-import { BiLinkExternal } from "react-icons/bi";
+import { GoLinkExternal } from "react-icons/go";
 
 import { Card } from "@app/components/Card";
 import { useFetchLeetCode } from "@app/hooks/useFetchLeetCode";
@@ -107,13 +107,13 @@ const _LeetCodeContent = () => {
     <>
       <List spacing={3} marginX="2">
         <ListItem color="blue.300">
-          <ListIcon as={BiLinkExternal} />
+          <ListIcon as={GoLinkExternal} />
           <Link href="https://github.com/MrWangJustToDo/leetcode" target="_blank" textDecoration="underline">
             Source
           </Link>
         </ListItem>
         <ListItem color="blue.300">
-          <ListIcon as={BiLinkExternal} />
+          <ListIcon as={GoLinkExternal} />
           <Link href="https://leetcode.com/MrWangSay/" target="_blank" textDecoration="underline">
             Site
           </Link>

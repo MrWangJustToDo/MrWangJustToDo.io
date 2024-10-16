@@ -4,7 +4,7 @@ import { Box, Text, SkeletonText, SkeletonCircle, useCallbackRef, Icon, IconButt
 import { countBy, throttle } from "lodash-es";
 import Head from "next/head";
 import React, { cloneElement, isValidElement, useDeferredValue, useEffect, useMemo } from "react";
-import { AiOutlineReload } from "react-icons/ai";
+import { GoSync } from "react-icons/go";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -246,7 +246,7 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
                 colorScheme={colorScheme}
                 aria-label="reload"
                 onClick={() => refetch()}
-                icon={<Icon as={AiOutlineReload} />}
+                icon={<Icon as={GoSync} />}
               />
             </Text>
           </Box>

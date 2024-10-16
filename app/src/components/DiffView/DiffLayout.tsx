@@ -2,7 +2,7 @@ import { Box, IconButton, useSafeLayoutEffect } from "@chakra-ui/react";
 import { css, Global } from "@emotion/react";
 import { useScroll } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { IoIosArrowUp } from "react-icons/io";
+import { GoChevronUp } from "react-icons/go";
 import ReactSplit from "react-split";
 
 import { useDiffAsideCompose } from "@app/hooks/useDiffAsideCompose";
@@ -89,7 +89,7 @@ export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: Reac
         <Box>{content}</Box>
       </ReactSplit>
       <IconButton
-        icon={<IoIosArrowUp />}
+        icon={<GoChevronUp />}
         fontSize="xl"
         display={scrollY ? "flex" : "none"}
         position="fixed"

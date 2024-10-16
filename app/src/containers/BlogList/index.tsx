@@ -21,8 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { throttle } from "lodash-es";
 import { memo, useEffect, useMemo, useRef } from "react";
-import { BsCheck } from "react-icons/bs";
-import { FaChevronDown, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { GoChevronLeft, GoChevronRight, GoChevronDown, GoCheck } from "react-icons/go";
 
 import { BlogGrid } from "@app/components/BlogGrid";
 import { ErrorCom } from "@app/components/Error";
@@ -68,7 +67,12 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
 
   return (
     <ButtonGroup position="fixed" bottom="4" right="4" className="tour_buttons" variant="solid">
-      <IconButton icon={collapse ? <FaChevronLeft /> : <FaChevronRight />} aria-label="collapse" onClick={toggle} size={{ base: "sm", lg: "md" }} />
+      <IconButton
+        icon={<Icon as={collapse ? GoChevronLeft : GoChevronRight} fontSize="larger" />}
+        aria-label="collapse"
+        onClick={toggle}
+        size={{ base: "sm", lg: "md" }}
+      />
       <Box transitionProperty="width" transitionDuration="0.3s" width={collapse ? "0px" : width} overflow="hidden">
         <ButtonGroup ref={ref}>
           <Button colorScheme="teal" textTransform="capitalize" onClick={() => props.onRefresh()} size={{ base: "sm", lg: "md" }}>
@@ -83,7 +87,7 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
                 as={Button}
                 minWidth="14em"
                 title="Change source"
-                rightIcon={<Icon as={FaChevronDown} fontSize="small" />}
+                rightIcon={<Icon as={GoChevronDown} fontSize="large" />}
                 size={{ base: "sm", lg: "md" }}
               >
                 {sourceName}
@@ -91,7 +95,7 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
               <MenuList>
                 {sources.map((item) => (
                   <MenuItem key={item.name} onClick={() => setSource(item.name)} justifyContent="space-between">
-                    {item.name} {item.name === sourceName && <Icon as={BsCheck} fontSize="lg" />}
+                    {item.name} {item.name === sourceName && <Icon as={GoCheck} fontSize="lg" />}
                   </MenuItem>
                 ))}
               </MenuList>

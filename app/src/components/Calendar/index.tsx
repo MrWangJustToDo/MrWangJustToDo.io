@@ -1,6 +1,6 @@
 import { Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Tooltip } from "@chakra-ui/react";
 import { useEffect } from "react";
-import { BiCalendar } from "react-icons/bi";
+import { GoClock } from "react-icons/go";
 
 import { useCalendar } from "@app/hooks/useCalendar";
 import { useIsMobile } from "@app/hooks/useIsMobile";
@@ -26,7 +26,7 @@ export const Calendar = () => {
           title="Calendar"
           size="sm"
           onClick={onOpen}
-          icon={<Icon as={BiCalendar} fontSize="xl" />}
+          icon={<Icon as={GoClock} fontSize="xl" />}
         />
       </Tooltip>
       <Modal size="full" isOpen={isOpen} onClose={onClose} scrollBehavior="inside">

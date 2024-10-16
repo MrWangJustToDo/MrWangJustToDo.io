@@ -9,11 +9,12 @@ export enum DiffViewSize {
 
 export const useDiffViewConfig = createState(
   () =>
-    ({ size: DiffViewSize.Medium, mode: DiffModeEnum.Split, wrap: true, highlight: true }) as {
+    ({ size: DiffViewSize.Medium, mode: DiffModeEnum.Split, wrap: true, highlight: true, autoLoad: false }) as {
       size: DiffViewSize;
       mode: DiffModeEnum;
       wrap: boolean;
       highlight: boolean;
+      autoLoad: boolean;
     },
   {
     withActions: (state) => {
@@ -30,6 +31,9 @@ export const useDiffViewConfig = createState(
         setHighlight: (highlight: boolean) => {
           state.highlight = highlight;
         },
+        setAutoLoad: (autoLoad: boolean) => {
+          state.autoLoad = autoLoad;
+        }
       };
     },
     withDeepSelector: false,

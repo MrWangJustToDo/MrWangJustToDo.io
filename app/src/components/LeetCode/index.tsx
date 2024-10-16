@@ -1,5 +1,5 @@
 import { Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Tooltip } from "@chakra-ui/react";
-import { SiLeetcode } from "react-icons/si";
+import { GoCode } from "react-icons/go";
 
 import { useLeetCode } from "@app/hooks/useLeetCode";
 import { useLeetCodeSelectId } from "@app/hooks/useLeetCodeSelectId";
@@ -21,7 +21,7 @@ export const LeetCode = () => {
           aria-label="LeetCode"
           title="LeetCode"
           onClick={onOpen}
-          icon={<Icon as={SiLeetcode} fontSize="xl" />}
+          icon={<Icon as={GoCode} fontSize="xl" />}
         />
       </Tooltip>
       <Modal size="full" isOpen={isOpen} scrollBehavior="inside" onClose={onClose} preserveScrollBarGap>

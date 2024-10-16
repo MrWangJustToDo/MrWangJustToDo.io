@@ -35,6 +35,7 @@ const onError = (error: IntlError) => {
 
 // 减少UI更新撕裂
 __my_react_shared__.enableLoopFromRoot.current = true;
+__my_react_shared__.enableConcurrentMode.current = false;
 
 export type NextPageComponent = NextComponentType<NextPageContext, Record<string, unknown>, Record<string, unknown>> & { disableLayout?: boolean };
 

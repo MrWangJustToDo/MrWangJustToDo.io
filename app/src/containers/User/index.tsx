@@ -16,7 +16,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { memo } from "react";
-import { AiOutlineGithub, AiOutlineMail, AiOutlineUser } from "react-icons/ai";
+import { GoHome, GoHubot, GoMail } from "react-icons/go";
 
 import { AboutMe } from "@app/components/AboutMe";
 import { Calendar } from "@app/components/Calendar";
@@ -88,7 +88,7 @@ const _User = memo(() => {
           target="_blank"
           aria-label="github"
           href="https://github.com/MrWangJustToDo/"
-          icon={<Icon as={AiOutlineGithub} fontSize="xl" />}
+          icon={<Icon as={GoHome} fontSize="xl" />}
         />
         <LeetCode />
         <PlayGround />
@@ -102,13 +102,13 @@ const _User = memo(() => {
         <Recommend />
       </Box>
       <Flex alignItems="center" marginTop="1">
-        <Icon as={AiOutlineUser} />
+        <Icon as={GoHubot} />
         <Text fontSize="small" marginLeft="2">
           {data.viewer.login}
         </Text>
       </Flex>
       <Flex alignItems="center" marginTop="1" color="lightTextColor">
-        <Icon as={AiOutlineMail} />
+        <Icon as={GoMail} />
         <Text fontSize="small" marginLeft="2">
           {data.viewer.email}
         </Text>

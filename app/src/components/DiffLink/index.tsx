@@ -19,16 +19,18 @@ import {
   Tooltip,
   useCallbackRef,
   useDisclosure,
+  useSafeLayoutEffect,
+  useToast,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { useDeferredValue, useEffect, useState } from "react";
-import { AiOutlineReload } from "react-icons/ai";
-import { BiEdit } from "react-icons/bi";
+import { GoCopy, GoPencil, GoSync } from "react-icons/go";
 
 import { useGitHubCompareSource } from "@app/hooks/useGitHubCompareSource";
 
 import type { InputProps } from "@chakra-ui/react";
 
-useGitHubCompareSource.getLifeCycle().syncUpdateComponent = true;
+// useGitHubCompareSource.getLifeCycle().syncUpdateComponent = true;
 
 const WrapperInput = ({ value, onValueChange, ...last }: { value: string; onValueChange: (v: string) => void } & InputProps) => {
   const [v, setV] = useState(() => value);
@@ -56,7 +58,32 @@ const WrapperInput = ({ value, onValueChange, ...last }: { value: string; onValu
 export const DiffLink = ({ url }: { url: string }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { owner, setOwner, repo, setRepo, sourceCommit, setSourceCommit, targetCommit, setTargetCommit, setDirty, restore, refresh } = useGitHubCompareSource();
+  const { query } = useRouter();
+
+  const toast = useToast();
+
+  const { owner, setOwner, repo, setRepo, sourceCommit, setSourceCommit, targetCommit, setTargetCommit, setDirty, restore, refresh, dirty } =
+    useGitHubCompareSource();
+
+  const ownerFromQuery = query.owner;
+
+  const repoFromQuery = query.repo;
+
+  const sourceCommitFromQuery = query.sourceCommit;
+
+  const targetCommitFromQuery = query.targetCommit;
+
+  useSafeLayoutEffect(() => {
+    if (ownerFromQuery && repoFromQuery && sourceCommitFromQuery && targetCommitFromQuery) {
+      setOwner(ownerFromQuery as string);
+      setRepo(repoFromQuery as string);
+      setSourceCommit(sourceCommitFromQuery as string);
+      setTargetCommit(targetCommitFromQuery as string);
+      setDirty(false);
+    } else {
+      restore();
+    }
+  }, [ownerFromQuery, repoFromQuery, setDirty, setOwner, setRepo, setSourceCommit, setTargetCommit, sourceCommitFromQuery, targetCommitFromQuery]);
 
   return (
     <Flex alignItems="center">
@@ -66,8 +93,25 @@ export const DiffLink = ({ url }: { url: string }) => {
         </Text>
       </Tooltip>
       <ButtonGroup gap="2" variant="outline">
-        <IconButton aria-label="edit url" icon={<Icon as={BiEdit} />} size="sm" onClick={onOpen} />
-        <IconButton aria-label="refresh" icon={<Icon as={AiOutlineReload} />} size="sm" onClick={refresh} />
+        <IconButton aria-label="edit url" icon={<Icon as={GoPencil} />} size="sm" onClick={onOpen} />
+        <IconButton aria-label="refresh" icon={<Icon as={GoSync} />} size="sm" onClick={refresh} />
+        <Tooltip label="Share this link to preview">
+          <IconButton
+            aria-label="share"
+            icon={<Icon as={GoCopy} />}
+            disabled={dirty}
+            size="sm"
+            onClick={async () => {
+              const newUrl = new URL(window.location.href);
+              newUrl.searchParams.set("owner", owner);
+              newUrl.searchParams.set("repo", repo);
+              newUrl.searchParams.set("sourceCommit", sourceCommit);
+              newUrl.searchParams.set("targetCommit", targetCommit);
+              await navigator.clipboard.writeText(newUrl.toString());
+              toast({ title: "Copied", status: "success" });
+            }}
+          />
+        </Tooltip>
       </ButtonGroup>
       <Modal size="2xl" isOpen={isOpen} onClose={onClose} scrollBehavior="inside" onCloseComplete={restore}>
         <ModalOverlay backdropFilter="blur(10px)" />

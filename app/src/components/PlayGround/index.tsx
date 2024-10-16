@@ -1,5 +1,5 @@
 import { Icon, IconButton, Modal, ModalBody, ModalContent, ModalOverlay, Tooltip } from "@chakra-ui/react";
-import { BiPlayCircle } from "react-icons/bi";
+import { GoPlay } from "react-icons/go";
 
 import { usePlayGround } from "@app/hooks/usePlayGround";
 
@@ -16,7 +16,7 @@ export const PlayGround = () => {
         aria-label="PlayGround"
         title="PlayGround"
         onClick={onOpen}
-        icon={<Icon as={BiPlayCircle} fontSize="xl" />}
+        icon={<Icon as={GoPlay} fontSize="xl" />}
       />
     </Tooltip>
   );

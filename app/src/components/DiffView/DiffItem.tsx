@@ -6,7 +6,6 @@ import {
   Icon,
   IconButton,
   Skeleton,
-  StatDownArrow,
   Text,
   useColorModeValue,
   useDisclosure,
@@ -20,7 +19,7 @@ import { DiffView } from "@git-diff-view/react";
 import { useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
-import { PiArrowsInLineVerticalBold, PiArrowsOutLineVerticalBold, PiShareNetworkBold } from "react-icons/pi";
+import { GoChevronDown, GoFold, GoLinkExternal, GoUnfold } from "react-icons/go";
 
 import { DiffViewSize, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 import { useGitHubCompareSourceSelect, type GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
@@ -240,13 +239,14 @@ export const DiffItem = ({
                 aria-label="open"
                 icon={
                   <Icon
-                    as={StatDownArrow}
+                    as={GoChevronDown}
                     color="lightTextColor"
                     transformOrigin="center"
                     transition="transform 0.2s ease-in-out"
                     transform={isOpen ? "rotate(0deg)" : "rotate(-90deg)"}
                   />
                 }
+                fontSize="larger"
                 size="sm"
                 onClick={onToggle}
               />
@@ -261,7 +261,7 @@ export const DiffItem = ({
                 ) : (
                   <IconButton
                     aria-label="expand"
-                    icon={<Icon as={expandAll ? PiArrowsInLineVerticalBold : PiArrowsOutLineVerticalBold} color="lightTextColor" />}
+                    icon={<Icon as={expandAll ? GoFold : GoUnfold} color="lightTextColor" />}
                     size="sm"
                     display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
                     onClick={onExpandToggle}
@@ -271,7 +271,7 @@ export const DiffItem = ({
               {link && (
                 <IconButton
                   aria-label="open"
-                  icon={<Icon as={PiShareNetworkBold} color="lightTextColor" />}
+                  icon={<Icon as={GoLinkExternal} color="lightTextColor" />}
                   size="sm"
                   onClick={() => window.open(link, "_blank")}
                 />

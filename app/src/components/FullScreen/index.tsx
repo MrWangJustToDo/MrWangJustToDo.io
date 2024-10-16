@@ -1,5 +1,5 @@
 import { Button, Icon } from "@chakra-ui/react";
-import { BiExitFullscreen, BiFullscreen } from "react-icons/bi";
+import { GoScreenFull, GoScreenNormal } from "react-icons/go";
 
 import { useFullScreen } from "@app/hooks/useFullScreen";
 
@@ -8,7 +8,7 @@ export const FullScreen = () => {
 
   return (
     <Button onClick={toggle} variant="ghost" size="sm">
-      <Icon as={state ? BiExitFullscreen : BiFullscreen} />
+      <Icon as={state ? GoScreenNormal : GoScreenFull} />
     </Button>
   );
 };

@@ -1,5 +1,5 @@
 import { Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Tooltip } from "@chakra-ui/react";
-import { IoMdGitCompare } from "react-icons/io";
+import { GoGitCompare } from "react-icons/go";
 
 import { useGitHubCompare } from "@app/hooks/useGitHubCompare";
 import { Page } from "@app/views/compare";
@@ -16,7 +16,7 @@ export const GitHubCompare = () => {
         title="GitHub Commit Compare"
         size="sm"
         onClick={onOpen}
-        icon={<Icon as={IoMdGitCompare} fontSize="xl" />}
+        icon={<Icon as={GoGitCompare} fontSize="xl" />}
       />
     </Tooltip>
   );

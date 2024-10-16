@@ -30,7 +30,7 @@ export type GitHubCompareFileListType = {
   status?: "added" | "modified" | "removed" | "renamed";
 };
 
-const temp: GitHubCompareSourceType = { owner: "MrWangJustToDo", repo: "git-diff-view", sourceCommit: "v0.0.12", targetCommit: "v0.0.13", key: 0 };
+const temp: GitHubCompareSourceType = { owner: "MrWangJustToDo", repo: "git-diff-view", sourceCommit: "v0.0.12", targetCommit: "v0.0.13", key: 0, dirty: true };
 
 export const useGitHubCompareSource = createState(() => ({ ...temp }) as GitHubCompareSourceType, {
   withDeepSelector: false,

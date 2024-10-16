@@ -1,8 +1,7 @@
 import { Text, Flex, Box, Icon, IconButton, Divider, Tooltip, Code } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React, { cloneElement, isValidElement, memo } from "react";
-import { AiOutlineRight } from "react-icons/ai";
-import { VscLinkExternal } from "react-icons/vsc";
+import { GoChevronRight, GoLinkExternal } from "react-icons/go";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -41,10 +40,10 @@ const ItemHeader = ({ title, externalUrl, detailNumber }: { title: string; exter
         </Text>
       </Tooltip>
       <Hover display="flex" alignItems="center">
-        <IconButton aria-label="detail" onClick={openModal} variant="link" size="sm" icon={<Icon as={AiOutlineRight} userSelect="none" />} />
+        <IconButton aria-label="detail" onClick={openModal} variant="link" size="sm" fontSize='large' icon={<Icon as={GoChevronRight} userSelect="none" />} />
       </Hover>
       <Hover display="flex" alignItems="center">
-        <IconButton size="sm" variant="link" aria-label="open" icon={<Icon as={VscLinkExternal} />} onClick={openExternal} />
+        <IconButton size="sm" variant="link" aria-label="open" icon={<Icon as={GoLinkExternal} />} onClick={openExternal} />
       </Hover>
     </Flex>
   );
@@ -59,7 +58,7 @@ export const Item = memo((props: GetBlogListQuery["repository"]["issues"]["nodes
     author: { avatarUrl, login },
     url,
   } = props;
-  
+
   return (
     <Flex flexDirection="column" height="100%">
       <Box padding="2" borderTopRadius="md">
@@ -122,4 +121,4 @@ export const Item = memo((props: GetBlogListQuery["repository"]["issues"]["nodes
   );
 });
 
-Item.displayName = 'Item';
+Item.displayName = "Item";

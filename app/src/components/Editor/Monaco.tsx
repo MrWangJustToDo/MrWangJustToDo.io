@@ -24,8 +24,7 @@ import {
 } from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
 import { useRef } from "react";
-import { AiOutlineDown, AiOutlineFile } from "react-icons/ai";
-import { BsCheck } from "react-icons/bs";
+import { GoCheck, GoChevronDown, GoFile } from "react-icons/go";
 
 import { useEditor_v2 } from "@app/hooks/useEditor";
 import { usePlayGround } from "@app/hooks/usePlayGround";
@@ -76,8 +75,8 @@ export const Monaco = () => {
                 as={Button}
                 size="sm"
                 variant="outline"
-                leftIcon={<Icon as={AiOutlineFile} fontSize="small" />}
-                rightIcon={<Icon as={AiOutlineDown} fontSize="small" />}
+                leftIcon={<Icon as={GoFile} />}
+                rightIcon={<Icon as={GoChevronDown} />}
               >
                 {file}
               </MenuButton>
@@ -85,7 +84,7 @@ export const Monaco = () => {
                 {Object.keys(files).map((key) => {
                   return (
                     <MenuItem key={key} value={key} onClick={() => setFile(key)} justifyContent="space-between">
-                      {files[key].name} {currentFile.name === files[key]?.name && <Icon as={BsCheck} />}
+                      {files[key].name} {currentFile.name === files[key]?.name && <Icon as={GoCheck} />}
                     </MenuItem>
                   );
                 })}

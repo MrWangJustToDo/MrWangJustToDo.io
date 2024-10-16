@@ -1,11 +1,11 @@
 import { Button, Icon, useColorMode } from "@chakra-ui/react";
-import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
+import { GoMoon, GoSun } from "react-icons/go";
 
 export const ColorMode = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   return (
     <Button onClick={toggleColorMode} variant="ghost" size="sm">
-      <Icon as={colorMode === "dark" ? MdOutlineDarkMode : MdOutlineLightMode} />
+      <Icon as={colorMode === "dark" ? GoMoon : GoSun} />
     </Button>
   );
 };

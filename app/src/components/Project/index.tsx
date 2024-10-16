@@ -1,7 +1,7 @@
 import { Box, Heading, Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Spacer, Tooltip } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { TbPackages } from "react-icons/tb";
+import { GoPackage } from "react-icons/go";
 
 import { useCurrentProject, useProject } from "@app/hooks/useProject";
 
@@ -37,7 +37,7 @@ export const Project = () => {
           title="projects"
           size="sm"
           onClick={onOpen}
-          icon={<Icon as={TbPackages} fontSize="xl" />}
+          icon={<Icon as={GoPackage} fontSize="xl" />}
         />
       </Tooltip>
       <Modal

@@ -18,7 +18,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import GitHubCalendar from "react-github-calendar";
-import { FaUserTie } from "react-icons/fa";
+import { GoPerson } from "react-icons/go";
 
 import { useAboutMe } from "@app/hooks/useAboutMe";
 import { useIsMobile } from "@app/hooks/useIsMobile";
@@ -39,7 +39,7 @@ export const AboutMe = () => {
           title="AboutMe"
           size="sm"
           onClick={onOpen}
-          icon={<Icon as={FaUserTie} fontSize="xl" />}
+          icon={<Icon as={GoPerson} fontSize="xl" />}
         />
       </Tooltip>
       <Modal size={isMobile ? "full" : "4xl"} isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
