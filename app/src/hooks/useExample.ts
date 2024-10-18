@@ -1,0 +1,64 @@
+import { useColorMode } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+
+export const useIsIframe = () => {
+  const [isIframe, setIsIframe] = useState(false);
+
+  useEffect(() => {
+    setIsIframe(window.self !== window.top);
+  }, []);
+
+  return isIframe;
+};
+
+export const useExample = () => {
+  const { setColorMode, colorMode } = useColorMode();
+
+  useEffect(() => {
+    const isIframe = window.self !== window.top;
+
+    let hasResponse = false;
+
+    let id: NodeJS.Timeout;
+
+    const checkResponse = () => {
+      if (hasResponse) {
+        return;
+      }
+
+      window.top.postMessage({ message: "hello" }, "*");
+
+      id = setTimeout(() => checkResponse(), 2000);
+    };
+
+    const onResponse = (event: MessageEvent) => {
+      if (typeof event.data === "object") {
+        if (event.data.from === "container") {
+          hasResponse = true;
+        }
+        if (hasResponse && event.data.color) {
+          setColorMode(event.data.color);
+        }
+      }
+    };
+
+    if (isIframe) {
+      checkResponse();
+
+      window.addEventListener("message", onResponse);
+
+      return () => {
+        window.removeEventListener("message", onResponse);
+        clearTimeout(id);
+      };
+    }
+  }, [setColorMode]);
+
+  useEffect(() => {
+    const isIframe = window.self !== window.top;
+
+    if (isIframe) {
+      window.top.postMessage({ message: "update" }, "*");
+    }
+  }, [colorMode]);
+};

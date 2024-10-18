@@ -41,7 +41,9 @@ export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: Reac
   const [scrollY, setScrollY] = useState(false);
 
   useSafeLayoutEffect(() => {
-    ref.current = document.querySelector("[data-id=diff-view-body]");
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    ref.current = document.querySelector("[data-id=diff-view-body]") || document.scrollingElement;
   }, []);
 
   const { scrollYProgress } = useScroll({ container: ref });

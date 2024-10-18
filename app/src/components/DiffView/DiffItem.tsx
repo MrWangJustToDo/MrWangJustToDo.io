@@ -296,7 +296,14 @@ export const DiffItem = ({
         >
           <div ref={ref} data-height={height}>
             {diffFile ? (
-              <DiffView diffFile={diffFile} diffViewHighlight={highlight} diffViewWrap={wrap} diffViewMode={mode} diffViewFontSize={diffSize} />
+              <DiffView
+                diffFile={diffFile}
+                diffViewHighlight={highlight}
+                diffViewTheme={theme}
+                diffViewWrap={wrap}
+                diffViewMode={mode}
+                diffViewFontSize={diffSize}
+              />
             ) : (
               <Text textAlign="center" padding="2">
                 Empty
