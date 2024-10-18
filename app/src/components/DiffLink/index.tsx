@@ -26,7 +26,7 @@ import { useRouter } from "next/router";
 import { useDeferredValue, useEffect, useState } from "react";
 import { GoCopy, GoPencil, GoSync } from "react-icons/go";
 
-import { useIsIframe } from "@app/hooks/useExample";
+import { useInIframe } from "@app/hooks/useExample";
 import { useGitHubCompareSource } from "@app/hooks/useGitHubCompareSource";
 
 import type { InputProps } from "@chakra-ui/react";
@@ -63,7 +63,7 @@ export const DiffLink = ({ url }: { url: string }) => {
 
   const toast = useToast();
 
-  const isIframe = useIsIframe();
+  const inIframe = useInIframe();
 
   const { owner, setOwner, repo, setRepo, sourceCommit, setSourceCommit, targetCommit, setTargetCommit, setDirty, restore, refresh, dirty } =
     useGitHubCompareSource();
@@ -107,7 +107,7 @@ export const DiffLink = ({ url }: { url: string }) => {
             aria-label="share"
             icon={<Icon as={GoCopy} />}
             disabled={dirty}
-            display={isIframe ? "none" : "inline-flex"}
+            display={inIframe ? "none" : "inline-flex"}
             size="sm"
             onClick={async () => {
               const newUrl = new URL(window.location.href);

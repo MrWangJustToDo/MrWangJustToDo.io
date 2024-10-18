@@ -24,6 +24,7 @@ import { AiOutlineLoading } from "react-icons/ai";
 import { GoChevronDown, GoFold, GoLinkExternal, GoPulse, GoUnfold } from "react-icons/go";
 
 import { DiffViewSize, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
+import { useInComparePage } from "@app/hooks/useExample";
 import { useGitHubCompareSourceSelect, type GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
 import { useDomSize } from "@app/hooks/useSize";
 import { base64ToString } from "@app/utils/text";
@@ -68,6 +69,8 @@ export const DiffItem = ({
 
   const [link, setLink] = useState("");
 
+  const inCompare = useInComparePage();
+
   // const [done, setDone] = useState(false);
 
   const idRef = useRef<number>();
@@ -81,8 +84,8 @@ export const DiffItem = ({
   const theme = useColorModeValue("light", "dark");
 
   useSafeLayoutEffect(() => {
-    containerRef.current = document.querySelector("[data-id=diff-view-body]") || (document.scrollingElement as HTMLElement);
-  }, []);
+    containerRef.current = !inCompare ? document.querySelector("[data-id=diff-view-body]") : document.querySelector("#diff-view-body");
+  }, [inCompare]);
 
   const inView = useInView(boxRef, { root: containerRef, amount: "some", margin: `-${stickyHeight}px 0px 0px 0px` });
 

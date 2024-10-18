@@ -1,7 +1,14 @@
 import { useColorMode } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-export const useIsIframe = () => {
+export const useInComparePage = () => {
+  const { pathname } = useRouter();
+
+  return pathname === "/compare";
+};
+
+export const useInIframe = () => {
   const [isIframe, setIsIframe] = useState(false);
 
   useEffect(() => {

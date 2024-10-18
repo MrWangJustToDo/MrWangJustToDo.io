@@ -6,6 +6,7 @@ import { GoChevronUp } from "react-icons/go";
 import ReactSplit from "react-split";
 
 import { useDiffAsideCompose } from "@app/hooks/useDiffAsideCompose";
+import { useInComparePage } from "@app/hooks/useExample";
 
 const style = css`
   .split {
@@ -40,9 +41,11 @@ export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: Reac
 
   const [scrollY, setScrollY] = useState(false);
 
+  const inCompare = useInComparePage();
+
   useSafeLayoutEffect(() => {
-    ref.current = document.querySelector("[data-id=diff-view-body]") || document.scrollingElement as HTMLElement;
-  }, []);
+    ref.current = !inCompare ? document.querySelector("[data-id=diff-view-body]") : document.querySelector("#diff-view-body");
+  }, [inCompare]);
 
   const { scrollYProgress } = useScroll({ container: ref });
 

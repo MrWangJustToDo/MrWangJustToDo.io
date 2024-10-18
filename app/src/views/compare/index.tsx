@@ -5,7 +5,7 @@ import { Card } from "@app/components/Card";
 import { DiffLink } from "@app/components/DiffLink";
 import { DiffView } from "@app/components/DiffView";
 import { CONTAINER_WIDTH } from "@app/config/container";
-import { useExample } from "@app/hooks/useExample";
+import { useExample, useInComparePage } from "@app/hooks/useExample";
 import { useGitHubCompareSourceState } from "@app/hooks/useGitHubCompareSource";
 
 export const Page = () => {
@@ -13,8 +13,18 @@ export const Page = () => {
 
   useExample();
 
+  const inCompare = useInComparePage();
+
   return (
-    <Container maxWidth={CONTAINER_WIDTH} padding="4" backgroundColor="mobileCardBackgroundColor">
+    <Container
+      maxWidth={CONTAINER_WIDTH}
+      padding="4"
+      id="diff-view-body"
+      backgroundColor="mobileCardBackgroundColor"
+      overflow={inCompare ? "auto" : "initial"}
+      height={inCompare ? "100vh" : "initial"}
+      paddingTop={inCompare ? "0" : undefined}
+    >
       <Flex marginTop="2" alignItems="baseline">
         <Heading as="h3">GitHub Commit Compare</Heading>
         <small>
