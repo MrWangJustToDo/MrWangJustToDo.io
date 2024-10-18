@@ -12,7 +12,7 @@ export const useIsIframe = () => {
 };
 
 export const useExample = () => {
-  const { setColorMode, colorMode } = useColorMode();
+  const { setColorMode } = useColorMode();
 
   useEffect(() => {
     const isIframe = window.self !== window.top;
@@ -38,6 +38,9 @@ export const useExample = () => {
         }
         if (hasResponse && event.data.color) {
           setColorMode(event.data.color);
+          setTimeout(() => {
+            window.top.postMessage({ message: "update" }, "*");
+          }, 200);
         }
       }
     };
@@ -53,12 +56,4 @@ export const useExample = () => {
       };
     }
   }, [setColorMode]);
-
-  useEffect(() => {
-    const isIframe = window.self !== window.top;
-
-    if (isIframe) {
-      window.top.postMessage({ message: "update" }, "*");
-    }
-  }, [colorMode]);
 };
