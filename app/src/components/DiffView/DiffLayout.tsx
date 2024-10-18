@@ -1,7 +1,7 @@
-import { Box, IconButton, useSafeLayoutEffect } from "@chakra-ui/react";
+import { Box, IconButton, useBreakpointValue, useSafeLayoutEffect } from "@chakra-ui/react";
 import { css, Global } from "@emotion/react";
 import { useScroll } from "framer-motion";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { memo, useEffect, useRef, useState, type ReactNode } from "react";
 import { GoChevronUp } from "react-icons/go";
 import ReactSplit from "react-split";
 
@@ -34,7 +34,7 @@ const style = css`
   }
 `;
 
-export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: ReactNode }) => {
+export const DiffLayout = memo(({ aside, content }: { aside: ReactNode; content: ReactNode }) => {
   const [el, setEl] = useState<HTMLDivElement>();
 
   const ref = useRef<HTMLElement>();
@@ -43,6 +43,8 @@ export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: Reac
 
   const inCompare = useInComparePage();
 
+  const small = useBreakpointValue({ base: true, md: false }, { fallback: "md" });
+
   useSafeLayoutEffect(() => {
     ref.current = !inCompare ? document.querySelector("[data-id=diff-view-body]") : document.querySelector("#diff-view-body");
   }, [inCompare]);
@@ -50,6 +52,12 @@ export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: Reac
   const { scrollYProgress } = useScroll({ container: ref });
 
   const state = useDiffAsideCompose((s) => s.state);
+
+  useEffect(() => {
+    if (small) {
+      useDiffAsideCompose.getActions().setState(true);
+    }
+  }, [small]);
 
   useEffect(() => {
     scrollYProgress.onChange((v) => {
@@ -67,7 +75,23 @@ export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: Reac
     }
   }, [el]);
 
-  if (state) return content;
+  if (state)
+    return (
+      <>
+        {content}
+        <IconButton
+          icon={<GoChevronUp />}
+          fontSize="xl"
+          display={scrollY ? "flex" : "none"}
+          position="fixed"
+          onClick={() => ref.current.scrollTo({ top: 0 })}
+          bottom="6"
+          zIndex="modal"
+          right="10"
+          aria-label="scroll top"
+        />
+      </>
+    );
 
   return (
     <>
@@ -104,4 +128,6 @@ export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: Reac
       />
     </>
   );
-};
+});
+
+DiffLayout.displayName = "DiffLayout";

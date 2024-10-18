@@ -8,6 +8,10 @@ import { DiffAside } from "./DiffAside";
 import { DiffContent } from "./DiffContent";
 import { DiffLayout } from "./DiffLayout";
 
+const left = <DiffAside />;
+
+const right = <DiffContent />;
+
 export const DiffView = () => {
   const { loading, list } = useGitHubCompareSourceList((s) => ({ list: s.list, data: s.data, loading: s.loading }));
 
@@ -25,5 +29,5 @@ export const DiffView = () => {
     );
   }
 
-  return <DiffLayout aside={<DiffAside />} content={<DiffContent />} />;
+  return <DiffLayout aside={left} content={right} />;
 };
