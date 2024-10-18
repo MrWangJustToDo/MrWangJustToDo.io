@@ -36,14 +36,12 @@ const style = css`
 export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: ReactNode }) => {
   const [el, setEl] = useState<HTMLDivElement>();
 
-  const ref = useRef<HTMLDivElement>();
+  const ref = useRef<HTMLElement>();
 
   const [scrollY, setScrollY] = useState(false);
 
   useSafeLayoutEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    ref.current = document.querySelector("[data-id=diff-view-body]") || document.scrollingElement;
+    ref.current = document.querySelector("[data-id=diff-view-body]") || document.scrollingElement as HTMLElement;
   }, []);
 
   const { scrollYProgress } = useScroll({ container: ref });
@@ -52,7 +50,7 @@ export const DiffLayout = ({ aside, content }: { aside: ReactNode; content: Reac
 
   useEffect(() => {
     scrollYProgress.onChange((v) => {
-      if (v < 0.1) {
+      if (v < 0.05) {
         setScrollY(false);
       } else {
         setScrollY(true);

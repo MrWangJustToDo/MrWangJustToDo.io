@@ -18,7 +18,7 @@ import { GoGear } from "react-icons/go";
 import { DiffViewSize, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 
 export const DiffViewSetting = () => {
-  const { size, setMode, mode, setSize, wrap, setWrap, highlight, setHighlight } = useDiffViewConfig();
+  const { size, setMode, mode, setSize, wrap, setWrap, highlight, setHighlight, autoLoad, setAutoLoad } = useDiffViewConfig();
 
   return (
     <Popover trigger="click" placement="bottom-end">
@@ -62,6 +62,16 @@ export const DiffViewSetting = () => {
           <FormControl as="fieldset">
             <FormLabel as="legend">Highlight Mode</FormLabel>
             <RadioGroup defaultValue={String(highlight)} onChange={(l) => setHighlight(l === "true" ? true : false)}>
+              <HStack spacing="24px">
+                <Radio value="true">Enable</Radio>
+                <Radio value="false">Disable</Radio>
+              </HStack>
+            </RadioGroup>
+          </FormControl>
+          <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
+          <FormControl as="fieldset">
+            <FormLabel as="legend">AutoLoad FullDiff</FormLabel>
+            <RadioGroup defaultValue={String(autoLoad)} onChange={(l) => setAutoLoad(l === "true" ? true : false)}>
               <HStack spacing="24px">
                 <Radio value="true">Enable</Radio>
                 <Radio value="false">Disable</Radio>

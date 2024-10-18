@@ -96,8 +96,12 @@ export const DiffLink = ({ url }: { url: string }) => {
         </Text>
       </Tooltip>
       <ButtonGroup gap="2" variant="outline">
-        <IconButton aria-label="edit url" icon={<Icon as={GoPencil} />} size="sm" onClick={onOpen} />
-        <IconButton aria-label="refresh" icon={<Icon as={GoSync} />} size="sm" onClick={refresh} />
+        <Tooltip label="Edit to show">
+          <IconButton aria-label="edit url" icon={<Icon as={GoPencil} />} size="sm" onClick={onOpen} />
+        </Tooltip>
+        <Tooltip label="Refresh All Diff">
+          <IconButton aria-label="refresh" icon={<Icon as={GoSync} />} size="sm" onClick={refresh} />
+        </Tooltip>
         <Tooltip label="Share this link to preview">
           <IconButton
             aria-label="share"

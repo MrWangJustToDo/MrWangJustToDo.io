@@ -7,6 +7,8 @@ import {
   IconButton,
   Skeleton,
   Text,
+  Tooltip,
+  useCallbackRef,
   useColorModeValue,
   useDisclosure,
   useOutsideClick,
@@ -19,7 +21,7 @@ import { DiffView } from "@git-diff-view/react";
 import { useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
-import { GoChevronDown, GoFold, GoLinkExternal, GoUnfold } from "react-icons/go";
+import { GoChevronDown, GoFold, GoLinkExternal, GoPulse, GoUnfold } from "react-icons/go";
 
 import { DiffViewSize, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 import { useGitHubCompareSourceSelect, type GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
@@ -54,6 +56,8 @@ export const DiffItem = ({
 
   const { key, setKey } = useGitHubCompareSourceSelect();
 
+  const autoLoad = useDiffViewConfig.useShallowStableSelector((s) => s.autoLoad);
+
   const [loading, setLoading] = useState(true);
 
   const [expandAll, setExpandAll] = useState(false);
@@ -72,12 +76,12 @@ export const DiffItem = ({
 
   const boxRef = useRef<HTMLDivElement>();
 
-  const containerRef = useRef<HTMLDivElement>();
+  const containerRef = useRef<HTMLElement>();
 
   const theme = useColorModeValue("light", "dark");
 
   useSafeLayoutEffect(() => {
-    containerRef.current = document.querySelector("[data-id=diff-view-body]");
+    containerRef.current = document.querySelector("[data-id=diff-view-body]") || (document.scrollingElement as HTMLElement);
   }, []);
 
   const inView = useInView(boxRef, { root: containerRef, amount: "some", margin: `-${stickyHeight}px 0px 0px 0px` });
@@ -113,8 +117,8 @@ export const DiffItem = ({
     scrollToCurrent().then(() => setExpandAll((l) => !l));
   }, [scrollToCurrent]);
 
-  useEffect(() => {
-    if (isOpen && !content && item.patch && inView) {
+  const loadFullContentDiff = useCallbackRef(() => {
+    if (item.patch && item.contents_url && !content) {
       loadContent(item.contents_url).then((res: { content: string; html_url: string; encoding: string }) => {
         if (res.encoding === "base64") {
           setContent(base64ToString(res.content));
@@ -124,7 +128,13 @@ export const DiffItem = ({
         setLink(res.html_url);
       });
     }
-  }, [item.patch, item.contents_url, isOpen, content, toast, inView]);
+  });
+
+  useEffect(() => {
+    if (autoLoad && isOpen && !content && inView) {
+      loadFullContentDiff();
+    }
+  }, [isOpen, content, inView, autoLoad, loadFullContentDiff]);
 
   useEffect(() => {
     const id = Math.random();
@@ -259,22 +269,31 @@ export const DiffItem = ({
                     size="sm"
                   />
                 ) : (
-                  <IconButton
-                    aria-label="expand"
-                    icon={<Icon as={expandAll ? GoFold : GoUnfold} color="lightTextColor" />}
-                    size="sm"
-                    display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
-                    onClick={onExpandToggle}
-                  />
+                  <Tooltip label={!expandAll ? "Expand all diff" : "UnExpand all diff"}>
+                    <IconButton
+                      aria-label="expand"
+                      icon={<Icon as={expandAll ? GoFold : GoUnfold} color="lightTextColor" />}
+                      size="sm"
+                      display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
+                      onClick={onExpandToggle}
+                    />
+                  </Tooltip>
                 )
               ) : null}
+              {!autoLoad && !content && !loading && item.contents_url && (
+                <Tooltip label="Load full diff">
+                  <IconButton aria-label="load" icon={<Icon as={GoPulse} color="lightTextColor" />} size="sm" onClick={loadFullContentDiff} />
+                </Tooltip>
+              )}
               {link && (
-                <IconButton
-                  aria-label="open"
-                  icon={<Icon as={GoLinkExternal} color="lightTextColor" />}
-                  size="sm"
-                  onClick={() => window.open(link, "_blank")}
-                />
+                <Tooltip label="Goto github link">
+                  <IconButton
+                    aria-label="open"
+                    icon={<Icon as={GoLinkExternal} color="lightTextColor" />}
+                    size="sm"
+                    onClick={() => window.open(link, "_blank")}
+                  />
+                </Tooltip>
               )}
             </ButtonGroup>
             <Text as="span" color="lightTextColor">

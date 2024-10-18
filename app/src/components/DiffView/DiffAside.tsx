@@ -10,6 +10,7 @@ import { VscDiffAdded, VscDiffModified, VscDiffRemoved, VscDiffRenamed } from "r
 import { useGitHubCompareSourceInView, useGitHubCompareSourceList, useGitHubCompareSourceSelect } from "@app/hooks/useGitHubCompareSource";
 import { useDomSize, useSyncDomSize } from "@app/hooks/useSize";
 import { useTruncateText } from "@app/hooks/useTruncateText";
+import { useWindowSize } from "@app/hooks/useWindowSize";
 
 import { Card } from "../Card";
 
@@ -118,7 +119,13 @@ export const DiffAside = () => {
 
   const ref = useRef<HTMLDivElement>();
 
+  const groupRef = useRef<HTMLDivElement>();
+
   const { width } = useDomSize({ ref, delay: 16 });
+
+  const { height: groupHeight } = useDomSize({ ref: groupRef, delay: 16 });
+
+  const { height: windowHeight } = useWindowSize();
 
   selectRef.current = select;
 
@@ -180,7 +187,7 @@ export const DiffAside = () => {
 
   return (
     <Box position="sticky" top="0">
-      <InputGroup>
+      <InputGroup ref={groupRef}>
         <Input placeholder="Search" marginY="2" disabled />
         <InputRightAddon as={IconButton} marginY="2" color="lightTextColor" fontSize="xl" variant="ghost" aria-label="Search" icon={<GoSearch />} />
       </InputGroup>
@@ -201,6 +208,7 @@ export const DiffAside = () => {
             indent={16}
             overscanCount={40}
             width={width || undefined}
+            height={groupHeight && windowHeight ? windowHeight - groupHeight - 50 : undefined}
             disableMultiSelection
             rowHeight={26}
             onSelect={(s) => {
