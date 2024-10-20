@@ -7,14 +7,20 @@ export enum DiffViewSize {
   Large = "large",
 }
 
+export enum HighlightEngine {
+  lowlight = "lowlight",
+  shiki = "shiki",
+}
+
 export const useDiffViewConfig = createState(
   () =>
-    ({ size: DiffViewSize.Medium, mode: DiffModeEnum.Split, wrap: true, highlight: true, autoLoad: false }) as {
+    ({ size: DiffViewSize.Medium, mode: DiffModeEnum.Split, wrap: true, highlight: true, autoLoad: false, engine: HighlightEngine.lowlight }) as {
       size: DiffViewSize;
       mode: DiffModeEnum;
       wrap: boolean;
       highlight: boolean;
       autoLoad: boolean;
+      engine?: HighlightEngine;
     },
   {
     withActions: (state) => {
@@ -33,11 +39,15 @@ export const useDiffViewConfig = createState(
         },
         setAutoLoad: (autoLoad: boolean) => {
           state.autoLoad = autoLoad;
-        }
+        },
+        setEngine: (engine: HighlightEngine) => {
+          state.engine = engine;
+        },
       };
     },
     withDeepSelector: false,
     withStableSelector: true,
     withNamespace: "useDiffViewConfig",
+    withPersist: 'useDiffViewConfig',
   },
 );

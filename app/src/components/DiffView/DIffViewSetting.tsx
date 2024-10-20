@@ -15,10 +15,10 @@ import {
 import { DiffModeEnum } from "@git-diff-view/react";
 import { GoGear } from "react-icons/go";
 
-import { DiffViewSize, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
+import { DiffViewSize, HighlightEngine, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 
 export const DiffViewSetting = () => {
-  const { size, setMode, mode, setSize, wrap, setWrap, highlight, setHighlight, autoLoad, setAutoLoad } = useDiffViewConfig();
+  const { size, setMode, mode, setSize, wrap, setWrap, highlight, setHighlight, autoLoad, setAutoLoad, engine, setEngine } = useDiffViewConfig();
 
   return (
     <Popover trigger="click" placement="bottom-end">
@@ -65,6 +65,19 @@ export const DiffViewSetting = () => {
               <HStack spacing="24px">
                 <Radio value="true">Enable</Radio>
                 <Radio value="false">Disable</Radio>
+              </HStack>
+            </RadioGroup>
+          </FormControl>
+          <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
+          <FormControl as="fieldset">
+            <FormLabel as="legend">Highlight Engine (reload require)</FormLabel>
+            <RadioGroup
+              defaultValue={String(engine)}
+              onChange={(l) => setEngine(l as HighlightEngine)}
+            >
+              <HStack spacing="24px">
+                <Radio value={HighlightEngine.lowlight}>{HighlightEngine.lowlight}</Radio>
+                <Radio value={HighlightEngine.shiki}>{HighlightEngine.shiki}</Radio>
               </HStack>
             </RadioGroup>
           </FormControl>

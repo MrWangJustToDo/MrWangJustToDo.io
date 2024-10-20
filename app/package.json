@@ -21,6 +21,7 @@
     "@emotion/styled": "^11.13.0",
     "@git-diff-view/core": "^0.0.18",
     "@git-diff-view/react": "^0.0.18",
+    "@git-diff-view/shiki": "^0.0.18",
     "@monaco-editor/react": "^4.6.0",
     "@my-react/react": "^0.3.3",
     "@my-react/react-dom": "^0.3.3",

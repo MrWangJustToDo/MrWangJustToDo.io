@@ -1,10 +1,14 @@
 import { DiffFile, highlighter } from "@git-diff-view/core";
+import { highlighterReady } from "@git-diff-view/shiki";
+
+import { HighlightEngine } from "@app/hooks/useDiffViewConfig";
 
 import type { DiffViewProps } from "@git-diff-view/react";
 
 export type MessageData = {
   id: number;
-  theme?: 'light' | 'dark';
+  theme?: "light" | "dark";
+  engine?: HighlightEngine;
   data: DiffViewProps<any>["data"];
   bundle: ReturnType<DiffFile["_getFullBundle"]>;
 };
@@ -13,7 +17,7 @@ const post = (d: MessageData) => postMessage(d);
 
 highlighter.setMaxLineToIgnoreSyntax(60000);
 
-onmessage = (event: MessageEvent<MessageData>) => {
+onmessage = async (event: MessageEvent<MessageData>) => {
   const _data = event.data;
 
   const data = _data.data;
@@ -30,16 +34,26 @@ onmessage = (event: MessageEvent<MessageData>) => {
 
   file.initTheme(_data.theme);
 
-  file.init();
+  file.initRaw();
+
+  if (_data.engine === HighlightEngine.shiki) {
+    try {
+      const shikiHighlighter = await highlighterReady;
+      if (shikiHighlighter.hasRegisteredCurrentLang(file._oldFileLang) && shikiHighlighter.hasRegisteredCurrentLang(file._newFileLang)) {
+        file.initSyntax({ registerHighlighter: shikiHighlighter });
+      }
+    } catch {
+      file.initSyntax();
+    }
+  } else {
+    file.initSyntax();
+  }
 
   file.buildSplitDiffLines();
 
   file.buildUnifiedDiffLines();
 
   const bundle = file._getFullBundle();
-
-  // TODO! @git-diff-view 0.0.14 release will fix this issue
-  // bundle.fileLineLength = Math.max(bundle.splitLineLength, bundle.unifiedLineLength, bundle.newFileResult?.maxLineNumber);
 
   const res: MessageData = {
     id: _data.id,
