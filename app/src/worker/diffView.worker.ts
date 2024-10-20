@@ -41,6 +41,8 @@ onmessage = async (event: MessageEvent<MessageData>) => {
       const shikiHighlighter = await highlighterReady;
       if (shikiHighlighter.hasRegisteredCurrentLang(file._oldFileLang) && shikiHighlighter.hasRegisteredCurrentLang(file._newFileLang)) {
         file.initSyntax({ registerHighlighter: shikiHighlighter });
+      } else {
+        file.initSyntax();
       }
     } catch {
       file.initSyntax();

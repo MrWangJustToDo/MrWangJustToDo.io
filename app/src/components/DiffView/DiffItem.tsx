@@ -61,8 +61,6 @@ export const DiffItem = ({
 
   const engine = useDiffViewConfig.useShallowStableSelector(s => s.engine);
 
-  console.log(engine);
-
   const [loading, setLoading] = useState(true);
 
   const [expandAll, setExpandAll] = useState(false);
