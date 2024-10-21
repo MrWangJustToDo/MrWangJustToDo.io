@@ -22,7 +22,7 @@ export const DiffView = () => {
   if (list.length === 0) {
     return (
       <Card boxShadow="none" height="100vh">
-        <Text textAlign="center" marginY="4" lineHeight='100vh'>
+        <Text textAlign="center" marginY="4" lineHeight="100vh">
           Empty
         </Text>
       </Card>

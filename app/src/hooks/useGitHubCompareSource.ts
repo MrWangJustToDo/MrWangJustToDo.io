@@ -3,7 +3,7 @@ import { useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { createState } from "reactivity-store";
 
-import { generateDirs } from "@app/utils/generateDir";
+import { flattenDirs, generateDirs } from "@app/utils/generateDir";
 
 import { useDebouncedState } from "./useDebouncedState";
 
@@ -76,18 +76,27 @@ export const useGitHubCompareSource = createState(() => ({ ...temp }) as GitHubC
 });
 
 export const useGitHubCompareSourceList = createState(
-  () => ({ list: [], data: [], loading: false }) as { list: GitHubCompareFileListType[]; data: TreeViewData[]; loading: boolean },
+  () =>
+    ({ list: [], data: [], flattenData: [], loading: false }) as {
+      list: GitHubCompareFileListType[];
+      data: TreeViewData[];
+      flattenData: TreeViewData[];
+      loading: boolean;
+    },
   {
     withDeepSelector: false,
+    withStableSelector: true,
     withNamespace: "useDifHubCompareSourceList",
     withActions: (state) => ({
       setList: (list: GitHubCompareFileListType[]) => {
         state.list = list;
         state.data = generateDirs(list);
+        state.flattenData = state.data.map((i) => flattenDirs(i)).flat();
       },
       setLoading: (loading: boolean) => {
         state.loading = loading;
       },
+      refreshList: () => (state.flattenData = state.data.map((i) => flattenDirs(i, (l) => !l.isOpen)).flat()),
     }),
   },
 );
@@ -134,11 +143,20 @@ export const useGitHubCompareSourceState = () => {
 export const useGitHubCompareSourceSelect = createState(() => ({}) as { key?: string }, {
   withActions: (s) => ({ setKey: (key: string) => (s.key = key) }),
   withDeepSelector: false,
+  withStableSelector: true,
   withNamespace: "useGitHubCompareSourceSelect",
+});
+
+export const useGitHubCompareTreeSelect = createState(() => ({}) as { key?: string }, {
+  withActions: (s) => ({ setKey: (key: string) => (s.key = key) }),
+  withDeepSelector: false,
+  withStableSelector: true,
+  withNamespace: "useGitHUbCOmpareTreeSelect",
 });
 
 export const useGitHubCompareSourceInView = createState(() => ({ id: "" }), {
   withActions: (s) => ({ setId: (id: string) => (s.id = id) }),
   withDeepSelector: false,
+  withStableSelector: true,
   withNamespace: "useGitHubCompareSourceInView",
 });

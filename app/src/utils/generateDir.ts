@@ -4,7 +4,13 @@ export interface TreeViewData {
   id: string;
   name: string;
   value: string;
+  deep?: number;
+  isDir?: boolean;
+  isOpen?: boolean;
+  parent?: TreeViewData;
+  hasNextDir?: boolean;
   isLeaf?: boolean;
+  status?: GitHubCompareFileListType['status'];
   children: TreeViewData[];
 }
 
@@ -49,9 +55,27 @@ export const generateDirs = (data: GitHubCompareFileListType[]) => {
     loop(index + 1);
   };
 
+  const link = (node: TreeViewData[]) => {
+    let prevDir: TreeViewData = null;
+
+    node.forEach((item) => {
+      if (!item.isLeaf && item.children) {
+        if (prevDir) {
+          prevDir.hasNextDir = true;
+        }
+
+        prevDir = item;
+
+        item.isDir = true;
+
+        link(item.children);
+      }
+    });
+  };
+
   // 合并
   const compress = (node: TreeViewData[]): TreeViewData[] => {
-    return node.reduce<TreeViewData[]>((p, c) => {
+    const re = node.reduce<TreeViewData[]>((p, c) => {
       if (c.children) {
         // 递归子项
         const compressedChildren = compress(c.children);
@@ -76,17 +100,56 @@ export const generateDirs = (data: GitHubCompareFileListType[]) => {
 
       return p;
     }, []);
+
+    return re;
   };
 
   loop(0);
 
   // 第一个层级不用合并，避免视图上的歧义
-  re.map((r) => {
+  re.forEach((r) => {
     if (r.children) {
       r.children = compress(r.children);
     }
-    return r;
   });
 
+  link(re);
+
   return re;
+};
+
+export const flattenDirs = (data: TreeViewData, isCollapsed?: (item: TreeViewData) => boolean) => {
+  const list: TreeViewData[] = [];
+
+  data.deep = 0;
+
+  const stack = [data];
+
+  while (stack.length) {
+    const currentNode = stack.pop();
+
+    if (!currentNode) continue;
+
+    list.push(currentNode);
+
+    if (currentNode.children) {
+      if (typeof isCollapsed === "function" && isCollapsed(currentNode)) {
+        continue;
+      }
+
+      currentNode.isOpen = true;
+
+      for (let i = currentNode.children.length - 1; i >= 0; i--) {
+        const item = currentNode.children[i];
+
+        item.parent = currentNode;
+
+        item.deep = currentNode.deep + 1;
+
+        stack.push(item);
+      }
+    }
+  }
+
+  return list;
 };
