@@ -1,10 +1,20 @@
 import { axiosClient } from "@blog/graphql";
 import {
   Box,
+  Button,
   ButtonGroup,
   Flex,
   Icon,
   IconButton,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverTrigger,
+  Portal,
   Skeleton,
   Text,
   Tooltip,
@@ -19,7 +29,7 @@ import {
 import { DiffFile } from "@git-diff-view/core";
 import { DiffView } from "@git-diff-view/react";
 import { useInView } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { GoChevronDown, GoFold, GoLinkExternal, GoPulse, GoUnfold } from "react-icons/go";
 
@@ -30,8 +40,13 @@ import { useDomSize } from "@app/hooks/useSize";
 import { base64ToString } from "@app/utils/text";
 
 import type { MessageData } from "@app/worker/diffView.worker";
+import type { IconButtonProps } from "@chakra-ui/react";
 import type { DiffViewProps } from "@git-diff-view/react";
 import type { RefObject } from "react";
+
+const LargerFile = 3000;
+
+const MaxFile = 10000;
 
 const loadContent = async (url: string) => {
   const res = await axiosClient.get(url);
@@ -59,7 +74,7 @@ export const DiffItem = ({
 
   const autoLoad = useDiffViewConfig.useShallowStableSelector((s) => s.autoLoad);
 
-  const engine = useDiffViewConfig.useShallowStableSelector(s => s.engine);
+  const engine = useDiffViewConfig.useShallowStableSelector((s) => s.engine);
 
   const [loading, setLoading] = useState(true);
 
@@ -216,6 +231,42 @@ export const DiffItem = ({
 
   let Ele = null;
 
+  const ForwardRefItem = forwardRef<HTMLButtonElement, IconButtonProps & { needPopover?: boolean }>(({ needPopover, onClick, ...props }, ref) => {
+    if (needPopover) {
+      return (
+        <PopoverTrigger>
+          <IconButton
+            aria-label="expand"
+            ref={ref}
+            icon={<Icon as={expandAll ? GoFold : GoUnfold} color="lightTextColor" />}
+            size="sm"
+            isDisabled={diffFile.fileLineLength > MaxFile}
+            display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
+            onClick={onClick}
+            {...props}
+          />
+        </PopoverTrigger>
+      );
+    } else {
+      return (
+        <IconButton
+          aria-label="expand"
+          ref={ref}
+          icon={<Icon as={expandAll ? GoFold : GoUnfold} color="lightTextColor" />}
+          size="sm"
+          display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
+          onClick={(e) => {
+            onClick?.(e);
+            onExpandToggle();
+          }}
+          {...props}
+        />
+      );
+    }
+  });
+
+  ForwardRefItem.displayName = "IconButtonWithRef";
+
   if (item.patch && !diffFile) {
     Ele = <Skeleton height="50px" width="100%" />;
   } else {
@@ -274,15 +325,33 @@ export const DiffItem = ({
                     size="sm"
                   />
                 ) : (
-                  <Tooltip label={!expandAll ? "Expand all diff" : "UnExpand all diff"}>
-                    <IconButton
-                      aria-label="expand"
-                      icon={<Icon as={expandAll ? GoFold : GoUnfold} color="lightTextColor" />}
-                      size="sm"
-                      display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
-                      onClick={onExpandToggle}
-                    />
-                  </Tooltip>
+                  <Popover isLazy>
+                    {({ onClose }) => (
+                      <>
+                        <Tooltip label={!expandAll ? "Expand all diff" : "UnExpand all diff"} closeOnScroll>
+                          <ForwardRefItem aria-label="expand" needPopover={diffFile.fileLineLength > LargerFile} />
+                        </Tooltip>
+                        <Portal appendToParentPortal={false}>
+                          <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverHeader>Note</PopoverHeader>
+                            <PopoverCloseButton />
+                            <PopoverBody>
+                              <Text fontSize="sm">This file is too large, it may take a long time to expand / unExpand all.</Text>
+                            </PopoverBody>
+                            <PopoverFooter textAlign="right">
+                              <ButtonGroup variant="outline" spacing="6" size="sm">
+                                <Button onClick={onClose}>Cancel</Button>
+                                <Button colorScheme="blue" onClick={onExpandToggle}>
+                                  Expand
+                                </Button>
+                              </ButtonGroup>
+                            </PopoverFooter>
+                          </PopoverContent>
+                        </Portal>
+                      </>
+                    )}
+                  </Popover>
                 )
               ) : null}
               {!autoLoad && !content && !loading && item.contents_url && (
