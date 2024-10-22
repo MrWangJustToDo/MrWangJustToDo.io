@@ -86,7 +86,7 @@ export const useGitHubCompareSourceList = createState(
   {
     withDeepSelector: false,
     withStableSelector: true,
-    withNamespace: "useDifHubCompareSourceList",
+    // withNamespace: "useDifHubCompareSourceList",
     withActions: (state) => ({
       setList: (list: GitHubCompareFileListType[]) => {
         state.list = list;

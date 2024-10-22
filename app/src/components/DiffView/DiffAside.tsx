@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Box, IconButton, Input, InputGroup, InputRightAddon } from "@chakra-ui/react";
 import { smoothScroll } from "@reactour/utils";
-import {  useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { GoSearch } from "react-icons/go";
 
 import {
@@ -22,7 +22,7 @@ import type { VirtuosoHandle } from "react-virtuoso";
 const setSelectKey = useGitHubCompareSourceSelect.getActions().setKey;
 
 export const DiffAside = () => {
-  const list = useGitHubCompareSourceList(s => s.flattenData);
+  const list = useGitHubCompareSourceList((s) => s.flattenData);
 
   const id = useGitHubCompareSourceInView((s) => s.id);
 
@@ -50,7 +50,7 @@ export const DiffAside = () => {
 
   useEffect(() => {
     if (id) {
-      const index = list.findIndex(i => i.id === id);
+      const index = list.findIndex((i) => i.id === id);
       if (index !== -1) {
         treeRef.current?.scrollIntoView({ index: Number(index) });
       }
@@ -71,11 +71,7 @@ export const DiffAside = () => {
           // @ts-ignore
           style={{ ["--tree-container-width"]: `${width}px` }}
         >
-          <DiffAsideTree
-            ref={treeRef}
-            width={width || undefined}
-            height={groupHeight && windowHeight ? windowHeight - groupHeight - 50 : undefined}
-          />
+          <DiffAsideTree ref={treeRef} width={width || undefined} height={groupHeight && windowHeight ? windowHeight - groupHeight - 50 : undefined} />
         </Box>
       </Card>
     </Box>

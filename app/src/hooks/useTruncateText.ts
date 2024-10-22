@@ -15,7 +15,7 @@ export const useTruncateText = ({ text, container, fontSize = "14px" }: { text: 
     const width = 20;
     let maxWidth = Infinity;
     if (container.width !== 0) {
-      const targetWidth = container.right - width;
+      const targetWidth = container.right - container.left - width;
       if (targetWidth >= container.width) {
         maxWidth = container.width - width;
       } else {

@@ -76,7 +76,7 @@ const RenderName = ({ item }: { item: TreeViewData }) => {
 
   const container = useSyncDomSize({ ref });
 
-  const { textToDisplay, maxWidth } = useTruncateText({ text: item.name, container });
+  const { textToDisplay, maxWidth } = useTruncateText({ text: item.name, container, fontSize: '16px' });
 
   const Ele =
     textToDisplay !== item.name ? (
