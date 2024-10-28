@@ -63,7 +63,7 @@ const _PlayGroundContent = () => {
       cols={GRID_COLS}
       layouts={GRID_LAYOUTS}
       rowHeight={GRID_ROW_HEIGHT}
-      measureBeforeMount={true}
+      // measureBeforeMount={true}
       draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
       draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
     >
