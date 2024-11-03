@@ -478,6 +478,6 @@ blockquote {
   }
 }
 
-.diff-tailwindcss-wrapper {
-  color: black;
+*, *::before, *::after {
+  // border-color: currentColor;
 }

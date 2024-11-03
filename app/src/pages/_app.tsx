@@ -2,7 +2,7 @@
 import { ApolloProvider } from "@apollo/client";
 import { useApollo } from "@blog/graphql";
 import { ChakraProvider } from "@chakra-ui/react";
-import { __my_react_shared__ } from '@my-react/react'
+import { __my_react_shared__ } from "@my-react/react";
 import { IntlProvider } from "next-intl";
 import NextNProgress from "nextjs-progressbar";
 
