@@ -19,7 +19,7 @@ const BLOG_GRID_COLS = { lg: 3, md: 3, sm: 2, xs: 1, xxs: 1 };
 
 const MotionCard = motion(Card);
 
-const _Item = ({
+const Item_ = ({
   number,
   data,
   col,
@@ -98,7 +98,7 @@ const _Item = ({
 
 const { updateLayout, mergeLayout } = useListLayoutStore.getActions();
 
-const _BlogGridWithGridLayout = ({ data, state }: { data: GetBlogListQuery["repository"]["issues"]["nodes"]; state: boolean }) => {
+const BlogGridWithGridLayout_ = ({ data, state }: { data: GetBlogListQuery["repository"]["issues"]["nodes"]; state: boolean }) => {
   const newLayout = useGetResponseListLayout(data);
 
   const layouts = useListLayoutStore(useCallback((s) => s.data, []))
@@ -160,7 +160,7 @@ const _BlogGridWithGridLayout = ({ data, state }: { data: GetBlogListQuery["repo
   );
 };
 
-const _BlogGrid = ({ data, disableGridLayout = true }: { data: GetBlogListQuery["repository"]["issues"]["nodes"]; disableGridLayout?: boolean }) => {
+const BlogGrid_ = ({ data, disableGridLayout = true }: { data: GetBlogListQuery["repository"]["issues"]["nodes"]; disableGridLayout?: boolean }) => {
   const col = useBreakpointValue({ base: 1, md: 2, lg: 3, "2xl": 4 });
 
   const state = useFullScreen((s) => s.state);
@@ -169,12 +169,12 @@ const _BlogGrid = ({ data, disableGridLayout = true }: { data: GetBlogListQuery[
     return (
       <SimpleGrid width="100%" padding="2" columns={{ base: 1, md: 2, lg: 3, "2xl": 4 }} spacing={3}>
         {data.map((p, index) => (
-          <_Item data={p} number={index + 1} key={p.id + index} col={col} state={state} />
+          <Item_ data={p} number={index + 1} key={p.id + index} col={col} state={state} />
         ))}
       </SimpleGrid>
     );
   }
-  return <_BlogGridWithGridLayout data={data} state={state} />;
+  return <BlogGridWithGridLayout_ data={data} state={state} />;
 };
 
-export const BlogGrid = memo(_BlogGrid);
+export const BlogGrid = memo(BlogGrid_);

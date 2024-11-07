@@ -198,8 +198,8 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
                 },
               }}
             >
-              {/* @ts-expect-error */}
-              {data?.repository?.read1?.text || data?.repository?.read2?.text || ""}
+              {(data?.repository?.read1 && 'text' in data.repository.read1 ? data.repository.read1.text : "") || 
+               (data?.repository?.read2 && 'text' in data.repository.read2 ? data.repository.read2.text : "") || ""}
             </Markdown>
           </Box>
         </SkeletonText>

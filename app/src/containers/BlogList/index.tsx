@@ -107,7 +107,7 @@ const BlogListButton = (props: { onRefresh: () => void }) => {
   );
 };
 
-const _BlogList = () => {
+const BlogList_ = () => {
   const { before, after, navDirection = "first" } = useGetListParams();
 
   const source = useBlogSource((s) => s.source);
@@ -150,7 +150,7 @@ const _BlogList = () => {
   );
 };
 
-const _BlogListWithInfinityScroll = ({ isMobileWidth }: { isMobileWidth: boolean }) => {
+const BlogListWithInfinityScroll_ = ({ isMobileWidth }: { isMobileWidth: boolean }) => {
   const disableGridLayout = useGridLayout((s) => s.state);
 
   const state = useFullScreen((s) => s.state);
@@ -227,10 +227,10 @@ const _BlogListWithInfinityScroll = ({ isMobileWidth }: { isMobileWidth: boolean
   );
 };
 
-export const BlogList = memo(_BlogList);
+export const BlogList = memo(BlogList_);
 
 export const BlogGridWithInfinityScroll = memo(({ isMobileWidth }: { isMobileWidth: boolean }) => {
-  return <_BlogListWithInfinityScroll isMobileWidth={isMobileWidth} />;
+  return <BlogListWithInfinityScroll_ isMobileWidth={isMobileWidth} />;
 });
 
 BlogGridWithInfinityScroll.displayName = "BlogGridWithInfinityScroll";

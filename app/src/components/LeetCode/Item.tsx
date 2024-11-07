@@ -94,7 +94,7 @@ const ModalCard = ({ content }: { content: string }) => {
   );
 };
 
-const _LeetCodeContent = () => {
+const LeetCodeContent_ = () => {
   const { content, loading } = useFetchLeetCode();
 
   const selectContent = useLeetCodeSelectId((s) => s.state);
@@ -158,4 +158,4 @@ const _LeetCodeContent = () => {
   );
 };
 
-export const LeetCodeContent = memo(_LeetCodeContent);
+export const LeetCodeContent = memo(LeetCodeContent_);

@@ -8,7 +8,7 @@ import { useWindowSize } from "@app/hooks/useWindowSize";
 
 import type { ColorMode } from "@chakra-ui/react";
 
-const _Bg = () => {
+const Bg_ = () => {
   const isMounted = useIsMounted();
 
   const { colorMode } = useColorMode();
@@ -66,4 +66,4 @@ const AnimateBg = ({ colorMode, prevColorMode }: { colorMode: ColorMode; prevCol
   );
 };
 
-export const Bg = memo(_Bg);
+export const Bg = memo(Bg_);

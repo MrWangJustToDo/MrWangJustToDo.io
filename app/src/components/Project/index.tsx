@@ -56,7 +56,7 @@ export const Project = () => {
             <Spacer marginY="2em" />
             <AnimatePresence>
               {!data ? (
-                <Box display="grid" gridTemplateColumns={{ base: "repeat(1, 1fr)", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} columnGap="1em" rowGap="1em">
+                <Box display="grid" gridTemplateColumns={{ base: "repeat(1, 100%)", md: "repeat(2, 45%)", lg: "repeat(3, 32%)" }} columnGap="1em" rowGap="1em">
                   <Item type="MyReact" onOpenReadme={() => setType("MyReact")} onOpenPreview={() => set_Type("MyReact")} />
                   <Item type="RStore" onOpenReadme={() => setType("RStore")} onOpenPreview={() => set_Type("RStore")} />
                   <Item type="SSR" onOpenReadme={() => setType("SSR")} onOpenPreview={() => set_Type("SSR")} />

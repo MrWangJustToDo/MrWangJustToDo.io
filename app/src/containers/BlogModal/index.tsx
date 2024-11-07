@@ -6,7 +6,7 @@ import { useOverlaysClose, useOverlaysOpen } from "@app/hooks/useOverlay";
 
 import { DetailModalBody, DetailModalHeader } from "./DetailModal";
 
-const _BlogModal = () => {
+const BlogModal_ = () => {
   const { query, push } = useRouter();
   const open = useOverlaysOpen();
   const close = useOverlaysClose();
@@ -38,4 +38,4 @@ const _BlogModal = () => {
   return <React.Fragment />;
 };
 
-export const BlogModal = memo(_BlogModal);
+export const BlogModal = memo(BlogModal_);
