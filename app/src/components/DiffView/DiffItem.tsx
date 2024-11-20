@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { axiosClient } from "@blog/graphql";
 import {
   Box,
@@ -27,9 +28,9 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { DiffFile } from "@git-diff-view/core";
-import { DiffView } from "@git-diff-view/react";
+import { DiffModeEnum, DiffView } from "@git-diff-view/react";
 import { useInView } from "framer-motion";
-import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AiOutlineLoading } from "react-icons/ai";
 import { GoChevronDown, GoFold, GoLinkExternal, GoPulse, GoUnfold } from "react-icons/go";
 
@@ -80,7 +81,11 @@ export const DiffItem = ({
 
   const [expandAll, setExpandAll] = useState(false);
 
+  const [_expandAll, _setExpandAll] = useState(false);
+
   const previousExpand = usePrevious(expandAll);
+
+  const _previousExpand = usePrevious(_expandAll);
 
   const [content, setContent] = useState<string>();
 
@@ -134,7 +139,13 @@ export const DiffItem = ({
   }, [_onOpen, scrollToCurrent]);
 
   const onExpandToggle = useCallback(() => {
-    scrollToCurrent().then(() => setExpandAll((l) => !l));
+    scrollToCurrent().then(() => {
+      if (useDiffViewConfig.getReadonlyState().mode?.toString() === DiffModeEnum.Unified.toString()) {
+        _setExpandAll((l) => !l);
+      } else {
+        setExpandAll((l) => !l);
+      }
+    });
   }, [scrollToCurrent]);
 
   const loadFullContentDiff = useCallbackRef(() => {
@@ -211,7 +222,10 @@ export const DiffItem = ({
     },
   });
 
+  const { wrap, highlight, mode, size } = useDiffViewConfig();
+
   useEffect(() => {
+    if (mode?.toString() === DiffModeEnum.Unified.toString()) return;
     if (previousExpand !== expandAll && diffFile) {
       if (expandAll) {
         diffFile.onAllExpand("split");
@@ -219,51 +233,66 @@ export const DiffItem = ({
         diffFile.onAllCollapse("split");
       }
     }
-  }, [previousExpand, expandAll, diffFile]);
+  }, [previousExpand, expandAll, diffFile, mode]);
+
+  useEffect(() => {
+    if (mode?.toString() !== DiffModeEnum.Unified.toString()) return;
+    if (_previousExpand !== _expandAll && diffFile) {
+      if (_expandAll) {
+        diffFile.onAllExpand("unified");
+      } else {
+        diffFile.onAllCollapse("unified");
+      }
+    }
+  }, [_previousExpand, _expandAll, diffFile, mode]);
 
   useEffect(() => {
     autoSetCurrentInView();
   }, [inView, autoSetCurrentInView]);
 
-  const { wrap, highlight, mode, size } = useDiffViewConfig();
-
   const diffSize = size === DiffViewSize.Small ? 11.5 : size === DiffViewSize.Medium ? 13 : 15;
 
   let Ele = null;
 
-  const ForwardRefItem = forwardRef<HTMLButtonElement, IconButtonProps & { needPopover?: boolean }>(({ needPopover, onClick, ...props }, ref) => {
-    if (needPopover) {
-      return (
-        <PopoverTrigger>
-          <IconButton
-            aria-label="expand"
-            ref={ref}
-            icon={<Icon as={expandAll ? GoFold : GoUnfold} color="lightTextColor" />}
-            size="sm"
-            isDisabled={diffFile.fileLineLength > MaxFile}
-            display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
-            onClick={onClick}
-            {...props}
-          />
-        </PopoverTrigger>
-      );
-    } else {
-      return (
-        <IconButton
-          aria-label="expand"
-          ref={ref}
-          icon={<Icon as={expandAll ? GoFold : GoUnfold} color="lightTextColor" />}
-          size="sm"
-          display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
-          onClick={(e) => {
-            onClick?.(e);
-            onExpandToggle();
-          }}
-          {...props}
-        />
-      );
-    }
-  });
+  const ForwardRefItem = useMemo(
+    () =>
+      // eslint-disable-next-line react/display-name
+      forwardRef<HTMLButtonElement, IconButtonProps & { needPopover?: boolean }>(({ needPopover, onClick, ...props }, ref) => {
+        const finalExpandAll = mode?.toString() === DiffModeEnum.Unified.toString() ? _expandAll : expandAll;
+        if (needPopover) {
+          return (
+            <PopoverTrigger>
+              <IconButton
+                aria-label="expand"
+                ref={ref}
+                icon={<Icon as={finalExpandAll ? GoFold : GoUnfold} color="lightTextColor" />}
+                size="sm"
+                isDisabled={diffFile.fileLineLength > MaxFile}
+                display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
+                onClick={onClick}
+                {...props}
+              />
+            </PopoverTrigger>
+          );
+        } else {
+          return (
+            <IconButton
+              aria-label="expand"
+              ref={ref}
+              icon={<Icon as={finalExpandAll ? GoFold : GoUnfold} color="lightTextColor" />}
+              size="sm"
+              display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
+              onClick={(e) => {
+                onClick?.(e);
+                onExpandToggle();
+              }}
+              {...props}
+            />
+          );
+        }
+      }),
+    [diffFile?.fileLineLength, diffFile?.hasSomeLineCollapsed, expandAll, _expandAll, mode, onExpandToggle],
+  );
 
   ForwardRefItem.displayName = "IconButtonWithRef";
 
