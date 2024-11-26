@@ -8,8 +8,8 @@ export const theme: Partial<ChakraTheme> = {
   semanticTokens,
   breakpoints: { "2xl": "1200px", xl: "996px", lg: "768px", md: "480px", sm: "320px", base: "0px" },
   fonts: {
-    heading: "Product Sans, myFont",
-    body: "Product Sans, myFont",
-    mono: "Product Sans, myFont",
+    heading: "Outfit, myFont",
+    body: "Outfit, myFont",
+    mono: "Outfit, myFont",
   },
 };

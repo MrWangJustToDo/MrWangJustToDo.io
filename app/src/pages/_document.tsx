@@ -7,7 +7,13 @@ export default class Document extends NextDocument {
     return (
       <Html>
         <Head>
-          <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/google-sans"></link>
+          {/* <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/google-sans"></link> */}
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Outfit:wght@100..900&display=swap"
+            rel="stylesheet"
+          />
           <Script
             id="baidu_track"
             strategy="afterInteractive"
