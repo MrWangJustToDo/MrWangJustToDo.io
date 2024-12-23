@@ -75,8 +75,6 @@ export const DiffItem = ({
 
   const autoLoad = useDiffViewConfig.useShallowStableSelector((s) => s.autoLoad);
 
-  const engine = useDiffViewConfig.useShallowStableSelector((s) => s.engine);
-
   const [loading, setLoading] = useState(true);
 
   const [expandAll, setExpandAll] = useState(false);
@@ -188,8 +186,8 @@ export const DiffItem = ({
 
     setLoading(true);
 
-    workRef.current.postMessage({ id, data, theme, engine });
-  }, [item, workRef, content, theme, engine]);
+    workRef.current.postMessage({ id, data, theme, engine: useDiffViewConfig.getReadonlyState().engine });
+  }, [item, workRef, content, theme]);
 
   useEffect(() => {
     const cb = (event: MessageEvent<MessageData>) => {
