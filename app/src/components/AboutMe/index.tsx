@@ -16,7 +16,11 @@ import {
   TabPanels,
   Tabs,
   Tooltip,
+  useColorModeValue,
+  VStack,
 } from "@chakra-ui/react";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import GitHubCalendar from "react-github-calendar";
 import { GoPerson } from "react-icons/go";
 
@@ -24,8 +28,18 @@ import { useAboutMe } from "@app/hooks/useAboutMe";
 import { useIsMobile } from "@app/hooks/useIsMobile";
 import { resourceUri } from "@app/utils/resourceUri";
 
+import type { Dayjs } from "dayjs";
+
 export const AboutMe = () => {
   const isMobile = useIsMobile();
+
+  const [year, setYear] = useState<Dayjs>();
+
+  useEffect(() => {
+    setYear(dayjs());
+  }, []);
+
+  const colorScheme = useColorModeValue("light", "dark");
 
   const { isOpen, onClose, onOpen } = useAboutMe();
 
@@ -48,14 +62,20 @@ export const AboutMe = () => {
           <ModalCloseButton zIndex="popover" />
           <ModalBody>
             <Tabs variant="enclosed">
-              <TabList position="sticky" top="0" zIndex="sticky" backgroundColor="var(--modal-bg)">
+              <TabList position="sticky" paddingTop="1" marginTop="-2" top="-2" zIndex="sticky" backgroundColor="var(--modal-bg)">
                 <Tab>Github</Tab>
                 <Tab>Resume</Tab>
               </TabList>
               <TabPanels>
                 <TabPanel>
                   <Box marginTop="4em" />
-                  <GitHubCalendar username="MrWangJustToDo" />
+                  {year && (
+                    <VStack spacing="4">
+                      <GitHubCalendar username="MrWangJustToDo" colorScheme={colorScheme} year={year.year()} />
+                      <GitHubCalendar username="MrWangJustToDo" colorScheme={colorScheme} year={year.add(-1, "year").year()} />
+                      <GitHubCalendar username="MrWangJustToDo" colorScheme={colorScheme} year={year.add(-2, "year").year()} />
+                    </VStack>
+                  )}
                   <Box marginBottom="4em" />
                 </TabPanel>
                 <TabPanel>

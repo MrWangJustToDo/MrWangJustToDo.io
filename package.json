@@ -17,7 +17,7 @@
     "prettier": "prettier --ignore-path .prettierignore --write .",
     "fix": "pnpm -p -r -c exec eslint --fix src",
     "ts-check": "pnpm -s -p -r -c exec tsc --noEmit",
-    "clean": "pnpm -p -r -c exec rm -rf dist",
+    "clean": "pnpm -p -r -c exec rm -rf dist .next",
     "purge": "pnpm -p -r -c exec rm -rf node_modules",
     "prepare": "husky install & pnpm clean"
   },

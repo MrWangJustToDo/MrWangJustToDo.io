@@ -2,7 +2,6 @@
 import { ApolloProvider } from "@apollo/client";
 import { useApollo } from "@blog/graphql";
 import { ChakraProvider } from "@chakra-ui/react";
-import { __my_react_shared__ } from "@my-react/react";
 import { IntlProvider } from "next-intl";
 import NextNProgress from "nextjs-progressbar";
 
@@ -32,10 +31,6 @@ const onError = (error: IntlError) => {
     void 0;
   }
 };
-
-// 减少UI更新撕裂
-__my_react_shared__.enableLoopFromRoot.current = true;
-__my_react_shared__.enableConcurrentMode.current = false;
 
 export type NextPageComponent = NextComponentType<NextPageContext, Record<string, unknown>, Record<string, unknown>> & { disableLayout?: boolean };
 
