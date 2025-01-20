@@ -17,6 +17,7 @@ import type { AbstractIntlMessages, IntlError } from "next-intl";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import "@app/styles/global.scss";
+import "@git-diff-view/react/styles/diff-view.css";
 
 type PageProps = {
   _i18nMessage: AbstractIntlMessages;
