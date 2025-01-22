@@ -27,7 +27,7 @@ import { useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 import type { GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
 import type { IconButtonProps } from "@chakra-ui/react";
 
-const LargerFile = 3000;
+const LargerFile = 1000;
 
 const MaxFile = 10000;
 
@@ -186,7 +186,7 @@ export const DiffItemHeader = ({
             <Popover isLazy>
               {({ onClose }) => (
                 <>
-                  <Tooltip label={!expandAll ? "Expand all diff" : "UnExpand all diff"} closeOnScroll>
+                  <Tooltip label={!expandAll ? "Expand all diff" : "Collapse expanded lines"} closeOnScroll>
                     <ForwardRefItem aria-label="expand" needPopover={diffFile.fileLineLength > LargerFile} />
                   </Tooltip>
                   <Portal appendToParentPortal={false}>
@@ -195,13 +195,19 @@ export const DiffItemHeader = ({
                       <PopoverHeader>Note</PopoverHeader>
                       <PopoverCloseButton />
                       <PopoverBody>
-                        <Text fontSize="sm">This file is too large, it may take a long time to expand / unExpand all.</Text>
+                        <Text fontSize="sm">This file is too large, it may take a long time to expand / collapse all.</Text>
                       </PopoverBody>
                       <PopoverFooter textAlign="right">
                         <ButtonGroup variant="outline" spacing="6" size="sm">
                           <Button onClick={onClose}>Cancel</Button>
-                          <Button colorScheme="blue" onClick={onExpandToggle}>
-                            Expand
+                          <Button
+                            colorScheme="blue"
+                            onClick={() => {
+                              onExpandToggle();
+                              onClose();
+                            }}
+                          >
+                            {expandAll ? "Collapse" : "Expand"}
                           </Button>
                         </ButtonGroup>
                       </PopoverFooter>
