@@ -1,6 +1,8 @@
+@import url("overlayscrollbars/overlayscrollbars.css");
+
 @font-face {
-  font-family: 'myFont';
-  src: url('./LXGWNeoXiHei.ttf') format('truetype');
+  font-family: "myFont";
+  src: url("./LXGWNeoXiHei.ttf") format("truetype");
 }
 
 .no-select {
@@ -418,7 +420,8 @@ blockquote {
   overflow: auto;
 }
 
-.w-100, .w-full {
+.w-100,
+.w-full {
   width: 100%;
 }
 
@@ -476,6 +479,8 @@ blockquote {
   }
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   // border-color: currentColor;
 }

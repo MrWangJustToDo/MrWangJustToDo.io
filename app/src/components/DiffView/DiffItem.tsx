@@ -2,37 +2,18 @@
 import { axiosClient } from "@blog/graphql";
 import {
   Box,
-  Button,
-  ButtonGroup,
-  Flex,
-  Icon,
-  IconButton,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverFooter,
-  PopoverHeader,
-  PopoverTrigger,
-  Portal,
   Skeleton,
   Text,
-  Tooltip,
   useCallbackRef,
   useColorModeValue,
   useDisclosure,
   useOutsideClick,
-  usePrevious,
   useSafeLayoutEffect,
   useToast,
 } from "@chakra-ui/react";
 import { DiffFile } from "@git-diff-view/core";
-import { DiffModeEnum, DiffView } from "@git-diff-view/react";
 import { useInView } from "framer-motion";
-import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AiOutlineLoading } from "react-icons/ai";
-import { GoChevronDown, GoFold, GoLinkExternal, GoPulse, GoUnfold } from "react-icons/go";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { DiffViewSize, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 import { useInComparePage } from "@app/hooks/useExample";
@@ -40,14 +21,12 @@ import { useGitHubCompareSourceSelect, type GitHubCompareFileListType } from "@a
 import { useDomSize } from "@app/hooks/useSize";
 import { base64ToString } from "@app/utils/text";
 
+import { DiffItemContent } from "./DiffItemContent";
+import { DiffItemHeader } from "./DiffItemHeader";
+
 import type { MessageData } from "@app/worker/diffView.worker";
-import type { IconButtonProps } from "@chakra-ui/react";
 import type { DiffViewProps } from "@git-diff-view/react";
 import type { RefObject } from "react";
-
-const LargerFile = 3000;
-
-const MaxFile = 10000;
 
 const loadContent = async (url: string) => {
   const res = await axiosClient.get(url);
@@ -76,14 +55,6 @@ export const DiffItem = ({
   const autoLoad = useDiffViewConfig.useShallowStableSelector((s) => s.autoLoad);
 
   const [loading, setLoading] = useState(true);
-
-  const [expandAll, setExpandAll] = useState(false);
-
-  const [_expandAll, _setExpandAll] = useState(false);
-
-  const previousExpand = usePrevious(expandAll);
-
-  const _previousExpand = usePrevious(_expandAll);
 
   const [content, setContent] = useState<string>();
 
@@ -126,25 +97,10 @@ export const DiffItem = ({
     return a;
   }, [stickyHeight]);
 
-  const onToggle = useCallback(() => {
-    // setDone(false);
-    scrollToCurrent().then(() => _onToggle());
-  }, [_onToggle, scrollToCurrent]);
-
   const onOpen = useCallback(() => {
     // setDone(false);
     scrollToCurrent().then(() => _onOpen());
   }, [_onOpen, scrollToCurrent]);
-
-  const onExpandToggle = useCallback(() => {
-    scrollToCurrent().then(() => {
-      if (useDiffViewConfig.getReadonlyState().mode?.toString() === DiffModeEnum.Unified.toString()) {
-        _setExpandAll((l) => !l);
-      } else {
-        setExpandAll((l) => !l);
-      }
-    });
-  }, [scrollToCurrent]);
 
   const loadFullContentDiff = useCallbackRef(() => {
     if (item.patch && item.contents_url && !content) {
@@ -223,76 +179,12 @@ export const DiffItem = ({
   const { wrap, highlight, mode, size } = useDiffViewConfig();
 
   useEffect(() => {
-    if (mode?.toString() === DiffModeEnum.Unified.toString()) return;
-    if (previousExpand !== expandAll && diffFile) {
-      if (expandAll) {
-        diffFile.onAllExpand("split");
-      } else {
-        diffFile.onAllCollapse("split");
-      }
-    }
-  }, [previousExpand, expandAll, diffFile, mode]);
-
-  useEffect(() => {
-    if (mode?.toString() !== DiffModeEnum.Unified.toString()) return;
-    if (_previousExpand !== _expandAll && diffFile) {
-      if (_expandAll) {
-        diffFile.onAllExpand("unified");
-      } else {
-        diffFile.onAllCollapse("unified");
-      }
-    }
-  }, [_previousExpand, _expandAll, diffFile, mode]);
-
-  useEffect(() => {
     autoSetCurrentInView();
   }, [inView, autoSetCurrentInView]);
 
   const diffSize = size === DiffViewSize.Small ? 11.5 : size === DiffViewSize.Medium ? 13 : 15;
 
   let Ele = null;
-
-  const ForwardRefItem = useMemo(
-    () =>
-      // eslint-disable-next-line react/display-name
-      forwardRef<HTMLButtonElement, IconButtonProps & { needPopover?: boolean }>(({ needPopover, onClick, ...props }, ref) => {
-        const finalExpandAll = mode?.toString() === DiffModeEnum.Unified.toString() ? _expandAll : expandAll;
-        if (needPopover) {
-          return (
-            <PopoverTrigger>
-              <IconButton
-                aria-label="expand"
-                ref={ref}
-                icon={<Icon as={finalExpandAll ? GoFold : GoUnfold} color="lightTextColor" />}
-                size="sm"
-                isDisabled={diffFile.fileLineLength > MaxFile}
-                display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
-                onClick={onClick}
-                {...props}
-              />
-            </PopoverTrigger>
-          );
-        } else {
-          return (
-            <IconButton
-              aria-label="expand"
-              ref={ref}
-              icon={<Icon as={finalExpandAll ? GoFold : GoUnfold} color="lightTextColor" />}
-              size="sm"
-              display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
-              onClick={(e) => {
-                onClick?.(e);
-                onExpandToggle();
-              }}
-              {...props}
-            />
-          );
-        }
-      }),
-    [diffFile?.fileLineLength, diffFile?.hasSomeLineCollapsed, expandAll, _expandAll, mode, onExpandToggle],
-  );
-
-  ForwardRefItem.displayName = "IconButtonWithRef";
 
   if (item.patch && !diffFile) {
     Ele = <Skeleton height="50px" width="100%" />;
@@ -314,93 +206,18 @@ export const DiffItem = ({
             backgroundColor: "mobileCardBackgroundColor",
           }}
         >
-          <Flex
-            paddingX="4"
-            paddingY="1"
-            borderTopRadius="md"
-            borderRadius={isOpen ? undefined : "md"}
-            overflow="hidden"
-            alignItems="center"
-            border="1px"
-            position="relative"
-            zIndex="1"
-            borderColor="cardBorderColor"
-            backgroundColor="mobileCardBackgroundColor"
-          >
-            <ButtonGroup variant="ghost" marginRight="3" spacing="1">
-              <IconButton
-                aria-label="open"
-                icon={
-                  <Icon
-                    as={GoChevronDown}
-                    color="lightTextColor"
-                    transformOrigin="center"
-                    transition="transform 0.2s ease-in-out"
-                    transform={isOpen ? "rotate(0deg)" : "rotate(-90deg)"}
-                  />
-                }
-                fontSize="larger"
-                size="sm"
-                onClick={onToggle}
-              />
-              {item.patch ? (
-                loading ? (
-                  <IconButton
-                    icon={<Icon as={AiOutlineLoading} color="lightTextColor" animation="1s linear 0s infinite loading" />}
-                    aria-label="loading"
-                    as="div"
-                    size="sm"
-                  />
-                ) : (
-                  <Popover isLazy>
-                    {({ onClose }) => (
-                      <>
-                        <Tooltip label={!expandAll ? "Expand all diff" : "UnExpand all diff"} closeOnScroll>
-                          <ForwardRefItem aria-label="expand" needPopover={diffFile.fileLineLength > LargerFile} />
-                        </Tooltip>
-                        <Portal appendToParentPortal={false}>
-                          <PopoverContent>
-                            <PopoverArrow />
-                            <PopoverHeader>Note</PopoverHeader>
-                            <PopoverCloseButton />
-                            <PopoverBody>
-                              <Text fontSize="sm">This file is too large, it may take a long time to expand / unExpand all.</Text>
-                            </PopoverBody>
-                            <PopoverFooter textAlign="right">
-                              <ButtonGroup variant="outline" spacing="6" size="sm">
-                                <Button onClick={onClose}>Cancel</Button>
-                                <Button colorScheme="blue" onClick={onExpandToggle}>
-                                  Expand
-                                </Button>
-                              </ButtonGroup>
-                            </PopoverFooter>
-                          </PopoverContent>
-                        </Portal>
-                      </>
-                    )}
-                  </Popover>
-                )
-              ) : null}
-              {!autoLoad && !content && !loading && item.contents_url && (
-                <Tooltip label="Load full diff">
-                  <IconButton aria-label="load" icon={<Icon as={GoPulse} color="lightTextColor" />} size="sm" onClick={loadFullContentDiff} />
-                </Tooltip>
-              )}
-              {link && (
-                <Tooltip label="Goto github link">
-                  <IconButton
-                    aria-label="open"
-                    icon={<Icon as={GoLinkExternal} color="lightTextColor" />}
-                    size="sm"
-                    onClick={() => window.open(link, "_blank")}
-                  />
-                </Tooltip>
-              )}
-            </ButtonGroup>
-            <Text as="span" color="lightTextColor">
-              {item.status === "renamed" ? `${item.previous_filename} -> ${item.filename}` : item.filename}
-            </Text>
-          </Flex>
+          <DiffItemHeader
+            isOpen={isOpen}
+            item={item}
+            diffFile={diffFile}
+            loading={loading}
+            autoLoad={autoLoad}
+            _onToggle={_onToggle}
+            _onOpen={_onOpen}
+            link={link}
+            loadFullContentDiff={loadFullContentDiff}
+            scrollToCurrent={scrollToCurrent}
+          />
         </Box>
         <Box
           height={isOpen ? `auto` : "0px"}
@@ -416,7 +233,7 @@ export const DiffItem = ({
         >
           <div ref={ref} data-height={height}>
             {diffFile ? (
-              <DiffView
+              <DiffItemContent
                 diffFile={diffFile}
                 diffViewHighlight={highlight}
                 diffViewTheme={theme}

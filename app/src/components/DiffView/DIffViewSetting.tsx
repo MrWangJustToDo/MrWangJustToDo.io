@@ -20,11 +20,16 @@ import { forwardRef } from "react";
 import { GoGear } from "react-icons/go";
 
 import { DiffViewSize, HighlightEngine, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
+import { useInComparePage } from "@app/hooks/useExample";
+
+import { ColorMode } from "../ColorMode";
 
 import type { ButtonProps } from "@chakra-ui/react";
 
 export const DiffViewSetting = () => {
   const { size, setMode, mode, setSize, wrap, setWrap, highlight, setHighlight, autoLoad, setAutoLoad, engine, setEngine } = useDiffViewConfig();
+
+  const isInComparePage = useInComparePage();
 
   const ForwardRefButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => (
     <PopoverTrigger>
@@ -36,6 +41,7 @@ export const DiffViewSetting = () => {
 
   return (
     <Box display="inline-block">
+      {!isInComparePage && <ColorMode fontSize="xl" color="lightTextColor" marginRight="3" variant={undefined} size={undefined} />}
       <Popover trigger="click" placement="bottom-end">
         <Tooltip label="Diff config" closeOnClick={false}>
           <ForwardRefButton />

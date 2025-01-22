@@ -3,6 +3,7 @@ import { Flex, HStack, useCallbackRef } from "@chakra-ui/react";
 import { debounce } from "lodash";
 import { memo, useLayoutEffect, useMemo, useRef } from "react";
 
+import { HighlightEngine, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 import { useGitHubCompareSourceInView, useGitHubCompareSourceList } from "@app/hooks/useGitHubCompareSource";
 import { useDomSize } from "@app/hooks/useSize";
 
@@ -25,7 +26,13 @@ const _DiffContent = memo(() => {
   const { height } = useDomSize({ ref });
 
   useLayoutEffect(() => {
-    workRef.current = new Worker(new URL("@app/worker/diffView.worker", import.meta.url));
+    const engine = useDiffViewConfig.getReadonlyState().engine
+
+    if (engine === HighlightEngine.shiki) {
+      workRef.current = new Worker(new URL("@app/worker/diffView.shiki.worker", import.meta.url));
+    } else {
+      workRef.current = new Worker(new URL("@app/worker/diffView.default.worker", import.meta.url));
+    }
 
     return () => workRef.current.terminate();
   }, []);

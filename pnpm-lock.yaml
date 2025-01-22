@@ -209,6 +209,9 @@ importers:
       nextjs-progressbar:
         specifier: ^0.0.16
         version: 0.0.16(next@12.3.4(@babel/core@7.23.9)(babel-plugin-macros@3.1.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.79.5))(react@18.2.0)
+      overlayscrollbars:
+        specifier: ^2.10.0
+        version: 2.10.1
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -5581,6 +5584,9 @@ packages:
   os-tmpdir@1.0.2:
     resolution: {integrity: sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==}
     engines: {node: '>=0.10.0'}
+
+  overlayscrollbars@2.10.1:
+    resolution: {integrity: sha512-BQoUAaw533ZbqBIE8LzKtsIiOKzB3pkhA6oS2ol+8THB5b2VO91myEXPlKrQqXQRYHG53f/169fFBNrGZ9tzag==}
 
   p-cancelable@3.0.0:
     resolution: {integrity: sha512-mlVgR3PGuzlo0MmTdk4cXqXWlwQDLnONTAg6sm62XkMJEiRxN3GL3SffkYvqwonbkJBcrI7Uvv5Zh9yjvn2iUw==}
@@ -13840,6 +13846,8 @@ snapshots:
       strip-ansi: 7.1.0
 
   os-tmpdir@1.0.2: {}
+
+  overlayscrollbars@2.10.1: {}
 
   p-cancelable@3.0.0: {}
 
