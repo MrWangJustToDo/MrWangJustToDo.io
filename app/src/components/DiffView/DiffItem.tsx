@@ -212,9 +212,10 @@ export const DiffItem = ({
             diffFile={diffFile}
             loading={loading}
             autoLoad={autoLoad}
+            content={content}
+            link={link}
             _onToggle={_onToggle}
             _onOpen={_onOpen}
-            link={link}
             loadFullContentDiff={loadFullContentDiff}
             scrollToCurrent={scrollToCurrent}
           />
