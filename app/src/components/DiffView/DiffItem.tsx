@@ -222,6 +222,7 @@ export const DiffItem = ({
           <DiffItemHeader
             isOpen={isOpen}
             item={item}
+            key={diffFile?.getId()}
             diffFile={diffFile}
             loading={loading}
             autoLoad={autoLoad}

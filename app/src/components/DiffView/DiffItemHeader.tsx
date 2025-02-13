@@ -15,7 +15,6 @@ import {
   Button,
   Text,
   PopoverTrigger,
-  usePrevious,
 } from "@chakra-ui/react";
 import { DiffModeEnum, type DiffFile } from "@git-diff-view/react";
 import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
@@ -23,6 +22,7 @@ import { AiOutlineLoading } from "react-icons/ai";
 import { GoChevronDown, GoPulse, GoLinkExternal, GoFold, GoUnfold } from "react-icons/go";
 
 import { useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
+import { usePrevious } from "@app/hooks/usePrevious";
 
 import type { GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
 import type { IconButtonProps } from "@chakra-ui/react";
@@ -56,9 +56,9 @@ export const DiffItemHeader = ({
   loadFullContentDiff: () => void;
   scrollToCurrent: () => Promise<void>;
 }) => {
-  const [expandAll, setExpandAll] = useState(false);
+  const [expandAll, setExpandAll] = useState(() => diffFile?.hasExpandSplitAll);
 
-  const [_expandAll, _setExpandAll] = useState(false);
+  const [_expandAll, _setExpandAll] = useState(() => diffFile?.hasExpandUnifiedAll);
 
   const previousExpand = usePrevious(expandAll);
 
