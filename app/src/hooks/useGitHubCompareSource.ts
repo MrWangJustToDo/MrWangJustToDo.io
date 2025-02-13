@@ -19,6 +19,7 @@ type GitHubCompareSourceType = {
 };
 
 export type GitHubCompareFileListType = {
+  sha: string;
   filename: string;
   previous_filename?: string;
   patch: string;
@@ -86,7 +87,7 @@ export const useGitHubCompareSourceList = createState(
   {
     withDeepSelector: false,
     withStableSelector: true,
-    // withNamespace: "useDifHubCompareSourceList",
+    // withNamespace: { reduxDevTool: true, shallow: true, namespace: "useGitHubCompareSourceList" },
     withActions: (state) => ({
       setList: (list: GitHubCompareFileListType[]) => {
         state.list = list;

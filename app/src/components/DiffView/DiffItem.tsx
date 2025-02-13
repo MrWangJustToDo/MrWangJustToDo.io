@@ -1,16 +1,6 @@
 /* eslint-disable max-lines */
 import { axiosClient } from "@blog/graphql";
-import {
-  Box,
-  Skeleton,
-  Text,
-  useCallbackRef,
-  useColorModeValue,
-  useDisclosure,
-  useOutsideClick,
-  useSafeLayoutEffect,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Skeleton, Text, useCallbackRef, useColorModeValue, useDisclosure, useOutsideClick, useSafeLayoutEffect, useToast } from "@chakra-ui/react";
 import { DiffFile } from "@git-diff-view/core";
 import { useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -33,6 +23,10 @@ const loadContent = async (url: string) => {
   return res?.data;
 };
 
+const fileMap = new Map<string, DiffFile>();
+
+const resMap = new Map<string, { link: string; content: string }>();
+
 export const DiffItem = ({
   item,
   workRef,
@@ -44,7 +38,7 @@ export const DiffItem = ({
   stickyHeight: number;
   autoSetCurrentInView: () => void;
 }) => {
-  const [diffFile, setDiffFile] = useState<DiffFile>();
+  const [diffFile, setDiffFile] = useState<DiffFile>(() => fileMap.get(item.sha));
 
   const toast = useToast();
 
@@ -56,9 +50,9 @@ export const DiffItem = ({
 
   const [loading, setLoading] = useState(true);
 
-  const [content, setContent] = useState<string>();
+  const [content, setContent] = useState<string>(() => resMap.get(item.sha)?.content);
 
-  const [link, setLink] = useState("");
+  const [link, setLink] = useState(() => resMap.get(item.sha)?.link);
 
   const inCompare = useInComparePage();
 
@@ -105,12 +99,15 @@ export const DiffItem = ({
   const loadFullContentDiff = useCallbackRef(() => {
     if (item.patch && item.contents_url && !content) {
       loadContent(item.contents_url).then((res: { content: string; html_url: string; encoding: string }) => {
+        let c = "";
         if (res.encoding === "base64") {
-          setContent(base64ToString(res.content));
+          c = base64ToString(res.content);
+          setContent(c);
         } else {
           toast({ title: "Error", description: "Not support encoding", status: "error" });
         }
         setLink(res.html_url);
+        resMap.set(item.sha, { link: res.html_url, content: c });
       });
     }
   });
@@ -132,6 +129,18 @@ export const DiffItem = ({
       return;
     }
 
+    if (diffFile && !content) {
+      setLoading(false);
+
+      return;
+    }
+
+    if (diffFile && content && diffFile._newFileContent?.trim() === content?.trim()) {
+      setLoading(false);
+
+      return;
+    }
+
     const data: DiffViewProps<unknown>["data"] = {
       newFile: {
         fileName: item.filename,
@@ -142,15 +151,19 @@ export const DiffItem = ({
 
     setLoading(true);
 
-    workRef.current.postMessage({ id, data, theme, engine: useDiffViewConfig.getReadonlyState().engine });
-  }, [item, workRef, content, theme]);
+    workRef.current.postMessage({ id, data, theme, engine: useDiffViewConfig.getReadonlyState().engine, uuid: item.sha + (content ? "f" : "c") });
+  }, [item, workRef, content, theme, diffFile]);
 
   useEffect(() => {
     const cb = (event: MessageEvent<MessageData>) => {
       if (event.data.id === idRef.current) {
         setLoading(false);
 
-        setDiffFile(DiffFile.createInstance(event.data.data, event.data.bundle));
+        const d = DiffFile.createInstance(event.data.data, event.data.bundle);
+
+        setDiffFile(d);
+
+        fileMap.set(item.sha, d);
       }
     };
 
@@ -159,7 +172,7 @@ export const DiffItem = ({
     i.addEventListener("message", cb);
 
     return () => i.removeEventListener("message", cb);
-  }, [workRef]);
+  }, [item.sha, workRef]);
 
   useEffect(() => {
     if (currentIsSelect) {

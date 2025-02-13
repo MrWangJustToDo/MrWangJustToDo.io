@@ -48,7 +48,7 @@
     "react-remove-scroll": "^2.6.2",
     "react-resizable": "^3.0.5",
     "react-split": "^2.0.14",
-    "react-virtuoso": "^4.12.3",
+    "react-virtuoso": "^4.12.5",
     "reactivity-store": "^0.3.9",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.0",

@@ -159,7 +159,7 @@ export const DiffAsideTree = memo(
 
     return (
       <Box className="group" {...props}>
-        <Virtuoso<TreeViewData, null> ref={ref} overscan={60} fixedItemHeight={26} data={data as TreeViewData[]} itemContent={render} />
+        <Virtuoso<TreeViewData, null> ref={ref} overscan={600} fixedItemHeight={26} data={data as TreeViewData[]} itemContent={render} />
       </Box>
     );
   }),

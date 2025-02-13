@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Box, IconButton, Input, InputGroup, InputRightAddon } from "@chakra-ui/react";
-import { smoothScroll } from "@reactour/utils";
 import { useEffect, useRef } from "react";
 import { GoSearch } from "react-icons/go";
 
 import {
   useGitHubCompareSourceInView,
   useGitHubCompareSourceList,
-  useGitHubCompareSourceSelect,
-  useGitHubCompareTreeSelect,
 } from "@app/hooks/useGitHubCompareSource";
 import { useDomSize } from "@app/hooks/useSize";
 import { useWindowSize } from "@app/hooks/useWindowSize";
@@ -19,14 +16,10 @@ import { DiffAsideTree } from "./DiffAsideTree";
 
 import type { VirtuosoHandle } from "react-virtuoso";
 
-const setSelectKey = useGitHubCompareSourceSelect.getActions().setKey;
-
 export const DiffAside = () => {
   const list = useGitHubCompareSourceList((s) => s.flattenData);
 
   const id = useGitHubCompareSourceInView((s) => s.id);
-
-  const key = useGitHubCompareTreeSelect((s) => s.key);
 
   const treeRef = useRef<VirtuosoHandle>();
 
@@ -39,14 +32,6 @@ export const DiffAside = () => {
   const { height: groupHeight } = useDomSize({ ref: groupRef, delay: 16 });
 
   const { height: windowHeight } = useWindowSize();
-
-  useEffect(() => {
-    if (key) {
-      const ele = document.querySelector(`[data-file="${key}"]`) as HTMLElement;
-      ele && smoothScroll(ele, { behavior: "instant", block: "start" });
-      ele && setSelectKey(key);
-    }
-  }, [key]);
 
   useEffect(() => {
     if (id) {

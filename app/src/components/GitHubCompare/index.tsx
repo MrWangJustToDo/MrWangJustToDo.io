@@ -2,7 +2,10 @@ import { Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, Mod
 import { GoGitCompare } from "react-icons/go";
 
 import { useGitHubCompare } from "@app/hooks/useGitHubCompare";
+import { useGitHubCompareScrollContainer } from "@app/hooks/useGitHubCompareScrollContainer";
 import { Page } from "@app/views/compare";
+
+const { setEle } = useGitHubCompareScrollContainer.getActions();
 
 export const GitHubCompare = () => {
   const { onOpen } = useGitHubCompare();
@@ -30,7 +33,7 @@ export const GitHubCompareModal = () => {
       <ModalOverlay backdropFilter="blur(10px)" />
       <ModalContent border="1px" borderRadius="md" borderColor="cardBorderColor">
         <ModalCloseButton zIndex="overlay" />
-        <ModalBody paddingY="0" data-id="diff-view-body">
+        <ModalBody paddingY="0" data-id="diff-view-body" ref={setEle}>
           <Page />
         </ModalBody>
       </ModalContent>

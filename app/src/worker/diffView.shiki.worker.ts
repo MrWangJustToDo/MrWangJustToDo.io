@@ -7,6 +7,7 @@ import type { DiffViewProps } from "@git-diff-view/react";
 
 export type MessageData = {
   id: number;
+  uuid?: string;
   theme?: "light" | "dark";
   engine?: HighlightEngine;
   data: DiffViewProps<any>["data"];
@@ -30,6 +31,7 @@ onmessage = async (event: MessageEvent<MessageData>) => {
     data?.hunks || [],
     data?.oldFile?.fileLang || "",
     data?.newFile?.fileLang || "",
+    _data?.uuid
   );
 
   file.initTheme(_data.theme);

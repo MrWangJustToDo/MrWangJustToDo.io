@@ -6,7 +6,10 @@ import { DiffLink } from "@app/components/DiffLink";
 import { DiffView } from "@app/components/DiffView";
 import { CONTAINER_WIDTH } from "@app/config/container";
 import { useExample, useInComparePage } from "@app/hooks/useExample";
+import { useGitHubCompareScrollContainer } from "@app/hooks/useGitHubCompareScrollContainer";
 import { useGitHubCompareSourceState } from "@app/hooks/useGitHubCompareSource";
+
+const { setEle } = useGitHubCompareScrollContainer.getActions();
 
 export const Page = () => {
   const { url } = useGitHubCompareSourceState();
@@ -22,6 +25,7 @@ export const Page = () => {
       maxWidth={CONTAINER_WIDTH}
       padding="4"
       id="diff-view-body"
+      ref={setEle}
       backgroundColor="mobileCardBackgroundColor"
       overflow={inCompare ? "auto" : "initial"}
       height={inCompare ? "100vh" : "initial"}
