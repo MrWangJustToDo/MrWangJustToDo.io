@@ -110,6 +110,7 @@ const _DiffContent = memo(() => {
         <HStack spacing="2">
           <DiffAsideCompose />
           <DiffFileCount />
+          <small>(virtual scroll support)</small>
         </HStack>
         <DiffViewSetting />
       </Flex>
@@ -123,7 +124,17 @@ const _DiffContent = memo(() => {
           customScrollParent={ele as HTMLElement}
           itemContent={(index) => {
             const item = list[index];
-            return <DiffItem key={item.filename} item={item} workRef={workRef} autoSetCurrentInView={autoSetCurrentInView} stickyHeight={height} />;
+            return (
+              <DiffItem
+                key={item.filename}
+                item={item}
+                index={index}
+                workRef={workRef}
+                virtualRef={virtuosoRef}
+                autoSetCurrentInView={autoSetCurrentInView}
+                stickyHeight={height}
+              />
+            );
           }}
         />
       </Flex>

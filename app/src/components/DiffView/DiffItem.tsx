@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
 import { axiosClient } from "@blog/graphql";
-import { Box, Skeleton, Text, useCallbackRef, useColorModeValue, useDisclosure, useOutsideClick, useSafeLayoutEffect, useToast } from "@chakra-ui/react";
+import { Box, Skeleton, Text, useCallbackRef, useColorModeValue, useDisclosure, useOutsideClick, useToast } from "@chakra-ui/react";
 import { DiffFile } from "@git-diff-view/core";
 import { useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { DiffViewSize, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
-import { useInComparePage } from "@app/hooks/useExample";
+import { useGitHubCompareScrollContainer } from "@app/hooks/useGitHubCompareScrollContainer";
 import { useGitHubCompareSourceSelect, type GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
 import { useDomSize } from "@app/hooks/useSize";
 import { base64ToString } from "@app/utils/text";
@@ -17,6 +17,7 @@ import { DiffItemHeader } from "./DiffItemHeader";
 import type { MessageData } from "@app/worker/diffView.worker";
 import type { DiffViewProps } from "@git-diff-view/react";
 import type { RefObject } from "react";
+import type { VirtuosoHandle } from "react-virtuoso";
 
 const loadContent = async (url: string) => {
   const res = await axiosClient.get(url);
@@ -29,12 +30,16 @@ const resMap = new Map<string, { link: string; content: string }>();
 
 export const DiffItem = ({
   item,
+  index,
   workRef,
+  virtualRef,
   stickyHeight,
   autoSetCurrentInView,
 }: {
+  index: number;
   item: GitHubCompareFileListType;
   workRef: RefObject<Worker>;
+  virtualRef: RefObject<VirtuosoHandle>;
   stickyHeight: number;
   autoSetCurrentInView: () => void;
 }) => {
@@ -54,8 +59,6 @@ export const DiffItem = ({
 
   const [link, setLink] = useState(() => resMap.get(item.sha)?.link);
 
-  const inCompare = useInComparePage();
-
   // const [done, setDone] = useState(false);
 
   const idRef = useRef<number>();
@@ -64,13 +67,9 @@ export const DiffItem = ({
 
   const boxRef = useRef<HTMLDivElement>();
 
-  const containerRef = useRef<HTMLElement>();
+  const containerRef = useGitHubCompareScrollContainer((s) => s.eleRef) as RefObject<HTMLElement>;
 
   const theme = useColorModeValue("light", "dark");
-
-  useSafeLayoutEffect(() => {
-    containerRef.current = !inCompare ? document.querySelector("[data-id=diff-view-body]") : document.querySelector("#diff-view-body");
-  }, [inCompare]);
 
   const inView = useInView(boxRef, { root: containerRef, amount: "some", margin: `-${stickyHeight}px 0px 0px 0px` });
 
@@ -80,16 +79,17 @@ export const DiffItem = ({
 
   const scrollToCurrent = useCallback(() => {
     const ele = boxRef.current;
+
     const a = new Promise<void>((r) => {
       if (ele) {
-        containerRef.current.scrollTo({ top: ele.offsetTop - stickyHeight - 2 });
+        virtualRef.current?.scrollToIndex({ index, offset: -stickyHeight });
         r();
       } else {
         r();
       }
     });
     return a;
-  }, [stickyHeight]);
+  }, [index, stickyHeight, virtualRef]);
 
   const onOpen = useCallback(() => {
     // setDone(false);

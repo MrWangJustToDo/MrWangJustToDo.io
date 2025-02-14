@@ -1,12 +1,12 @@
-import { Box, IconButton, useBreakpointValue, useSafeLayoutEffect } from "@chakra-ui/react";
+import { Box, IconButton, useBreakpointValue } from "@chakra-ui/react";
 import { css, Global } from "@emotion/react";
 import { useScroll } from "framer-motion";
-import { memo, useEffect, useRef, useState, type ReactNode } from "react";
+import { memo, useEffect, useState, type ReactNode, type RefObject } from "react";
 import { GoChevronUp } from "react-icons/go";
 import ReactSplit from "react-split";
 
 import { useDiffAsideCompose } from "@app/hooks/useDiffAsideCompose";
-import { useInComparePage } from "@app/hooks/useExample";
+import { useGitHubCompareScrollContainer } from "@app/hooks/useGitHubCompareScrollContainer";
 
 const style = css`
   .split {
@@ -37,19 +37,13 @@ const style = css`
 export const DiffLayout = memo(({ aside, content }: { aside: ReactNode; content: ReactNode }) => {
   const [el, setEl] = useState<HTMLDivElement>();
 
-  const ref = useRef<HTMLElement>();
+  const eleRef = useGitHubCompareScrollContainer(s => s.eleRef) as RefObject<HTMLElement>;
 
   const [scrollY, setScrollY] = useState(false);
 
-  const inCompare = useInComparePage();
-
   const small = useBreakpointValue({ base: true, md: false }, { fallback: "md" });
 
-  useSafeLayoutEffect(() => {
-    ref.current = !inCompare ? document.querySelector("[data-id=diff-view-body]") : document.querySelector("#diff-view-body");
-  }, [inCompare]);
-
-  const { scrollYProgress } = useScroll({ container: ref });
+  const { scrollYProgress } = useScroll({ container: eleRef });
 
   const state = useDiffAsideCompose((s) => s.state);
 
@@ -84,7 +78,7 @@ export const DiffLayout = memo(({ aside, content }: { aside: ReactNode; content:
           fontSize="xl"
           display={scrollY ? "flex" : "none"}
           position="fixed"
-          onClick={() => ref.current.scrollTo({ top: 0 })}
+          onClick={() => eleRef.current.scrollTo({ top: 0 })}
           bottom="6"
           zIndex="modal"
           right="10"
@@ -120,7 +114,7 @@ export const DiffLayout = memo(({ aside, content }: { aside: ReactNode; content:
         fontSize="xl"
         display={scrollY ? "flex" : "none"}
         position="fixed"
-        onClick={() => ref.current.scrollTo({ top: 0 })}
+        onClick={() => eleRef.current.scrollTo({ top: 0 })}
         bottom="6"
         zIndex="modal"
         right="10"
