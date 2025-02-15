@@ -120,6 +120,8 @@ export const useGitHubCompareSourceList = createState(
           state.list = list;
           state.cacheList = list;
           state.fileExt = list.reduce<{ [p: string]: boolean }>((acc, cur) => {
+            const index = cur.filename.lastIndexOf(".");
+            if (index === -1) return acc;
             const ext = cur.filename.slice(cur.filename.lastIndexOf("."));
             acc[ext] = true;
             return acc;

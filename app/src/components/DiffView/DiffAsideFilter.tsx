@@ -10,7 +10,7 @@ import {
   MenuItemOption,
   MenuList,
   MenuOptionGroup,
-  Portal,
+  // Portal,
   Spacer,
   Spinner,
 } from "@chakra-ui/react";
@@ -54,19 +54,19 @@ export const DiffAsideFilter = (props: FlexProps) => {
         {({ isOpen }) => (
           <>
             <MenuButton isActive={isOpen} color="lightTextColor" as={IconButton} icon={<Icon as={FilterIcon} />} />
-            <Portal appendToParentPortal={false}>
-              <MenuList zIndex="modal">
-                <MenuOptionGroup value={selectedExt} type="checkbox">
-                  {Object.keys(fileExt).map((ext) => {
-                    return (
-                      <MenuItemOption key={ext} value={ext} closeOnSelect={false} onClick={() => onToggleExt(ext, value)}>
-                        {ext}
-                      </MenuItemOption>
-                    );
-                  })}
-                </MenuOptionGroup>
-              </MenuList>
-            </Portal>
+            {/* <Portal> */}
+            <MenuList zIndex="modal" maxHeight="400" overflowY="auto">
+              <MenuOptionGroup value={selectedExt} type="checkbox">
+                {Object.keys(fileExt).map((ext) => {
+                  return (
+                    <MenuItemOption key={ext} value={ext} closeOnSelect={false} onClick={() => onToggleExt(ext, value)}>
+                      {ext}
+                    </MenuItemOption>
+                  );
+                })}
+              </MenuOptionGroup>
+            </MenuList>
+            {/* </Portal> */}
           </>
         )}
       </Menu>

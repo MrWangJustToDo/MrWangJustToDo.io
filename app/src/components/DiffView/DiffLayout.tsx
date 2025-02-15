@@ -37,7 +37,7 @@ const style = css`
 export const DiffLayout = memo(({ aside, content }: { aside: ReactNode; content: ReactNode }) => {
   const [el, setEl] = useState<HTMLDivElement>();
 
-  const eleRef = useGitHubCompareScrollContainer(s => s.eleRef) as RefObject<HTMLElement>;
+  const eleRef = useGitHubCompareScrollContainer((s) => s.eleRef) as RefObject<HTMLElement>;
 
   const [scrollY, setScrollY] = useState(false);
 
@@ -106,7 +106,9 @@ export const DiffLayout = memo(({ aside, content }: { aside: ReactNode; content:
         cursor="col-resize"
         dragInterval={1}
       >
-        <Box flexShrink={0}>{aside}</Box>
+        <Box flexShrink={0} zIndex="modal" position="relative">
+          {aside}
+        </Box>
         <Box>{content}</Box>
       </ReactSplit>
       <IconButton

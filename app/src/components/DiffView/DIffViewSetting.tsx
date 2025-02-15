@@ -8,7 +8,6 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
-  Portal,
   Radio,
   RadioGroup,
   Spacer,
@@ -47,73 +46,71 @@ export const DiffViewSetting = () => {
         <Tooltip label="Diff config" closeOnClick={false}>
           <ForwardRefButton />
         </Tooltip>
-        <Portal appendToParentPortal={false}>
-          <PopoverContent>
-            <PopoverArrow />
-            <PopoverBody padding="5">
-              <FormControl as="fieldset">
-                <FormLabel as="legend">Font Size</FormLabel>
-                <RadioGroup defaultValue={size} onChange={setSize}>
-                  <HStack spacing="24px">
-                    <Radio value={DiffViewSize.Small}>Small</Radio>
-                    <Radio value={DiffViewSize.Medium}>Medium</Radio>
-                    <Radio value={DiffViewSize.Large}>Large</Radio>
-                  </HStack>
-                </RadioGroup>
-              </FormControl>
-              <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
-              <FormControl as="fieldset">
-                <FormLabel as="legend">Diff Mode</FormLabel>
-                <RadioGroup defaultValue={mode.toString()} onChange={(l) => setMode(l as unknown as DiffModeEnum)}>
-                  <HStack spacing="24px">
-                    <Radio value={DiffModeEnum.Split.toString()}>Split</Radio>
-                    <Radio value={DiffModeEnum.Unified.toString()}>Unified</Radio>
-                  </HStack>
-                </RadioGroup>
-              </FormControl>
-              <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
-              <FormControl as="fieldset">
-                <FormLabel as="legend">Line Mode</FormLabel>
-                <RadioGroup defaultValue={String(wrap)} onChange={(l) => setWrap(l === "true" ? true : false)}>
-                  <HStack spacing="24px">
-                    <Radio value="true">Wrap</Radio>
-                    <Radio value="false">No Wrap</Radio>
-                  </HStack>
-                </RadioGroup>
-              </FormControl>
-              <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
-              <FormControl as="fieldset">
-                <FormLabel as="legend">Highlight Mode</FormLabel>
-                <RadioGroup defaultValue={String(highlight)} onChange={(l) => setHighlight(l === "true" ? true : false)}>
-                  <HStack spacing="24px">
-                    <Radio value="true">Enable</Radio>
-                    <Radio value="false">Disable</Radio>
-                  </HStack>
-                </RadioGroup>
-              </FormControl>
-              <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
-              <FormControl as="fieldset">
-                <FormLabel as="legend">Highlight Engine (reload require)</FormLabel>
-                <RadioGroup defaultValue={String(engine)} onChange={(l) => setEngine(l as HighlightEngine)}>
-                  <HStack spacing="24px">
-                    <Radio value={HighlightEngine.lowlight}>{HighlightEngine.lowlight}</Radio>
-                    <Radio value={HighlightEngine.shiki}>{HighlightEngine.shiki}</Radio>
-                  </HStack>
-                </RadioGroup>
-              </FormControl>
-              <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
-              <FormControl as="fieldset">
-                <FormLabel as="legend">AutoLoad FullDiff</FormLabel>
-                <RadioGroup defaultValue={String(autoLoad)} onChange={(l) => setAutoLoad(l === "true" ? true : false)}>
-                  <HStack spacing="24px">
-                    <Radio value="true">Enable</Radio>
-                    <Radio value="false">Disable</Radio>
-                  </HStack>
-                </RadioGroup>
-              </FormControl>
-            </PopoverBody>
-          </PopoverContent>
-        </Portal>
+        <PopoverContent>
+          <PopoverArrow />
+          <PopoverBody padding="5">
+            <FormControl as="fieldset">
+              <FormLabel as="legend">Font Size</FormLabel>
+              <RadioGroup defaultValue={size} onChange={setSize}>
+                <HStack spacing="24px">
+                  <Radio value={DiffViewSize.Small}>Small</Radio>
+                  <Radio value={DiffViewSize.Medium}>Medium</Radio>
+                  <Radio value={DiffViewSize.Large}>Large</Radio>
+                </HStack>
+              </RadioGroup>
+            </FormControl>
+            <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
+            <FormControl as="fieldset">
+              <FormLabel as="legend">Diff Mode</FormLabel>
+              <RadioGroup defaultValue={mode.toString()} onChange={(l) => setMode(l as unknown as DiffModeEnum)}>
+                <HStack spacing="24px">
+                  <Radio value={DiffModeEnum.Split.toString()}>Split</Radio>
+                  <Radio value={DiffModeEnum.Unified.toString()}>Unified</Radio>
+                </HStack>
+              </RadioGroup>
+            </FormControl>
+            <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
+            <FormControl as="fieldset">
+              <FormLabel as="legend">Line Mode</FormLabel>
+              <RadioGroup defaultValue={String(wrap)} onChange={(l) => setWrap(l === "true" ? true : false)}>
+                <HStack spacing="24px">
+                  <Radio value="true">Wrap</Radio>
+                  <Radio value="false">No Wrap</Radio>
+                </HStack>
+              </RadioGroup>
+            </FormControl>
+            <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
+            <FormControl as="fieldset">
+              <FormLabel as="legend">Highlight Mode</FormLabel>
+              <RadioGroup defaultValue={String(highlight)} onChange={(l) => setHighlight(l === "true" ? true : false)}>
+                <HStack spacing="24px">
+                  <Radio value="true">Enable</Radio>
+                  <Radio value="false">Disable</Radio>
+                </HStack>
+              </RadioGroup>
+            </FormControl>
+            <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
+            <FormControl as="fieldset">
+              <FormLabel as="legend">Highlight Engine (reload require)</FormLabel>
+              <RadioGroup defaultValue={String(engine)} onChange={(l) => setEngine(l as HighlightEngine)}>
+                <HStack spacing="24px">
+                  <Radio value={HighlightEngine.lowlight}>{HighlightEngine.lowlight}</Radio>
+                  <Radio value={HighlightEngine.shiki}>{HighlightEngine.shiki}</Radio>
+                </HStack>
+              </RadioGroup>
+            </FormControl>
+            <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
+            <FormControl as="fieldset">
+              <FormLabel as="legend">AutoLoad FullDiff</FormLabel>
+              <RadioGroup defaultValue={String(autoLoad)} onChange={(l) => setAutoLoad(l === "true" ? true : false)}>
+                <HStack spacing="24px">
+                  <Radio value="true">Enable</Radio>
+                  <Radio value="false">Disable</Radio>
+                </HStack>
+              </RadioGroup>
+            </FormControl>
+          </PopoverBody>
+        </PopoverContent>
       </Popover>
     </Box>
   );
