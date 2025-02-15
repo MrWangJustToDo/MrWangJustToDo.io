@@ -14,6 +14,7 @@ import {
   Spacer,
   Box,
   Tooltip,
+  Icon,
 } from "@chakra-ui/react";
 import { DiffModeEnum } from "@git-diff-view/react";
 import { forwardRef } from "react";
@@ -33,7 +34,7 @@ export const DiffViewSetting = () => {
 
   const ForwardRefButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => (
     <PopoverTrigger>
-      <IconButton ref={ref} icon={<GoGear />} fontSize="xl" color="lightTextColor" aria-label="diff ui setting" {...props} />
+      <IconButton ref={ref} icon={<Icon as={GoGear} />} fontSize="xl" color="lightTextColor" aria-label="diff ui setting" {...props} />
     </PopoverTrigger>
   ));
 

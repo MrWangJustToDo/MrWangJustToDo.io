@@ -273,6 +273,7 @@ export const DiffItem = ({
       data-file={item.filename}
       data-in-view={inView}
       margin="2px"
+      marginBottom="1em"
       position="relative"
       borderRadius="md"
       _after={{

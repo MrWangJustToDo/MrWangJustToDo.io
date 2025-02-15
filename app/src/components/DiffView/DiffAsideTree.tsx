@@ -76,7 +76,7 @@ const RenderName = ({ item }: { item: TreeViewData }) => {
 
   const container = useSyncDomSize({ ref });
 
-  const { textToDisplay, maxWidth } = useTruncateText({ text: item.name, container, fontSize: '16px' });
+  const { textToDisplay, maxWidth } = useTruncateText({ text: item.name, container, fontSize: "16px" });
 
   const Ele =
     textToDisplay !== item.name ? (
@@ -155,7 +155,12 @@ export const DiffAsideTree = memo(
   forwardRef<VirtuosoHandle, BoxProps>((props, ref) => {
     const data = useGitHubCompareSourceList.useShallowStableSelector((s) => s.flattenData);
 
-    if (!data || !data.length) return null;
+    if (!data || !data.length)
+      return (
+        <Text textAlign="center" marginY="4" lineHeight="4em">
+          Empty
+        </Text>
+      );
 
     return (
       <Box className="group" {...props}>

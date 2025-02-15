@@ -68,6 +68,8 @@ export const generateDirs = (data: GitHubCompareFileListType[]) => {
 
         item.isDir = true;
 
+        item.isOpen = true;
+
         link(item.children);
       }
     });

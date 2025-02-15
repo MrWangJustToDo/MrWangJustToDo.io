@@ -1,5 +1,6 @@
 import { axiosClient } from "@blog/graphql";
 import { useToast } from "@chakra-ui/react";
+import { debounce } from "lodash-es";
 import { useEffect } from "react";
 import { createState } from "reactivity-store";
 
@@ -78,27 +79,71 @@ export const useGitHubCompareSource = createState(() => ({ ...temp }) as GitHubC
 
 export const useGitHubCompareSourceList = createState(
   () =>
-    ({ list: [], data: [], flattenData: [], loading: false }) as {
+    ({ list: [], data: [], flattenData: [], loading: false, cacheList: [], cacheData: [], cacheFlattenData: [], fileExt: {}, filterLoading: false }) as {
       list: GitHubCompareFileListType[];
+      cacheList: GitHubCompareFileListType[];
       data: TreeViewData[];
+      cacheData: TreeViewData[];
       flattenData: TreeViewData[];
+      cacheFlattenData: TreeViewData[];
+      fileExt: { [key: string]: boolean };
+      filterLoading: boolean;
       loading: boolean;
     },
   {
     withDeepSelector: false,
     withStableSelector: true,
     // withNamespace: { reduxDevTool: true, shallow: true, namespace: "useGitHubCompareSourceList" },
-    withActions: (state) => ({
-      setList: (list: GitHubCompareFileListType[]) => {
-        state.list = list;
-        state.data = generateDirs(list);
-        state.flattenData = state.data.map((i) => flattenDirs(i)).flat();
-      },
-      setLoading: (loading: boolean) => {
-        state.loading = loading;
-      },
-      refreshList: () => (state.flattenData = state.data.map((i) => flattenDirs(i, (l) => !l.isOpen)).flat()),
-    }),
+    withActions: (state) => {
+      const getFlattenData = () => state.data.map((i) => flattenDirs(i, (l) => !l.isOpen)).flat();
+
+      const onSearch = debounce((value: string) => {
+        state.list = state.cacheList.filter((i) => {
+          let hasMatchValue = true;
+          if (value) {
+            hasMatchValue = i.filename.toLowerCase().includes(value.toLowerCase());
+          }
+          return (
+            hasMatchValue &&
+            Object.keys(state.fileExt)
+              .filter((ext) => state.fileExt[ext])
+              .some((ext) => i.filename.toLowerCase().endsWith(ext))
+          );
+        });
+        state.data = generateDirs(state.list);
+        state.flattenData = getFlattenData();
+        state.filterLoading = false;
+      }, 200);
+
+      return {
+        setList: (list: GitHubCompareFileListType[]) => {
+          state.list = list;
+          state.cacheList = list;
+          state.fileExt = list.reduce<{ [p: string]: boolean }>((acc, cur) => {
+            const ext = cur.filename.slice(cur.filename.lastIndexOf("."));
+            acc[ext] = true;
+            return acc;
+          }, {});
+          state.data = generateDirs(list);
+          state.cacheData = state.data;
+          state.flattenData = getFlattenData();
+          state.cacheFlattenData = state.flattenData;
+        },
+        onSearch: (value: string) => {
+          state.filterLoading = true;
+          onSearch(value);
+        },
+        onToggleExt: (ext: string, value?: string) => {
+          state.fileExt[ext] = !state.fileExt[ext];
+          state.filterLoading = true;
+          onSearch(value);
+        },
+        setLoading: (loading: boolean) => {
+          state.loading = loading;
+        },
+        refreshList: () => (state.flattenData = getFlattenData()),
+      };
+    },
   },
 );
 
