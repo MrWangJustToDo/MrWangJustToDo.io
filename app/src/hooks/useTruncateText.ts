@@ -12,7 +12,7 @@ export const useTruncateText = ({ text, container, fontSize = "14px" }: { text: 
   const [state, setState] = useState(() => ({ textToDisplay: cache.get(text) || text, maxWidth: _cache.get(text) || Infinity }));
 
   useSafeLayoutEffect(() => {
-    const width = 20;
+    const width = 6;
     let maxWidth = Infinity;
     if (container.width !== 0) {
       const targetWidth = container.right - container.left - width;

@@ -76,6 +76,42 @@ export function useDomSize({
   return rect;
 }
 
+export const useStaticDomSize = ({
+  ref,
+  getEle,
+  cssSelector,
+  deps,
+}: {
+  ref?: RefObject<HTMLElement>;
+  getEle?: () => HTMLElement | null;
+  cssSelector?: string;
+  deps?: any[];
+}) => {
+  const [rect, setRect] = useState<DOMRectType>(INITIAL_RECT);
+
+  const getElementRef = useRef(getEle);
+
+  getElementRef.current = getEle;
+
+  useEffect(() => {
+    const domElement = ref
+      ? ref.current
+      : cssSelector
+        ? document.querySelector(cssSelector)
+        : getElementRef.current
+          ? getElementRef.current()
+          : null;
+    if (domElement) {
+      setRect(domElement.getBoundingClientRect());
+    }
+    return () => {
+      setRect(INITIAL_RECT);
+    };
+  }, [ref, cssSelector, setRect, ...(deps || [])]);
+
+  return rect;
+};
+
 export function useSyncDomSize({
   ref,
   cssSelector,

@@ -7,7 +7,7 @@ import { Virtuoso } from "react-virtuoso";
 import { toRaw } from "reactivity-store";
 
 import { useGitHubCompareSourceList, useGitHubCompareTreeSelect } from "@app/hooks/useGitHubCompareSource";
-import { useSyncDomSize } from "@app/hooks/useSize";
+import { useStaticDomSize } from "@app/hooks/useSize";
 import { useTruncateText } from "@app/hooks/useTruncateText";
 
 import type { TreeViewData } from "@app/utils/generateDir";
@@ -71,10 +71,10 @@ const RenderStatusIcon = ({ item }: { item: TreeViewData }) => {
   }
 };
 
-const RenderName = ({ item }: { item: TreeViewData }) => {
+const RenderName = ({ item, parentWidth }: { item: TreeViewData; parentWidth?: any }) => {
   const ref = useRef<HTMLDivElement>();
 
-  const container = useSyncDomSize({ ref });
+  const container = useStaticDomSize({ ref, deps: [parentWidth] });
 
   const { textToDisplay, maxWidth } = useTruncateText({ text: item.name, container, fontSize: "16px" });
 
@@ -94,7 +94,7 @@ const RenderName = ({ item }: { item: TreeViewData }) => {
   );
 };
 
-const RenderItem = ({ index, item }: { index: number; item: TreeViewData }) => {
+const RenderItem = ({ index, item, width: parentWidth }: { index: number; item: TreeViewData; width?: any }) => {
   const selectKey = useGitHubCompareTreeSelect((s) => s.key);
 
   const currentIsSelect = item?.id === selectKey;
@@ -142,14 +142,14 @@ const RenderItem = ({ index, item }: { index: number; item: TreeViewData }) => {
         {currentIsSelect && <RenderSelect />}
         <RenderIndent item={item} />
         <RenderIcon item={item} />
-        <RenderName item={item} />
+        <RenderName item={item} parentWidth={parentWidth} />
         <RenderStatusIcon item={item} />
       </Flex>
     </Box>
   );
 };
 
-const render = (index: number, item: TreeViewData) => <RenderItem index={index} item={item} />;
+// const render = (index: number, item: TreeViewData) => <RenderItem index={index} item={item} />;
 
 export const DiffAsideTree = memo(
   forwardRef<VirtuosoHandle, BoxProps>((props, ref) => {
@@ -164,7 +164,13 @@ export const DiffAsideTree = memo(
 
     return (
       <Box className="group" {...props}>
-        <Virtuoso<TreeViewData, null> ref={ref} overscan={600} fixedItemHeight={26} data={data as TreeViewData[]} itemContent={render} />
+        <Virtuoso<TreeViewData, null>
+          ref={ref}
+          increaseViewportBy={200}
+          fixedItemHeight={26}
+          data={data as TreeViewData[]}
+          itemContent={(index: number, item: TreeViewData) => <RenderItem index={index} item={item} width={props.width} />}
+        />
       </Box>
     );
   }),

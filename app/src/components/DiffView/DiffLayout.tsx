@@ -6,6 +6,7 @@ import { GoChevronUp } from "react-icons/go";
 import ReactSplit from "react-split";
 
 import { useDiffAsideCompose } from "@app/hooks/useDiffAsideCompose";
+import { useDiffLayoutSize } from "@app/hooks/useDiffLayoutSize";
 import { useGitHubCompareScrollContainer } from "@app/hooks/useGitHubCompareScrollContainer";
 
 const style = css`
@@ -34,10 +35,14 @@ const style = css`
   }
 `;
 
+const { set } = useDiffLayoutSize.getActions();
+
 export const DiffLayout = memo(({ aside, content }: { aside: ReactNode; content: ReactNode }) => {
   const [el, setEl] = useState<HTMLDivElement>();
 
   const eleRef = useGitHubCompareScrollContainer((s) => s.eleRef) as RefObject<HTMLElement>;
+
+  const data = useDiffLayoutSize((s) => s.data);
 
   const [scrollY, setScrollY] = useState(false);
 
@@ -92,7 +97,7 @@ export const DiffLayout = memo(({ aside, content }: { aside: ReactNode; content:
       <Global styles={style} />
       <ReactSplit
         className="split"
-        sizes={[22, 78]}
+        sizes={data as number[]}
         minSize={100}
         expandToMin={false}
         gutterSize={5}
@@ -102,6 +107,7 @@ export const DiffLayout = memo(({ aside, content }: { aside: ReactNode; content:
           setEl(gutter);
           return gutter;
         }}
+        onDragEnd={set}
         snapOffset={30}
         cursor="col-resize"
         dragInterval={1}

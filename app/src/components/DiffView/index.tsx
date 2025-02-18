@@ -13,9 +13,9 @@ const right = <DiffContent />;
 export const DiffView = () => {
   const { loading } = useGitHubCompareSourceList((s) => ({ loading: s.loading }));
 
-  if (loading) {
-    return <Skeleton height="100vh" />;
-  }
-
-  return <DiffLayout aside={left} content={right} />;
+  return (
+    <Skeleton height="100vh" isLoaded={!loading}>
+      <DiffLayout aside={left} content={right} />
+    </Skeleton>
+  );
 };
