@@ -7,6 +7,7 @@ import { createState } from "reactivity-store";
 import { flattenDirs, generateDirs } from "@app/utils/generateDir";
 
 import { useDebouncedState } from "./useDebouncedState";
+import { useDiffLoadedItems } from "./useDiffLoadedItems";
 import { useDiffOpenedItems } from "./useDiffOpenedItems";
 
 import type { TreeViewData } from "@app/utils/generateDir";
@@ -34,6 +35,7 @@ export type GitHubCompareFileListType = {
 };
 
 const { openAll } = useDiffOpenedItems.getActions();
+const { reset } = useDiffLoadedItems.getActions();
 
 const temp: GitHubCompareSourceType = { owner: "MrWangJustToDo", repo: "git-diff-view", sourceCommit: "v0.0.12", targetCommit: "v0.0.13", key: 0, dirty: true };
 
@@ -129,6 +131,7 @@ export const useGitHubCompareSourceList = createState(
             acc[ext] = true;
             return acc;
           }, {});
+          reset();
           openAll(
             list.reduce<Record<string, boolean>>((acc, cur) => {
               acc[cur.filename] = true;

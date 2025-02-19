@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { axiosClient } from "@blog/graphql";
-import { Box, Skeleton, Text, useCallbackRef, useColorModeValue, useOutsideClick, useToast } from "@chakra-ui/react";
+import { Box, Skeleton, Text, useCallbackRef, useColorModeValue, useOutsideClick, useSafeLayoutEffect, useToast } from "@chakra-ui/react";
 import { DiffFile } from "@git-diff-view/core";
 import { useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -19,7 +19,6 @@ import { DiffItemHeader } from "./DiffItemHeader";
 import type { MessageData } from "@app/worker/diffView.worker";
 import type { DiffViewProps } from "@git-diff-view/react";
 import type { RefObject } from "react";
-import type { VirtuosoHandle } from "react-virtuoso";
 
 const loadContent = async (url: string) => {
   const res = await axiosClient.get(url);
@@ -30,7 +29,7 @@ const fileMap = new Map<string, DiffFile>();
 
 const resMap = new Map<string, { link: string; content: string }>();
 
-const { toggle, open } = useDiffOpenedItems.getActions();
+const { toggle } = useDiffOpenedItems.getActions();
 
 const { open: load } = useDiffLoadedItems.getActions();
 
@@ -38,16 +37,16 @@ export const DiffItem = ({
   item,
   index,
   workRef,
-  virtualRef,
   stickyHeight,
+  scrollToIndex,
   autoSetCurrentInView,
 }: {
   index: number;
   item: GitHubCompareFileListType;
   workRef: RefObject<Worker>;
-  virtualRef: RefObject<VirtuosoHandle>;
   stickyHeight: number;
   autoSetCurrentInView: () => void;
+  scrollToIndex: (index: number) => void;
 }) => {
   const [diffFile, setDiffFile] = useState<DiffFile>(() => fileMap.get(item.sha));
 
@@ -56,8 +55,6 @@ export const DiffItem = ({
   const isOpen = useDiffOpenedItems.useShallowSelector((s) => s.keys[item.filename]);
 
   const _onToggle = useCallback(() => toggle(item.filename), [item.filename]);
-
-  const _onOpen = useCallback(() => open(item.filename), [item.filename]);
 
   const { key, setKey } = useGitHubCompareSourceSelect();
 
@@ -85,26 +82,19 @@ export const DiffItem = ({
 
   const { height } = useDomSize({ ref, deps: [diffFile] });
 
-  const currentIsSelect = key === item.filename;
-
   const scrollToCurrent = useCallback(() => {
     const ele = boxRef.current;
 
     const a = new Promise<void>((r) => {
       if (ele) {
-        virtualRef.current?.scrollToIndex({ index, offset: -stickyHeight });
+        scrollToIndex(index);
         r();
       } else {
         r();
       }
     });
     return a;
-  }, [index, stickyHeight, virtualRef]);
-
-  const onOpen = useCallback(() => {
-    // setDone(false);
-    scrollToCurrent().then(() => _onOpen());
-  }, [_onOpen, scrollToCurrent]);
+  }, [index, scrollToIndex]);
 
   const loadFullContentDiff = useCallbackRef(() => {
     if (item.patch && item.contents_url && !content) {
@@ -128,7 +118,7 @@ export const DiffItem = ({
     }
   }, [isOpen, content, inView, autoLoad, loadFullContentDiff]);
 
-  useEffect(() => {
+  useSafeLayoutEffect(() => {
     if (!isOpen) return;
 
     const id = Math.random();
@@ -173,13 +163,13 @@ export const DiffItem = ({
   useEffect(() => {
     const cb = (event: MessageEvent<MessageData>) => {
       if (event.data.id === idRef.current) {
-        setLoading(false);
-
         const d = DiffFile.createInstance(event.data.data, event.data.bundle);
 
         setDiffFile(d);
 
         fileMap.set(item.sha, d);
+
+        setLoading(false);
       }
     };
 
@@ -189,12 +179,6 @@ export const DiffItem = ({
 
     return () => i.removeEventListener("message", cb);
   }, [item.sha, workRef]);
-
-  useEffect(() => {
-    if (currentIsSelect) {
-      onOpen();
-    }
-  }, [currentIsSelect, onOpen]);
 
   useOutsideClick({
     ref: boxRef,
@@ -213,95 +197,89 @@ export const DiffItem = ({
 
   const diffSize = size === DiffViewSize.Small ? 11.5 : size === DiffViewSize.Medium ? 13 : 15;
 
-  const Ele = (
-    <>
+  return (
+    <Box display="flow-root">
       <Box
-        position="sticky"
-        top={"var(--sticky-top)"}
-        zIndex="sticky"
-        _before={{
+        ref={boxRef}
+        data-file={item.filename}
+        data-in-view={inView}
+        margin="2px"
+        position="relative"
+        borderRadius="md"
+        _after={{
+          content: '""',
           position: "absolute",
           width: "100%",
           height: "100%",
-          content: '""',
           top: 0,
           left: 0,
+          zIndex: "sticky",
           pointerEvents: "none",
-          backgroundColor: "mobileCardBackgroundColor",
+          borderRadius: "md",
+          boxShadow: key === item.filename ? "0 0 2px rgba(60, 200, 255, 1)" : undefined,
         }}
       >
-        <DiffItemHeader
-          isOpen={isOpen}
-          item={item}
-          key={diffFile?.getId()}
-          diffFile={diffFile}
-          loading={loading}
-          autoLoad={autoLoad}
-          content={content}
-          link={link}
-          _onToggle={_onToggle}
-          _onOpen={_onOpen}
-          loadFullContentDiff={loadFullContentDiff}
-          scrollToCurrent={scrollToCurrent}
-        />
+        <Box
+          position="sticky"
+          top={"var(--sticky-top)"}
+          zIndex="sticky"
+          _before={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            content: '""',
+            top: 0,
+            left: 0,
+            pointerEvents: "none",
+            backgroundColor: "mobileCardBackgroundColor",
+          }}
+        >
+          <DiffItemHeader
+            isOpen={isOpen}
+            item={item}
+            diffFile={diffFile}
+            loading={loading}
+            autoLoad={autoLoad}
+            content={content}
+            link={link}
+            _onToggle={_onToggle}
+            loadFullContentDiff={loadFullContentDiff}
+            scrollToCurrent={scrollToCurrent}
+          />
+        </Box>
+        <Box
+          height={isOpen ? `auto` : "0px"}
+          visibility={isOpen ? "visible" : "hidden"}
+          // transition="all 0.2s ease-in-out"
+          borderBottomRadius="md"
+          marginTop="-1px"
+          border="1px"
+          borderTop="none"
+          borderColor="cardBorderColor"
+          overflow="hidden"
+          // onTransitionEndCapture={() => setDone(true)}
+        >
+          <Skeleton width="100%" isLoaded={!loading}>
+            <div ref={ref} data-height={height}>
+              {diffFile ? (
+                <DiffItemContent
+                  diffFile={diffFile}
+                  diffViewHighlight={highlight}
+                  diffViewTheme={theme}
+                  diffViewWrap={wrap}
+                  diffViewMode={mode}
+                  diffViewFontSize={diffSize}
+                />
+              ) : (
+                <Text textAlign="center" padding="2">
+                  Empty
+                </Text>
+              )}
+            </div>
+          </Skeleton>
+        </Box>
       </Box>
-      <Box
-        height={isOpen ? `auto` : "0px"}
-        visibility={isOpen ? "visible" : "hidden"}
-        // transition="all 0.2s ease-in-out"
-        borderBottomRadius="md"
-        marginTop="-1px"
-        border="1px"
-        borderTop="none"
-        borderColor="cardBorderColor"
-        overflow="hidden"
-        // onTransitionEndCapture={() => setDone(true)}
-      >
-        <Skeleton width="100%" isLoaded={!!diffFile}>
-          <div ref={ref} data-height={height}>
-            {diffFile ? (
-              <DiffItemContent
-                diffFile={diffFile}
-                diffViewHighlight={highlight}
-                diffViewTheme={theme}
-                diffViewWrap={wrap}
-                diffViewMode={mode}
-                diffViewFontSize={diffSize}
-              />
-            ) : (
-              <Text textAlign="center" padding="2">
-                Empty
-              </Text>
-            )}
-          </div>
-        </Skeleton>
-      </Box>
-    </>
-  );
-
-  return (
-    <Box
-      ref={boxRef}
-      data-file={item.filename}
-      data-in-view={inView}
-      margin="2px"
-      marginBottom="1em"
-      position="relative"
-      borderRadius="md"
-      _after={{
-        content: '""',
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        top: 0,
-        left: 0,
-        zIndex: "sticky",
-        pointerEvents: "none",
-        borderRadius: "md",
-        boxShadow: key === item.filename ? "0 0 2px rgba(60, 200, 255, 1)" : undefined,
-      }}
-    >
-      {Ele}
+      <Box height="1em" />
     </Box>
   );
 };

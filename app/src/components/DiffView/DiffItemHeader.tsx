@@ -39,7 +39,6 @@ export const DiffItemHeader = ({
   autoLoad,
   content,
   link,
-  _onOpen,
   _onToggle,
   loadFullContentDiff,
   scrollToCurrent,
@@ -52,7 +51,6 @@ export const DiffItemHeader = ({
   content?: string;
   link?: string;
   _onToggle: () => void;
-  _onOpen: () => void;
   loadFullContentDiff: () => void;
   scrollToCurrent: () => Promise<void>;
 }) => {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Flex, HStack, useCallbackRef } from "@chakra-ui/react";
+import { Box, Flex, HStack, useCallbackRef } from "@chakra-ui/react";
 import { debounce } from "lodash";
 import { memo, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Virtuoso } from "react-virtuoso";
@@ -26,7 +26,7 @@ import type { VirtuosoHandle } from "react-virtuoso";
 
 const { setId } = useGitHubCompareSourceInView.getActions();
 
-const { openAll } = useDiffOpenedItems.getActions();
+const { openAll, open } = useDiffOpenedItems.getActions();
 
 const setSelectKey = useGitHubCompareSourceSelect.getActions().setKey;
 
@@ -79,6 +79,8 @@ const _DiffContent = memo(() => {
 
   const ele = useGitHubCompareScrollContainer((s) => s.ele);
 
+  const scrollToIndex = useCallbackRef((index: number) => virtuosoRef.current?.scrollToIndex({ index, align: "start", offset: -height }));
+
   useEffect(() => {
     const unSubscribe = useGitHubCompareTreeSelect.subscribe(
       (s) => s.key,
@@ -92,7 +94,9 @@ const _DiffContent = memo(() => {
 
           openAll({ ...currentLoadedKeys });
 
-          virtuosoRef.current?.scrollToIndex({ index, align: "start" });
+          scrollToIndex(index);
+
+          open(key);
 
           setSelectKey(key);
         }
@@ -100,7 +104,7 @@ const _DiffContent = memo(() => {
     );
 
     return unSubscribe;
-  }, [list]);
+  }, [list, scrollToIndex]);
 
   return (
     <>
@@ -123,7 +127,7 @@ const _DiffContent = memo(() => {
         <DiffViewSetting />
       </Flex>
       {/* @ts-ignore */}
-      <Flex display="flex" flexDirection="column" rowGap="4" style={{ ["--sticky-top"]: `${height}px` }}>
+      <Box style={{ ["--sticky-top"]: `${height}px` }}>
         <Virtuoso
           totalCount={list.length}
           useWindowScroll
@@ -138,14 +142,14 @@ const _DiffContent = memo(() => {
                 item={item}
                 index={index}
                 workRef={workRef}
-                virtualRef={virtuosoRef}
-                autoSetCurrentInView={autoSetCurrentInView}
                 stickyHeight={height}
+                scrollToIndex={scrollToIndex}
+                autoSetCurrentInView={autoSetCurrentInView}
               />
             );
           }}
         />
-      </Flex>
+      </Box>
     </>
   );
 });
