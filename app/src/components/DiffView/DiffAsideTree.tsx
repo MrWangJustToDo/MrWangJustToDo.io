@@ -88,7 +88,7 @@ const RenderName = ({ item, parentWidth }: { item: TreeViewData; parentWidth?: a
     );
 
   return (
-    <Box marginLeft="2" width="calc(var(--tree-item-width) - 2.5em)" ref={ref} data-width={container.width} data-max-width={maxWidth}>
+    <Box marginLeft="2" flexGrow={1} ref={ref} data-width={container.width} data-content-width={maxWidth}>
       {maxWidth === Infinity ? <SkeletonText noOfLines={1} /> : Ele}
     </Box>
   );
@@ -99,9 +99,7 @@ const RenderItem = ({ index, item, width: parentWidth }: { index: number; item: 
 
   const currentIsSelect = item?.id === selectKey;
 
-  const left = `${Indent * item.deep}px + 8px`;
-
-  const width = `var(--tree-container-width) - 2px`;
+  const left = `${Indent * item.deep}px`;
 
   return (
     <Box
@@ -129,21 +127,18 @@ const RenderItem = ({ index, item, width: parentWidth }: { index: number; item: 
       backgroundColor={currentIsSelect ? "blackAlpha.200" : undefined}
       _hover={{ backgroundColor: "blackAlpha.200" }}
     >
-      <Flex
-        alignItems="center"
-        height="100%"
-        paddingX="2"
-        paddingLeft={`calc(${left})`}
-        width={`calc(${width})`}
-        // @ts-ignore
-        style={{ ["--tree-item-width"]: `calc(${width})` }}
-        position="relative"
-      >
+      <Flex alignItems="center" height="100%" paddingLeft={`calc(${left})`} width="full" data-aside-item position="relative">
+        <Box width="2" color="transparent" flexShrink="0" flexGrow="0">
+          .
+        </Box>
         {currentIsSelect && <RenderSelect />}
         <RenderIndent item={item} />
         <RenderIcon item={item} />
         <RenderName item={item} parentWidth={parentWidth} />
         <RenderStatusIcon item={item} />
+        <Box width="2" color="transparent" flexShrink="0" flexGrow="0">
+          .
+        </Box>
       </Flex>
     </Box>
   );
@@ -152,8 +147,10 @@ const RenderItem = ({ index, item, width: parentWidth }: { index: number; item: 
 // const render = (index: number, item: TreeViewData) => <RenderItem index={index} item={item} />;
 
 export const DiffAsideTree = memo(
-  forwardRef<VirtuosoHandle, BoxProps>((props, ref) => {
+  forwardRef<VirtuosoHandle, BoxProps & { containerWidth: number }>((props, ref) => {
     const data = useGitHubCompareSourceList.useShallowStableSelector((s) => s.flattenData);
+
+    const { onScroll, containerWidth, ...last } = props;
 
     if (!data || !data.length)
       return (
@@ -163,13 +160,14 @@ export const DiffAsideTree = memo(
       );
 
     return (
-      <Box className="group" {...props}>
+      <Box className="group" {...last}>
         <Virtuoso<TreeViewData, null>
           ref={ref}
           increaseViewportBy={200}
           fixedItemHeight={26}
+          onScroll={onScroll}
           data={data as TreeViewData[]}
-          itemContent={(index: number, item: TreeViewData) => <RenderItem index={index} item={item} width={props.width} />}
+          itemContent={(index: number, item: TreeViewData) => <RenderItem index={index} item={item} width={containerWidth} />}
         />
       </Box>
     );

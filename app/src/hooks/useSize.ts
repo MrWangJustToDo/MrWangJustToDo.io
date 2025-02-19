@@ -102,6 +102,8 @@ export const useStaticDomSize = ({
           ? getElementRef.current()
           : null;
     if (domElement) {
+      (domElement as HTMLElement).style.width = "auto";
+      
       setRect(domElement.getBoundingClientRect());
     }
     return () => {
