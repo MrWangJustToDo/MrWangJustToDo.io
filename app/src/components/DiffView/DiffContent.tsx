@@ -4,6 +4,8 @@ import { debounce } from "lodash";
 import { memo, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Virtuoso } from "react-virtuoso";
 
+import { useDiffLoadedItems } from "@app/hooks/useDiffLoadedItems";
+import { useDiffOpenedItems } from "@app/hooks/useDiffOpenedItems";
 import { HighlightEngine, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 import { useGitHubCompareScrollContainer } from "@app/hooks/useGitHubCompareScrollContainer";
 import {
@@ -23,6 +25,8 @@ import type { GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSourc
 import type { VirtuosoHandle } from "react-virtuoso";
 
 const { setId } = useGitHubCompareSourceInView.getActions();
+
+const { openAll } = useDiffOpenedItems.getActions();
 
 const setSelectKey = useGitHubCompareSourceSelect.getActions().setKey;
 
@@ -84,6 +88,10 @@ const _DiffContent = memo(() => {
         const index = list.findIndex((i) => i.filename === key);
 
         if (index !== -1) {
+          const currentLoadedKeys = useDiffLoadedItems.getReadonlyState().keys;
+
+          openAll({ ...currentLoadedKeys });
+
           virtuosoRef.current?.scrollToIndex({ index, align: "start" });
 
           setSelectKey(key);

@@ -115,8 +115,8 @@ export const DiffItemHeader = ({
                 ref={ref}
                 icon={<Icon as={finalExpandAll ? GoFold : GoUnfold} color="lightTextColor" />}
                 size="sm"
-                isDisabled={diffFile.fileLineLength > MaxFile}
-                display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
+                isDisabled={diffFile?.fileLineLength > MaxFile}
+                display={diffFile?.hasSomeLineCollapsed ? "flex" : "none"}
                 onClick={onClick}
                 {...props}
               />
@@ -129,7 +129,7 @@ export const DiffItemHeader = ({
               ref={ref}
               icon={<Icon as={finalExpandAll ? GoFold : GoUnfold} color="lightTextColor" />}
               size="sm"
-              display={diffFile.hasSomeLineCollapsed ? "flex" : "none"}
+              display={diffFile?.hasSomeLineCollapsed ? "flex" : "none"}
               onClick={(e) => {
                 onClick?.(e);
                 onExpandToggle();
@@ -187,7 +187,7 @@ export const DiffItemHeader = ({
               {({ onClose }) => (
                 <>
                   <Tooltip label={!expandAll ? "Expand all diff" : "Collapse expanded lines"} closeOnScroll>
-                    <ForwardRefItem aria-label="expand" needPopover={diffFile.fileLineLength > LargerFile} />
+                    <ForwardRefItem aria-label="expand" needPopover={diffFile?.fileLineLength > LargerFile} />
                   </Tooltip>
                   <Portal appendToParentPortal={false}>
                     <PopoverContent>

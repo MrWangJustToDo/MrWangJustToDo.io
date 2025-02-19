@@ -1,10 +1,12 @@
 /* eslint-disable max-lines */
 import { axiosClient } from "@blog/graphql";
-import { Box, Skeleton, Text, useCallbackRef, useColorModeValue, useDisclosure, useOutsideClick, useToast } from "@chakra-ui/react";
+import { Box, Skeleton, Text, useCallbackRef, useColorModeValue, useOutsideClick, useToast } from "@chakra-ui/react";
 import { DiffFile } from "@git-diff-view/core";
 import { useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useDiffLoadedItems } from "@app/hooks/useDiffLoadedItems";
+import { useDiffOpenedItems } from "@app/hooks/useDiffOpenedItems";
 import { DiffViewSize, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 import { useGitHubCompareScrollContainer } from "@app/hooks/useGitHubCompareScrollContainer";
 import { useGitHubCompareSourceSelect, type GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
@@ -28,6 +30,10 @@ const fileMap = new Map<string, DiffFile>();
 
 const resMap = new Map<string, { link: string; content: string }>();
 
+const { toggle, open } = useDiffOpenedItems.getActions();
+
+const { open: load } = useDiffLoadedItems.getActions();
+
 export const DiffItem = ({
   item,
   index,
@@ -47,13 +53,17 @@ export const DiffItem = ({
 
   const toast = useToast();
 
-  const { isOpen, onToggle: _onToggle, onOpen: _onOpen } = useDisclosure({ defaultIsOpen: true });
+  const isOpen = useDiffOpenedItems.useShallowSelector((s) => s.keys[item.filename]);
+
+  const _onToggle = useCallback(() => toggle(item.filename), [item.filename]);
+
+  const _onOpen = useCallback(() => open(item.filename), [item.filename]);
 
   const { key, setKey } = useGitHubCompareSourceSelect();
 
   const autoLoad = useDiffViewConfig.useShallowStableSelector((s) => s.autoLoad);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [content, setContent] = useState<string>(() => resMap.get(item.sha)?.content);
 
@@ -119,6 +129,8 @@ export const DiffItem = ({
   }, [isOpen, content, inView, autoLoad, loadFullContentDiff]);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const id = Math.random();
 
     idRef.current = id;
@@ -130,12 +142,16 @@ export const DiffItem = ({
     }
 
     if (diffFile && !content) {
+      load(item.filename);
+
       setLoading(false);
 
       return;
     }
 
     if (diffFile && content && diffFile._newFileContent?.trim() === content?.trim()) {
+      load(item.filename);
+
       setLoading(false);
 
       return;
@@ -152,7 +168,7 @@ export const DiffItem = ({
     setLoading(true);
 
     workRef.current.postMessage({ id, data, theme, engine: useDiffViewConfig.getReadonlyState().engine, uuid: item.sha + (content ? "f" : "c") });
-  }, [item, workRef, content, theme, diffFile]);
+  }, [item, workRef, content, theme, diffFile, isOpen]);
 
   useEffect(() => {
     const cb = (event: MessageEvent<MessageData>) => {
@@ -197,55 +213,51 @@ export const DiffItem = ({
 
   const diffSize = size === DiffViewSize.Small ? 11.5 : size === DiffViewSize.Medium ? 13 : 15;
 
-  let Ele = null;
-
-  if (item.patch && !diffFile) {
-    Ele = <Skeleton height="50px" width="100%" />;
-  } else {
-    Ele = (
-      <>
-        <Box
-          position="sticky"
-          top={"var(--sticky-top)"}
-          zIndex="sticky"
-          _before={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            content: '""',
-            top: 0,
-            left: 0,
-            pointerEvents: "none",
-            backgroundColor: "mobileCardBackgroundColor",
-          }}
-        >
-          <DiffItemHeader
-            isOpen={isOpen}
-            item={item}
-            key={diffFile?.getId()}
-            diffFile={diffFile}
-            loading={loading}
-            autoLoad={autoLoad}
-            content={content}
-            link={link}
-            _onToggle={_onToggle}
-            _onOpen={_onOpen}
-            loadFullContentDiff={loadFullContentDiff}
-            scrollToCurrent={scrollToCurrent}
-          />
-        </Box>
-        <Box
-          height={isOpen ? `auto` : "0px"}
-          visibility={isOpen ? "visible" : "hidden"}
-          // transition="all 0.2s ease-in-out"
-          borderBottomRadius="md"
-          marginTop="-1px"
-          border="1px"
-          borderTop="none"
-          borderColor="cardBorderColor"
-          overflow="hidden"
-          // onTransitionEndCapture={() => setDone(true)}
-        >
+  const Ele = (
+    <>
+      <Box
+        position="sticky"
+        top={"var(--sticky-top)"}
+        zIndex="sticky"
+        _before={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          content: '""',
+          top: 0,
+          left: 0,
+          pointerEvents: "none",
+          backgroundColor: "mobileCardBackgroundColor",
+        }}
+      >
+        <DiffItemHeader
+          isOpen={isOpen}
+          item={item}
+          key={diffFile?.getId()}
+          diffFile={diffFile}
+          loading={loading}
+          autoLoad={autoLoad}
+          content={content}
+          link={link}
+          _onToggle={_onToggle}
+          _onOpen={_onOpen}
+          loadFullContentDiff={loadFullContentDiff}
+          scrollToCurrent={scrollToCurrent}
+        />
+      </Box>
+      <Box
+        height={isOpen ? `auto` : "0px"}
+        visibility={isOpen ? "visible" : "hidden"}
+        // transition="all 0.2s ease-in-out"
+        borderBottomRadius="md"
+        marginTop="-1px"
+        border="1px"
+        borderTop="none"
+        borderColor="cardBorderColor"
+        overflow="hidden"
+        // onTransitionEndCapture={() => setDone(true)}
+      >
+        <Skeleton width="100%" isLoaded={!!diffFile}>
           <div ref={ref} data-height={height}>
             {diffFile ? (
               <DiffItemContent
@@ -262,10 +274,10 @@ export const DiffItem = ({
               </Text>
             )}
           </div>
-        </Box>
-      </>
-    );
-  }
+        </Skeleton>
+      </Box>
+    </>
+  );
 
   return (
     <Box

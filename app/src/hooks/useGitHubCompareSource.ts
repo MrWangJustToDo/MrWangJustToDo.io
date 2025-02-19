@@ -7,6 +7,7 @@ import { createState } from "reactivity-store";
 import { flattenDirs, generateDirs } from "@app/utils/generateDir";
 
 import { useDebouncedState } from "./useDebouncedState";
+import { useDiffOpenedItems } from "./useDiffOpenedItems";
 
 import type { TreeViewData } from "@app/utils/generateDir";
 
@@ -31,6 +32,8 @@ export type GitHubCompareFileListType = {
   deletions: number;
   status?: "added" | "modified" | "removed" | "renamed";
 };
+
+const { openAll } = useDiffOpenedItems.getActions();
 
 const temp: GitHubCompareSourceType = { owner: "MrWangJustToDo", repo: "git-diff-view", sourceCommit: "v0.0.12", targetCommit: "v0.0.13", key: 0, dirty: true };
 
@@ -126,6 +129,12 @@ export const useGitHubCompareSourceList = createState(
             acc[ext] = true;
             return acc;
           }, {});
+          openAll(
+            list.reduce<Record<string, boolean>>((acc, cur) => {
+              acc[cur.filename] = true;
+              return acc;
+            }, {}),
+          );
           state.data = generateDirs(list);
           state.cacheData = state.data;
           state.flattenData = getFlattenData();
