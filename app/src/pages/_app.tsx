@@ -2,7 +2,6 @@
 import { ApolloProvider } from "@apollo/client";
 import { useApollo } from "@blog/graphql";
 import { ChakraProvider } from "@chakra-ui/react";
-import { __my_react_shared__ } from "@my-react/react";
 import { IntlProvider } from "next-intl";
 import NextNProgress from "nextjs-progressbar";
 
@@ -40,8 +39,6 @@ interface NextAppProps extends AppProps {
   Component: NextPageComponent;
   pageProps: PageProps;
 }
-
-__my_react_shared__.enableConcurrentMode.current = false;
 
 function MyApp({ Component, pageProps }: NextAppProps) {
   const { _apolloState = {}, _i18nMessage = {}, ...restProps } = pageProps;
