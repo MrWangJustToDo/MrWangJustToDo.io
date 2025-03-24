@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Box, Flex, Icon, SkeletonText, Text, Tooltip, type BoxProps } from "@chakra-ui/react";
-import { Children, forwardRef, memo, useRef, type ReactNode } from "react";
+import { Box, Flex, Icon, Text, type BoxProps } from "@chakra-ui/react";
+import { Children, forwardRef, memo, type ReactNode } from "react";
 import { FaFile, FaFolder, FaFolderOpen } from "react-icons/fa";
 import { VscDiffAdded, VscDiffModified, VscDiffRemoved, VscDiffRenamed } from "react-icons/vsc";
 import { Virtuoso } from "react-virtuoso";
 import { toRaw } from "reactivity-store";
 
 import { useGitHubCompareSourceList, useGitHubCompareTreeSelect } from "@app/hooks/useGitHubCompareSource";
-import { useStaticDomSize } from "@app/hooks/useSize";
-import { useTruncateText } from "@app/hooks/useTruncateText";
 
 import type { TreeViewData } from "@app/utils/generateDir";
 import type { VirtuosoHandle } from "react-virtuoso";
@@ -49,9 +47,9 @@ const RenderIndent = ({ item }: { item: TreeViewData }) => {
 
 const RenderIcon = ({ item }: { item: TreeViewData }) => {
   if (item.isDir) {
-    return <Icon as={item.isOpen ? FaFolderOpen : FaFolder} color="blue.500" />;
+    return <Icon flexShrink={0} as={item.isOpen ? FaFolderOpen : FaFolder} color="blue.500" />;
   } else {
-    return <Icon as={FaFile} color="gray.400" />;
+    return <Icon flexShrink={0} as={FaFile} color="gray.400" />;
   }
 };
 
@@ -71,30 +69,29 @@ const RenderStatusIcon = ({ item }: { item: TreeViewData }) => {
   }
 };
 
-const RenderName = ({ item, parentWidth }: { item: TreeViewData; parentWidth?: any }) => {
-  const ref = useRef<HTMLDivElement>();
+const RenderName = ({ item }: { item: TreeViewData }) => {
+  const middleLength = Math.floor(item.name.length / 2);
 
-  const container = useStaticDomSize({ ref, deps: [parentWidth] });
+  const leftStr = item.name.slice(0, middleLength);
 
-  const { textToDisplay, maxWidth } = useTruncateText({ text: item.name, container, fontSize: "16px" });
-
-  const Ele =
-    textToDisplay !== item.name ? (
-      <Tooltip label={item.name}>
-        <Text>{textToDisplay}</Text>
-      </Tooltip>
-    ) : (
-      <Text>{textToDisplay}</Text>
-    );
+  const rightStr = item.name.slice(middleLength);
 
   return (
-    <Box marginLeft="2" flexGrow={1} ref={ref} data-width={container.width} data-content-width={maxWidth}>
-      {maxWidth === Infinity ? <SkeletonText noOfLines={1} /> : Ele}
-    </Box>
+    <Flex maxWidth="full" alignItems="center">
+      <RenderIcon item={item} />
+      <Text whiteSpace="nowrap" marginLeft={2} textOverflow="ellipsis" overflow="hidden" flexShrink={1}>
+        {leftStr}
+      </Text>
+      <Text textAlign="left" marginRight={2} style={{ direction: "rtl" }} whiteSpace="nowrap" overflow="hidden" flexShrink={1}>
+        &lrm;
+        {rightStr}
+        &lrm;
+      </Text>
+    </Flex>
   );
 };
 
-const RenderItem = ({ index, item, width: parentWidth }: { index: number; item: TreeViewData; width?: any }) => {
+const RenderItem = ({ index, item }: { index: number; item: TreeViewData }) => {
   const selectKey = useGitHubCompareTreeSelect((s) => s.key);
 
   const currentIsSelect = item?.id === selectKey;
@@ -127,30 +124,23 @@ const RenderItem = ({ index, item, width: parentWidth }: { index: number; item: 
       backgroundColor={currentIsSelect ? "blackAlpha.200" : undefined}
       _hover={{ backgroundColor: "blackAlpha.200" }}
     >
-      <Flex alignItems="center" height="100%" paddingLeft={`calc(${left})`} width="full" data-aside-item position="relative">
-        <Box width="2" color="transparent" flexShrink="0" flexGrow="0">
-          .
-        </Box>
+      <Flex alignItems="center" height="100%" paddingX="2" width="full" data-aside-item position="relative">
         {currentIsSelect && <RenderSelect />}
         <RenderIndent item={item} />
-        <RenderIcon item={item} />
-        <RenderName item={item} parentWidth={parentWidth} />
-        <RenderStatusIcon item={item} />
-        <Box width="2" color="transparent" flexShrink="0" flexGrow="0">
-          .
+        <Box width="calc(100% - 4em)" flexGrow={1} paddingLeft={`calc(${left})`}>
+          <RenderName item={item} />
         </Box>
+        <RenderStatusIcon item={item} />
       </Flex>
     </Box>
   );
 };
 
-// const render = (index: number, item: TreeViewData) => <RenderItem index={index} item={item} />;
-
 export const DiffAsideTree = memo(
-  forwardRef<VirtuosoHandle, BoxProps & { containerWidth: number }>((props, ref) => {
+  forwardRef<VirtuosoHandle, BoxProps>((props, ref) => {
     const data = useGitHubCompareSourceList.useShallowStableSelector((s) => s.flattenData);
 
-    const { onScroll, containerWidth, ...last } = props;
+    const { onScroll, ...last } = props;
 
     if (!data || !data.length)
       return (
@@ -167,7 +157,7 @@ export const DiffAsideTree = memo(
           fixedItemHeight={26}
           onScroll={onScroll}
           data={data as TreeViewData[]}
-          itemContent={(index: number, item: TreeViewData) => <RenderItem index={index} item={item} width={containerWidth} />}
+          itemContent={(index: number, item: TreeViewData) => <RenderItem index={index} item={item} />}
         />
       </Box>
     );
