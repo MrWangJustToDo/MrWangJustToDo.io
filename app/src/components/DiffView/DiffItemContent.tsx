@@ -1,18 +1,17 @@
-import { Box, useColorModeValue } from "@chakra-ui/react";
+import { useColorModeValue } from "@chakra-ui/react";
 import { DiffModeEnum, DiffView } from "@git-diff-view/react";
 import { OverlayScrollbars } from "overlayscrollbars";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { DiffViewProps } from "@git-diff-view/react";
+import type { RefObject } from "react";
 
-export const DiffItemContent = (props: Omit<DiffViewProps<string[]>, "data">) => {
-  const { diffViewMode = DiffModeEnum.Split, diffFile, diffViewWrap, extendData } = props;
+export const DiffItemContent = (props: Omit<DiffViewProps<string[]>, "data"> & { boxRef: RefObject<HTMLDivElement> }) => {
+  const { diffViewMode = DiffModeEnum.Split, diffFile, diffViewWrap, extendData, boxRef } = props;
 
   const [hasInit, setHasInit] = useState(false);
 
   const colorScheme = useColorModeValue("light", "dark");
-
-  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (diffFile && !diffViewWrap) {
@@ -20,9 +19,9 @@ export const DiffItemContent = (props: Omit<DiffViewProps<string[]>, "data">) =>
       const init = () => {
         const isSplitMode = diffViewMode & DiffModeEnum.Split;
         if (isSplitMode) {
-          const leftScrollbar = ref.current?.querySelector("[data-left]") as HTMLDivElement;
-          const rightScrollbar = ref.current?.querySelector("[data-right]") as HTMLDivElement;
-          const scrollContainers = Array.from(ref.current?.querySelectorAll(".diff-table-scroll-container") || []) as HTMLDivElement[];
+          const leftScrollbar = boxRef.current?.querySelector("[data-left]") as HTMLDivElement;
+          const rightScrollbar = boxRef.current?.querySelector("[data-right]") as HTMLDivElement;
+          const scrollContainers = Array.from(boxRef.current?.querySelectorAll(".diff-table-scroll-container") || []) as HTMLDivElement[];
           const [left, right] = scrollContainers;
           if (left && right) {
             const i1 = OverlayScrollbars(
@@ -58,8 +57,8 @@ export const DiffItemContent = (props: Omit<DiffViewProps<string[]>, "data">) =>
             });
           }
         } else {
-          const scrollBarContainer = ref.current?.querySelector("[data-full]") as HTMLDivElement;
-          const scrollContainer = ref.current?.querySelector(".diff-table-scroll-container") as HTMLDivElement;
+          const scrollBarContainer = boxRef.current?.querySelector("[data-full]") as HTMLDivElement;
+          const scrollContainer = boxRef.current?.querySelector(".diff-table-scroll-container") as HTMLDivElement;
           if (scrollContainer) {
             const i = OverlayScrollbars(
               { target: scrollContainer, scrollbars: { slot: scrollBarContainer } },
@@ -89,21 +88,7 @@ export const DiffItemContent = (props: Omit<DiffViewProps<string[]>, "data">) =>
     } else {
       setHasInit(true);
     }
-  }, [diffFile, diffViewWrap, diffViewMode, colorScheme]);
+  }, [diffFile, diffViewWrap, diffViewMode, colorScheme, boxRef]);
 
-  return (
-    <div ref={ref}>
-      <DiffView {...props} extendData={hasInit ? extendData : undefined} />
-      <Box data-scroll-target position="sticky" bottom="0" marginTop="-6px" display="flex" height="6px" width="full">
-        {diffViewMode & DiffModeEnum.Split ? (
-          <>
-            <Box data-left position="relative" width="50%" />
-            <Box data-right position="relative" width="50%" />
-          </>
-        ) : (
-          <div data-full></div>
-        )}
-      </Box>
-    </div>
-  );
+  return <DiffView {...props} extendData={hasInit ? extendData : undefined} />;
 };

@@ -2,6 +2,7 @@
 import { axiosClient } from "@blog/graphql";
 import { Box, Skeleton, Text, useCallbackRef, useColorModeValue, useOutsideClick, useSafeLayoutEffect, useToast } from "@chakra-ui/react";
 import { DiffFile } from "@git-diff-view/core";
+import { DiffModeEnum, type DiffViewProps } from "@git-diff-view/react";
 import { useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -17,7 +18,6 @@ import { DiffItemContent } from "./DiffItemContent";
 import { DiffItemHeader } from "./DiffItemHeader";
 
 import type { MessageData } from "@app/worker/diffView.worker";
-import type { DiffViewProps } from "@git-diff-view/react";
 import type { RefObject } from "react";
 
 const loadContent = async (url: string) => {
@@ -268,6 +268,7 @@ export const DiffItem = ({
                   diffViewTheme={theme}
                   diffViewWrap={wrap}
                   diffViewMode={mode}
+                  boxRef={boxRef}
                   diffViewFontSize={diffSize}
                 />
               ) : (
@@ -277,6 +278,16 @@ export const DiffItem = ({
               )}
             </div>
           </Skeleton>
+        </Box>
+        <Box data-scroll-target position="sticky" bottom="0" marginTop="-6px" zIndex="sticky" display="flex" height="6px" width="full">
+          {mode & DiffModeEnum.Split ? (
+            <>
+              <Box data-left position="relative" width="50%" />
+              <Box data-right position="relative" width="50%" />
+            </>
+          ) : (
+            <div data-full />
+          )}
         </Box>
       </Box>
       <Box height="1em" />
