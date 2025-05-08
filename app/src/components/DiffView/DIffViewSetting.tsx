@@ -16,8 +16,8 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { DiffModeEnum } from "@git-diff-view/react";
+import { SettingsIcon as GoGear } from "lucide-react";
 import { forwardRef } from "react";
-import { GoGear } from "react-icons/go";
 
 import { DiffViewSize, HighlightEngine, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 import { useInComparePage } from "@app/hooks/useExample";

@@ -1,7 +1,7 @@
 import { Box, CloseButton, Link, List, ListIcon, ListItem, SimpleGrid, SkeletonText } from "@chakra-ui/react";
 import { AnimatePresence, motion, useInView, useUnmountEffect } from "framer-motion";
+import { SquareArrowOutUpRightIcon as GoLinkExternal } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import { GoLinkExternal } from "react-icons/go";
 
 import { Card } from "@app/components/Card";
 import { useFetchLeetCode } from "@app/hooks/useFetchLeetCode";

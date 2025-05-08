@@ -23,8 +23,8 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
+import { CheckIcon as GoCheck, ChevronDownIcon as GoChevronDown, FileIcon as GoFile } from "lucide-react";
 import { useRef } from "react";
-import { GoCheck, GoChevronDown, GoFile } from "react-icons/go";
 
 import { useEditor_v2 } from "@app/hooks/useEditor";
 import { usePlayGround } from "@app/hooks/usePlayGround";
@@ -71,13 +71,7 @@ export const Monaco = () => {
         <Wrap paddingX="2" spacing="2" ref={boxRef}>
           <WrapItem>
             <Menu>
-              <MenuButton
-                as={Button}
-                size="sm"
-                variant="outline"
-                leftIcon={<Icon as={GoFile} />}
-                rightIcon={<Icon as={GoChevronDown} />}
-              >
+              <MenuButton as={Button} size="sm" variant="outline" leftIcon={<Icon as={GoFile} />} rightIcon={<Icon as={GoChevronDown} />}>
                 {file}
               </MenuButton>
               <MenuList>

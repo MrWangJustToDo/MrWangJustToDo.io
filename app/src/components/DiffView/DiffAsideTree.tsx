@@ -1,8 +1,14 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Box, Flex, Icon, Text, type BoxProps } from "@chakra-ui/react";
+import {
+  FileIcon as FaFile,
+  FolderIcon as FaFolder,
+  FolderOpenIcon as FaFolderOpen,
+  SquarePlusIcon as VscDiffAdded,
+  SquareDotIcon as VscDiffModified,
+  SquareMinusIcon as VscDiffRemoved,
+  SquareArrowRightIcon as VscDiffRenamed,
+} from "lucide-react";
 import { Children, forwardRef, memo, type ReactNode } from "react";
-import { FaFile, FaFolder, FaFolderOpen } from "react-icons/fa";
-import { VscDiffAdded, VscDiffModified, VscDiffRemoved, VscDiffRenamed } from "react-icons/vsc";
 import { Virtuoso } from "react-virtuoso";
 import { toRaw } from "reactivity-store";
 

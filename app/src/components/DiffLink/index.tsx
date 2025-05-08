@@ -22,9 +22,9 @@ import {
   useSafeLayoutEffect,
   useToast,
 } from "@chakra-ui/react";
+import { CopyIcon as GoCopy, PenIcon as GoPencil, RefreshCcwIcon as GoSync } from "lucide-react";
 import { useRouter } from "next/router";
 import { useDeferredValue, useEffect, useState } from "react";
-import { GoCopy, GoPencil, GoSync } from "react-icons/go";
 
 import { useInIframe } from "@app/hooks/useExample";
 import { useGitHubCompareSource } from "@app/hooks/useGitHubCompareSource";
@@ -33,7 +33,7 @@ import type { InputProps } from "@chakra-ui/react";
 
 // useGitHubCompareSource.getLifeCycle().syncUpdateComponent = true;
 
-const WrapperInput = ({ value, onValueChange, ...last }: { value: string; onValueChange: (v: string) => void } & InputProps) => {
+const WrapperInput = ({ value, onValueChange, onChange, ...last }: { value: string; onValueChange: (v: string) => void } & InputProps) => {
   const [v, setV] = useState(() => value);
 
   const onValueChangeRef = useCallbackRef(onValueChange);
@@ -49,7 +49,7 @@ const WrapperInput = ({ value, onValueChange, ...last }: { value: string; onValu
       value={v}
       onChange={(e) => {
         setV(e.target.value);
-        last.onChange?.(e);
+        onChange?.(e);
       }}
       {...last}
     />

@@ -1,6 +1,6 @@
 import { Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Tooltip } from "@chakra-ui/react";
+import { CalendarDaysIcon as GoClock } from "lucide-react";
 import { useEffect } from "react";
-import { GoClock } from "react-icons/go";
 
 import { useCalendar } from "@app/hooks/useCalendar";
 import { useIsMobile } from "@app/hooks/useIsMobile";

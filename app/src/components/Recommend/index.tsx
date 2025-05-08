@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { GetRepoAboutDocument } from "@blog/graphql";
 import { Badge, Icon, StackDivider, Text, VStack, Flex } from "@chakra-ui/react";
-import { GoStarFill } from "react-icons/go";
+import { StarIcon as GoStarFill } from "lucide-react";
 
 import { useCurrentProject, useProject } from "@app/hooks/useProject";
 
@@ -32,7 +32,7 @@ const RecommendItem = ({ type, onClick }: { type: keyof typeof ProjectItems; onC
       boxShadow="sm"
     >
       <Badge colorScheme="orange" display="flex" alignItems="center" position="absolute" right="6px">
-        <Icon as={GoStarFill} marginRight="1" />
+        <Icon as={GoStarFill} marginRight="1" fill="currentcolor" />
         {data?.repository?.stargazerCount}
       </Badge>
       <Flex alignItems="baseline" marginTop="2">

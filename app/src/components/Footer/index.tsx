@@ -1,8 +1,8 @@
 import { Text, Icon, Link, Flex, Box } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { AnimatePresence, motion } from "framer-motion";
+import { HeartIcon as GoHeartFill } from "lucide-react";
 import { memo } from "react";
-import { GoHeartFill } from "react-icons/go";
 import { createStoreWithComponent, onMounted, onUnmounted, ref } from "reactivity-store";
 
 import { BLOG_SOURCE } from "@app/config/source";
@@ -177,7 +177,7 @@ const _Footer = () => {
             Github
           </Link>
 
-          <Icon as={GoHeartFill} color="red.600" mx="0.2em" />
+          <Icon as={GoHeartFill} color="red.600" mx="0.2em" fill="currentcolor" />
           <Link href="https://nextjs.org/" target="_blank" color="blue.500">
             Next.js
           </Link>

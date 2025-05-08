@@ -17,9 +17,15 @@ import {
   PopoverTrigger,
 } from "@chakra-ui/react";
 import { DiffModeEnum, type DiffFile } from "@git-diff-view/react";
+import {
+  LoaderCircleIcon as AiOutlineLoading,
+  ChevronDownIcon as GoChevronDown,
+  ActivityIcon as GoPulse,
+  SquareArrowOutUpRightIcon as GoLinkExternal,
+  FoldVerticalIcon as GoFold,
+  UnfoldVerticalIcon as GoUnfold,
+} from "lucide-react";
 import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
-import { AiOutlineLoading } from "react-icons/ai";
-import { GoChevronDown, GoPulse, GoLinkExternal, GoFold, GoUnfold } from "react-icons/go";
 
 import { useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
 import { usePrevious } from "@app/hooks/usePrevious";

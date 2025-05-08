@@ -15,8 +15,8 @@ import {
   StackDivider,
   Text,
 } from "@chakra-ui/react";
+import { HomeIcon as GoHome, BotIcon as GoHubot, MailIcon as GoMail } from "lucide-react";
 import React, { memo } from "react";
-import { GoHome, GoHubot, GoMail } from "react-icons/go";
 
 import { AboutMe } from "@app/components/AboutMe";
 import { Calendar } from "@app/components/Calendar";

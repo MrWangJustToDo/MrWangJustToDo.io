@@ -1,7 +1,7 @@
 import { Box, Heading, Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Spacer, Tooltip } from "@chakra-ui/react";
 import { AnimatePresence } from "framer-motion";
+import { PackageIcon as GoPackage } from "lucide-react";
 import { useEffect, useState } from "react";
-import { GoPackage } from "react-icons/go";
 
 import { useCurrentProject, useProject } from "@app/hooks/useProject";
 

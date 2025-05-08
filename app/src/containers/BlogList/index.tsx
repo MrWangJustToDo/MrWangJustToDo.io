@@ -20,8 +20,8 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { throttle } from "lodash-es";
+import { ChevronLeftIcon as GoChevronLeft, ChevronRightIcon as GoChevronRight, ChevronDownIcon as GoChevronDown, CheckIcon as GoCheck } from "lucide-react";
 import { memo, useEffect, useMemo, useRef } from "react";
-import { GoChevronLeft, GoChevronRight, GoChevronDown, GoCheck } from "react-icons/go";
 
 import { BlogGrid } from "@app/components/BlogGrid";
 import { ErrorCom } from "@app/components/Error";

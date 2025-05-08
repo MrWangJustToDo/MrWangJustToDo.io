@@ -1,5 +1,5 @@
 import { Icon, IconButton, useColorMode } from "@chakra-ui/react";
-import { GoMoon, GoSun } from "react-icons/go";
+import { MoonIcon as GoMoon, SunIcon as GoSun } from "lucide-react";
 
 import type { ButtonProps } from "@chakra-ui/react";
 

@@ -1,5 +1,5 @@
 import { Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Tooltip } from "@chakra-ui/react";
-import { GoGitCompare } from "react-icons/go";
+import { GitCompareArrowsIcon as GoGitCompare } from "lucide-react";
 
 import { useGitHubCompare } from "@app/hooks/useGitHubCompare";
 import { useGitHubCompareScrollContainer } from "@app/hooks/useGitHubCompareScrollContainer";

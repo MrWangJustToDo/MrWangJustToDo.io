@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Box } from "@chakra-ui/react";
 import { useEffect, useRef } from "react";
 

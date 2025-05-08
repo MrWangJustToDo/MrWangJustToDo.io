@@ -1,5 +1,5 @@
 import { Icon, IconButton, Modal, ModalBody, ModalContent, ModalOverlay, Tooltip } from "@chakra-ui/react";
-import { GoPlay } from "react-icons/go";
+import { PlayIcon as GoPlay } from "lucide-react";
 
 import { usePlayGround } from "@app/hooks/usePlayGround";
 

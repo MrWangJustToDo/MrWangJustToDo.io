@@ -1,5 +1,5 @@
 import { Icon, IconButton } from "@chakra-ui/react";
-import { GoScreenFull, GoScreenNormal } from "react-icons/go";
+import { MaximizeIcon as GoScreenFull, MinimizeIcon as GoScreenNormal } from "lucide-react";
 
 import { useFullScreen } from "@app/hooks/useFullScreen";
 

@@ -1,8 +1,8 @@
 import { Box, IconButton, useBreakpointValue } from "@chakra-ui/react";
 import { css, Global } from "@emotion/react";
 import { useScroll } from "framer-motion";
+import { ChevronUpIcon as GoChevronUp } from "lucide-react";
 import { memo, useEffect, useState, type ReactNode, type RefObject } from "react";
-import { GoChevronUp } from "react-icons/go";
 import ReactSplit from "react-split";
 
 import { useDiffAsideCompose } from "@app/hooks/useDiffAsideCompose";

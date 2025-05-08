@@ -20,9 +20,9 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
+import { UserIcon as GoPerson } from "lucide-react";
 import { useEffect, useState } from "react";
 import GitHubCalendar from "react-github-calendar";
-import { GoPerson } from "react-icons/go";
 
 import { useAboutMe } from "@app/hooks/useAboutMe";
 import { useIsMobile } from "@app/hooks/useIsMobile";

@@ -1,5 +1,5 @@
 import { IconButton, Tooltip, useBreakpointValue } from "@chakra-ui/react";
-import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
+import { PanelRightCloseIcon as GoSidebarCollapse, PanelRightOpenIcon as GoSidebarExpand } from "lucide-react";
 
 import { useDiffAsideCompose } from "@app/hooks/useDiffAsideCompose";
 

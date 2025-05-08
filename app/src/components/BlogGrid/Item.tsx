@@ -1,7 +1,7 @@
 import { Text, Flex, Box, Icon, IconButton, Divider, Tooltip, Code } from "@chakra-ui/react";
+import { ChevronRightIcon as GoChevronRight, SquareArrowOutUpRightIcon as GoLinkExternal } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { cloneElement, isValidElement, memo } from "react";
-import { GoChevronRight, GoLinkExternal } from "react-icons/go";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -40,7 +40,7 @@ const ItemHeader = ({ title, externalUrl, detailNumber }: { title: string; exter
         </Text>
       </Tooltip>
       <Hover display="flex" alignItems="center">
-        <IconButton aria-label="detail" onClick={openModal} variant="link" size="sm" fontSize='large' icon={<Icon as={GoChevronRight} userSelect="none" />} />
+        <IconButton aria-label="detail" onClick={openModal} variant="link" size="sm" fontSize="large" icon={<Icon as={GoChevronRight} userSelect="none" />} />
       </Hover>
       <Hover display="flex" alignItems="center">
         <IconButton size="sm" variant="link" aria-label="open" icon={<Icon as={GoLinkExternal} />} onClick={openExternal} />

@@ -1,5 +1,5 @@
 import { Tooltip, Box, Text, Flex, Avatar, Icon, VStack, StackDivider, useDisclosure } from "@chakra-ui/react";
-import { AiOutlineMail, AiOutlineUser } from "react-icons/ai";
+import { MailIcon as AiOutlineMail, UserIcon as AiOutlineUser } from "lucide-react";
 
 import { Hover } from "../Hover";
 

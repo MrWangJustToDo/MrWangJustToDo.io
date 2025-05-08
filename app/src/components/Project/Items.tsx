@@ -4,8 +4,8 @@ import { useQuery } from "@apollo/client";
 import { GetRepoAboutDocument } from "@blog/graphql";
 import { Badge, Box, Button, CloseButton, Code, Divider, Flex, Icon, Image, Link, Skeleton, SkeletonText, Spacer, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import { StarIcon as GoStarFill } from "lucide-react";
 import { cloneElement, isValidElement, useState } from "react";
-import { GoStarFill } from "react-icons/go";
 import Markdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -84,7 +84,7 @@ export const Item = ({
             top="50%"
             transform="translateY(-50%)"
           >
-            <Icon as={GoStarFill} marginRight="1" />
+            <Icon as={GoStarFill} marginRight="1" fill="currentcolor" />
             {data?.repository?.stargazerCount}
           </Badge>
         )}
@@ -198,8 +198,9 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
                 },
               }}
             >
-              {(data?.repository?.read1 && 'text' in data.repository.read1 ? data.repository.read1.text : "") || 
-               (data?.repository?.read2 && 'text' in data.repository.read2 ? data.repository.read2.text : "") || ""}
+              {(data?.repository?.read1 && "text" in data.repository.read1 ? data.repository.read1.text : "") ||
+                (data?.repository?.read2 && "text" in data.repository.read2 ? data.repository.read2.text : "") ||
+                ""}
             </Markdown>
           </Box>
         </SkeletonText>

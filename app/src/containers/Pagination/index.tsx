@@ -1,7 +1,7 @@
 import { Box, ButtonGroup, Icon, IconButton } from "@chakra-ui/react";
 import { omit } from "lodash-es";
+import { ChevronLeftIcon as AiOutlineLeft, ChevronRightIcon as AiOutlineRight } from "lucide-react";
 import { useRouter } from "next/router";
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 
 import type { GetBlogListQuery } from "@blog/graphql";
 import type { BoxProps } from "@chakra-ui/react";

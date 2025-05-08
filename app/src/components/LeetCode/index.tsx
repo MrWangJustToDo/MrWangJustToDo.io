@@ -1,5 +1,5 @@
 import { Icon, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, Tooltip } from "@chakra-ui/react";
-import { GoCode } from "react-icons/go";
+import { CodeIcon as GoCode } from "lucide-react";
 
 import { useLeetCode } from "@app/hooks/useLeetCode";
 import { useLeetCodeSelectId } from "@app/hooks/useLeetCodeSelectId";
