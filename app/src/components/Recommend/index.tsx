@@ -51,10 +51,10 @@ export const Recommend = () => {
   return (
     <VStack divider={<StackDivider />} spacing="2" marginTop="1">
       <RecommendItem type="MyReact" onClick={() => setCurrentProject("MyReact")} />
+      <RecommendItem type="DevTools" onClick={() => setCurrentProject("DevTools")} />
+      <RecommendItem type="GitDiffView" onClick={() => setCurrentProject("GitDiffView")} />
       <RecommendItem type="RStore" onClick={() => setCurrentProject("RStore")} />
       <RecommendItem type="SSR" onClick={() => setCurrentProject("SSR")} />
-      <RecommendItem type="GitDiffView" onClick={() => setCurrentProject("GitDiffView")} />
-      <RecommendItem type="DevTools" onClick={() => setCurrentProject("DevTools")} />
     </VStack>
   );
 };

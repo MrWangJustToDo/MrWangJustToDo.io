@@ -58,10 +58,10 @@ export const Project = () => {
               {!data ? (
                 <Box display="grid" gridTemplateColumns={{ base: "repeat(1, 100%)", md: "repeat(2, 45%)", lg: "repeat(3, 32%)" }} columnGap="1em" rowGap="1em">
                   <Item type="MyReact" onOpenReadme={() => setType("MyReact")} onOpenPreview={() => set_Type("MyReact")} />
+                  <Item type="DevTools" onOpenReadme={() => setType("DevTools")} onOpenPreview={() => set_Type("DevTools")} />
+                  <Item type="GitDiffView" onOpenReadme={() => setType("GitDiffView")} onOpenPreview={() => set_Type("GitDiffView")} />
                   <Item type="RStore" onOpenReadme={() => setType("RStore")} onOpenPreview={() => set_Type("RStore")} />
                   <Item type="SSR" onOpenReadme={() => setType("SSR")} onOpenPreview={() => set_Type("SSR")} />
-                  <Item type="GitDiffView" onOpenReadme={() => setType("GitDiffView")} onOpenPreview={() => set_Type("GitDiffView")} />
-                  <Item type="DevTools" onOpenReadme={() => setType("DevTools")} onOpenPreview={() => set_Type("DevTools")} />
                 </Box>
               ) : (
                 <Box maxWidth="360px" marginX="auto">
