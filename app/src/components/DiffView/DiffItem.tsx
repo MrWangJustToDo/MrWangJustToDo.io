@@ -216,7 +216,7 @@ export const DiffItem = ({
           zIndex: "sticky",
           pointerEvents: "none",
           borderRadius: "md",
-          boxShadow: key === item.filename ? "0 0 2px rgba(60, 200, 255, 1)" : undefined,
+          boxShadow: key === item.filename ? "0 0 3px rgb(70, 240, 240)" : undefined,
         }}
       >
         <Box

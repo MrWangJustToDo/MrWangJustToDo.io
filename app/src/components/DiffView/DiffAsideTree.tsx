@@ -75,7 +75,7 @@ const RenderStatusIcon = ({ item }: { item: TreeViewData }) => {
   }
 };
 
-const RenderName = ({ item }: { item: TreeViewData }) => {
+const RenderName = ({ item, left }: { item: TreeViewData; left: string }) => {
   const middleLength = Math.floor(item.name.length / 2);
 
   const leftStr = item.name.slice(0, middleLength);
@@ -83,7 +83,7 @@ const RenderName = ({ item }: { item: TreeViewData }) => {
   const rightStr = item.name.slice(middleLength);
 
   return (
-    <Flex maxWidth="full" alignItems="center">
+    <Flex maxWidth="full" alignItems="center" style={{ paddingLeft: left }}>
       <RenderIcon item={item} />
       <Text whiteSpace="nowrap" marginLeft={2} textOverflow="ellipsis" overflow="hidden" flexShrink={1}>
         {leftStr}
@@ -133,8 +133,8 @@ const RenderItem = ({ index, item }: { index: number; item: TreeViewData }) => {
       <Flex alignItems="center" height="100%" paddingX="2" width="full" data-aside-item position="relative">
         {currentIsSelect && <RenderSelect />}
         <RenderIndent item={item} />
-        <Box width="calc(100% - 4em)" flexGrow={1} paddingLeft={`calc(${left})`}>
-          <RenderName item={item} />
+        <Box width="calc(100% - 4em)" flexGrow={1} overflow="hidden">
+          <RenderName item={item} left={left} />
         </Box>
         <RenderStatusIcon item={item} />
       </Flex>
@@ -163,6 +163,7 @@ export const DiffAsideTree = memo(
           fixedItemHeight={26}
           onScroll={onScroll}
           data={data as TreeViewData[]}
+          className="overflow-x-hidden"
           itemContent={(index: number, item: TreeViewData) => <RenderItem index={index} item={item} />}
         />
       </Box>
