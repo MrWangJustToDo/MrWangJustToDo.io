@@ -38,6 +38,10 @@ export const ProjectItems = {
     owner: "mrwangjusttodo",
     name: "myreact-devtools",
   },
+  Translate: {
+    owner: "mrwangjusttodo",
+    name: "translate",
+  }
 } as const;
 
 export const Item = ({
