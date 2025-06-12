@@ -62,7 +62,7 @@ export const DiffViewSetting = () => {
             <Spacer marginY="3" borderBottom="1px" borderColor="cardBorderColor" />
             <FormControl as="fieldset">
               <FormLabel as="legend">Diff Mode</FormLabel>
-              <RadioGroup defaultValue={mode.toString()} onChange={(l) => setMode(l as unknown as DiffModeEnum)}>
+              <RadioGroup defaultValue={mode.toString()} onChange={(l) => setMode(Number(l) as unknown as DiffModeEnum)}>
                 <HStack spacing="24px">
                   <Radio value={DiffModeEnum.Split.toString()}>Split</Radio>
                   <Radio value={DiffModeEnum.Unified.toString()}>Unified</Radio>
