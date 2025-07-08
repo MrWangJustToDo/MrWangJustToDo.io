@@ -112,9 +112,7 @@ export const DiffLayout = memo(({ aside, content }: { aside: ReactNode; content:
         cursor="col-resize"
         dragInterval={1}
       >
-        <Box flexShrink={0} zIndex="modal" position="relative">
-          {aside}
-        </Box>
+        <Box>{aside}</Box>
         <Box>{content}</Box>
       </ReactSplit>
       <IconButton

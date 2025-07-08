@@ -11,7 +11,7 @@ export const DiffAsideCompose = () => {
   return (
     <Tooltip label="Compose aside">
       <IconButton
-        icon={state ? <GoSidebarCollapse /> : <GoSidebarExpand />}
+        icon={state ? <GoSidebarCollapse strokeWidth={1.6} /> : <GoSidebarExpand strokeWidth={1.6} />}
         fontSize="xl"
         isDisabled={small}
         color="lightTextColor"
