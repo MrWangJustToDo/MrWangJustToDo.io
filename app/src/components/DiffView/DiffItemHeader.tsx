@@ -60,13 +60,13 @@ export const DiffItemHeader = ({
   loadFullContentDiff: () => void;
   scrollToCurrent: () => Promise<void>;
 }) => {
-  const [expandAll, setExpandAll] = useState(() => diffFile?.hasExpandSplitAll);
+  const [splitExpandAll, setSplitExpandAll] = useState(() => diffFile?.hasExpandSplitAll);
 
-  const [_expandAll, _setExpandAll] = useState(() => diffFile?.hasExpandUnifiedAll);
+  const [unifiedExpandAll, setUnifiedExpandAll] = useState(() => diffFile?.hasExpandUnifiedAll);
 
-  const previousExpand = usePrevious(expandAll);
+  const previousSplitExpand = usePrevious(splitExpandAll);
 
-  const _previousExpand = usePrevious(_expandAll);
+  const previousUnifiedExpand = usePrevious(unifiedExpandAll);
 
   const mode = useDiffViewConfig.useShallowStableSelector((s) => s.mode);
 
@@ -77,76 +77,67 @@ export const DiffItemHeader = ({
   const onExpandToggle = useCallback(() => {
     scrollToCurrent().then(() => {
       if (useDiffViewConfig.getReadonlyState().mode?.toString() === DiffModeEnum.Unified.toString()) {
-        _setExpandAll((l) => !l);
+        setUnifiedExpandAll((l) => !l);
       } else {
-        setExpandAll((l) => !l);
+        setSplitExpandAll((l) => !l);
       }
     });
   }, [scrollToCurrent]);
 
   useEffect(() => {
     if (mode?.toString() === DiffModeEnum.Unified.toString()) return;
-    if (previousExpand !== expandAll && diffFile) {
-      if (expandAll) {
+    if (previousSplitExpand !== splitExpandAll && diffFile) {
+      if (splitExpandAll) {
         diffFile.onAllExpand("split");
       } else {
         diffFile.onAllCollapse("split");
       }
     }
-  }, [previousExpand, expandAll, diffFile, mode]);
+  }, [previousSplitExpand, splitExpandAll, diffFile, mode]);
 
   useEffect(() => {
     if (mode?.toString() !== DiffModeEnum.Unified.toString()) return;
-    if (_previousExpand !== _expandAll && diffFile) {
-      if (_expandAll) {
+    if (previousUnifiedExpand !== unifiedExpandAll && diffFile) {
+      if (unifiedExpandAll) {
         diffFile.onAllExpand("unified");
       } else {
         diffFile.onAllCollapse("unified");
       }
     }
-  }, [_previousExpand, _expandAll, diffFile, mode]);
+  }, [previousUnifiedExpand, unifiedExpandAll, diffFile, mode]);
 
-  const ForwardRefItem = useMemo(
-    () =>
-      // eslint-disable-next-line react/display-name
-      forwardRef<HTMLButtonElement, IconButtonProps & { needPopover?: boolean }>(({ needPopover, onClick, ...props }, ref) => {
-        const finalExpandAll = mode?.toString() === DiffModeEnum.Unified.toString() ? _expandAll : expandAll;
-        if (needPopover) {
-          return (
-            <PopoverTrigger>
-              <IconButton
-                aria-label="expand"
-                ref={ref}
-                icon={<Icon as={finalExpandAll ? GoFold : GoUnfold} color="lightTextColor" />}
-                size="sm"
-                isDisabled={diffFile?.fileLineLength > MaxFile}
-                display={diffFile?.hasSomeLineCollapsed ? "flex" : "none"}
-                onClick={onClick}
-                {...props}
-              />
-            </PopoverTrigger>
-          );
-        } else {
-          return (
-            <IconButton
-              aria-label="expand"
-              ref={ref}
-              icon={<Icon as={finalExpandAll ? GoFold : GoUnfold} color="lightTextColor" />}
-              size="sm"
-              display={diffFile?.hasSomeLineCollapsed ? "flex" : "none"}
-              onClick={(e) => {
-                onClick?.(e);
-                onExpandToggle();
-              }}
-              {...props}
-            />
-          );
-        }
-      }),
-    [diffFile?.fileLineLength, diffFile?.hasSomeLineCollapsed, expandAll, _expandAll, mode, onExpandToggle],
-  );
+  const finalExpandAll = mode?.toString() === DiffModeEnum.Unified.toString() ? unifiedExpandAll : splitExpandAll;
 
-  ForwardRefItem.displayName = "IconButtonWithRef";
+  const ForwardRefItem = useMemo(() => {
+    const IconButtonWithRef = forwardRef<HTMLButtonElement, IconButtonProps & { needPopover?: boolean }>(({ needPopover, onClick, ...props }, ref) => {
+      if (needPopover) {
+        return (
+          <PopoverTrigger>
+            <IconButton aria-label="expand" ref={ref} size="sm" onClick={onClick} {...props} />
+          </PopoverTrigger>
+        );
+      } else {
+        return (
+          <IconButton
+            aria-label="expand"
+            ref={ref}
+            size="sm"
+            onClick={(e) => {
+              onClick?.(e);
+              onExpandToggle();
+            }}
+            {...props}
+          />
+        );
+      }
+    });
+
+    IconButtonWithRef.displayName = "IconButtonWithRef";
+
+    return IconButtonWithRef;
+  }, [onExpandToggle]);
+
+  ForwardRefItem.displayName = "MemoIconButtonWithRef";
 
   return (
     <Flex
@@ -190,8 +181,14 @@ export const DiffItemHeader = ({
             <Popover isLazy>
               {({ onClose }) => (
                 <>
-                  <Tooltip label={!expandAll ? "Expand all diff" : "Collapse expanded lines"} closeOnScroll>
-                    <ForwardRefItem aria-label="expand" needPopover={diffFile?.fileLineLength > LargerFile} />
+                  <Tooltip label={!finalExpandAll ? "Expand all diff" : "Collapse expanded lines"} closeOnScroll>
+                    <ForwardRefItem
+                      aria-label="expand"
+                      needPopover={diffFile?.fileLineLength > LargerFile}
+                      isDisabled={diffFile?.fileLineLength > MaxFile}
+                      icon={<Icon as={finalExpandAll ? GoFold : GoUnfold} color="lightTextColor" />}
+                      display={diffFile?.hasSomeLineCollapsed ? "flex" : "none"}
+                    />
                   </Tooltip>
                   <Portal appendToParentPortal={false}>
                     <PopoverContent>
@@ -211,7 +208,7 @@ export const DiffItemHeader = ({
                               onClose();
                             }}
                           >
-                            {expandAll ? "Collapse" : "Expand"}
+                            {finalExpandAll ? "Collapse" : "Expand"}
                           </Button>
                         </ButtonGroup>
                       </PopoverFooter>

@@ -55,7 +55,7 @@ export const DiffAsideFilter = (props: FlexProps) => {
           <>
             <MenuButton isActive={isOpen} color="lightTextColor" as={IconButton} icon={<Icon as={FilterIcon} />} />
             {/* <Portal> */}
-            <MenuList zIndex="modal" maxHeight="400" overflowY="auto">
+            <MenuList zIndex="toast" maxHeight="400" overflowY="auto">
               <MenuOptionGroup value={selectedExt} type="checkbox">
                 {Object.keys(fileExt).map((ext) => {
                   return (
