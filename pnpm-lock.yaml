@@ -165,11 +165,11 @@ importers:
         specifier: ^4.6.0
         version: 4.6.0(monaco-editor@0.46.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@my-react/react':
-        specifier: ^0.3.15
-        version: 0.3.15
+        specifier: ^0.3.16
+        version: 0.3.16
       '@my-react/react-dom':
-        specifier: ^0.3.15
-        version: 0.3.15(@my-react/react@0.3.15)
+        specifier: ^0.3.16
+        version: 0.3.16(@my-react/react@0.3.16)
       '@reactour/mask':
         specifier: ^1.1.0
         version: 1.1.0(react@18.2.0)
@@ -265,11 +265,11 @@ importers:
         specifier: ^7.23.9
         version: 7.23.9
       '@my-react/react-refresh':
-        specifier: ^0.3.15
-        version: 0.3.15(@my-react/react@0.3.15)
+        specifier: ^0.3.16
+        version: 0.3.16(@my-react/react@0.3.16)
       '@my-react/react-refresh-tools':
-        specifier: ^0.0.24
-        version: 0.0.24(@my-react/react-refresh@0.3.15(@my-react/react@0.3.15))
+        specifier: ^0.0.25
+        version: 0.0.25(@my-react/react-refresh@0.3.16(@my-react/react@0.3.16))
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -2025,32 +2025,32 @@ packages:
   '@motionone/utils@10.15.1':
     resolution: {integrity: sha512-p0YncgU+iklvYr/Dq4NobTRdAPv9PveRDUXabPEeOjBLSO/1FNB2phNTZxOxpi1/GZwYpAoECEa0Wam+nsmhSw==}
 
-  '@my-react/react-dom@0.3.15':
-    resolution: {integrity: sha512-dmVkPxZZuoVQZnxjjF0gvip/m7XVlXwA2onV4hTEDvdYObSghzz9KuQW+oLdkxUbNWH7iPcxIQo4f/jfMyoStA==}
+  '@my-react/react-dom@0.3.16':
+    resolution: {integrity: sha512-WjWWE4g19fu4kjHJP7UIiUrfL+dEGdUF9YNNWTuIPraRF7lCls4uBZtq/E1enWHQsQVF0jjfnaDka9Ag2OBFlQ==}
     peerDependencies:
-      '@my-react/react': '>=0.3.15'
+      '@my-react/react': '>=0.3.16'
 
-  '@my-react/react-jsx@0.3.15':
-    resolution: {integrity: sha512-owhBoNucXM5WbG9plHZDxn1W6h9US+b8BmVDKvhN1yTjDtZS6CodOahtnWUvFZ8h6WbdfuMKB+wJbWmyD454Mg==}
+  '@my-react/react-jsx@0.3.16':
+    resolution: {integrity: sha512-39wkM2phFSz9SABLiulaL1sfleixYDtKV5T7vwzl7sKkg24nIAQHx2p7es2AykqslnIviCTkptVQHYTw/me8EA==}
     peerDependencies:
-      '@my-react/react': '>=0.3.15'
+      '@my-react/react': '>=0.3.16'
 
-  '@my-react/react-refresh-tools@0.0.24':
-    resolution: {integrity: sha512-uLyVdOTKcOjosVoYIaND4maK2NnkwY4NeyaRvs2X44QpbmZD58PUOA0TPM3X39delCIR5pF/hrRzyilUR2T1jQ==}
+  '@my-react/react-refresh-tools@0.0.25':
+    resolution: {integrity: sha512-TVaPq+APPOHQUfolysyOz/UQC5OCaOhdqKDM57A7UPrFQeBVeCliI60esUthPnUdxEoNvBdiw3WGCIsARp2qow==}
     peerDependencies:
-      '@my-react/react-refresh': '>=0.3.15'
+      '@my-react/react-refresh': '>=0.3.16'
       webpack: ^4 || ^5
     peerDependenciesMeta:
       webpack:
         optional: true
 
-  '@my-react/react-refresh@0.3.15':
-    resolution: {integrity: sha512-aNvINPW9Iw9AsXanQDbJnZ+8WS7J4Mm95rcVWjOALhzmh0Un8wDvx28NZm7rSDS3izmzUc1p9EFl6trdp7kUwg==}
+  '@my-react/react-refresh@0.3.16':
+    resolution: {integrity: sha512-cStUJ6bmuk8WfpFoOvozqMk5a9b0e8EoxODFtwUTVRW6ZrPATE71v5i3lufpD8L6MEhjd0s419WWDRcZWcwIXw==}
     peerDependencies:
-      '@my-react/react': '>=0.3.15'
+      '@my-react/react': '>=0.3.16'
 
-  '@my-react/react@0.3.15':
-    resolution: {integrity: sha512-+yvLwv9hX3EEeIR0a97jooaeIh6/r3eLMZzH5r5vxenkNVmsxaCaIa2AiQ05voY5J5jKK9nZvtC6h/mNWVRPVQ==}
+  '@my-react/react@0.3.16':
+    resolution: {integrity: sha512-mbg4qjUoiBg85vv5uBoTCOxRM/a6UmwTuQ/Y1WbwZUFqifgmt/pQZfjt3z0v+bl/Qjtnj5qwcj6X5SjOKY5akw==}
 
   '@next/env@12.3.4':
     resolution: {integrity: sha512-H/69Lc5Q02dq3o+dxxy5O/oNxFsZpdL6WREtOOtOM1B/weonIwDXkekr1KV5DPVPr12IHFPrMrcJQ6bgPMfn7A==}
@@ -9555,25 +9555,25 @@ snapshots:
       hey-listen: 1.0.8
       tslib: 2.8.0
 
-  '@my-react/react-dom@0.3.15(@my-react/react@0.3.15)':
+  '@my-react/react-dom@0.3.16(@my-react/react@0.3.16)':
     dependencies:
-      '@my-react/react': 0.3.15
+      '@my-react/react': 0.3.16
 
-  '@my-react/react-jsx@0.3.15(@my-react/react@0.3.15)':
+  '@my-react/react-jsx@0.3.16(@my-react/react@0.3.16)':
     dependencies:
-      '@my-react/react': 0.3.15
+      '@my-react/react': 0.3.16
 
-  '@my-react/react-refresh-tools@0.0.24(@my-react/react-refresh@0.3.15(@my-react/react@0.3.15))':
+  '@my-react/react-refresh-tools@0.0.25(@my-react/react-refresh@0.3.16(@my-react/react@0.3.16))':
     dependencies:
-      '@my-react/react-refresh': 0.3.15(@my-react/react@0.3.15)
+      '@my-react/react-refresh': 0.3.16(@my-react/react@0.3.16)
 
-  '@my-react/react-refresh@0.3.15(@my-react/react@0.3.15)':
+  '@my-react/react-refresh@0.3.16(@my-react/react@0.3.16)':
     dependencies:
-      '@my-react/react': 0.3.15
+      '@my-react/react': 0.3.16
 
-  '@my-react/react@0.3.15':
+  '@my-react/react@0.3.16':
     dependencies:
-      '@my-react/react-jsx': 0.3.15(@my-react/react@0.3.15)
+      '@my-react/react-jsx': 0.3.16(@my-react/react@0.3.16)
 
   '@next/env@12.3.4': {}
 
