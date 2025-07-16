@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Box, Flex, HStack, useCallbackRef } from "@chakra-ui/react";
 import { debounce } from "lodash";
-import { memo, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 import { Virtuoso } from "react-virtuoso";
 
 import { useDiffLoadedItems } from "@app/hooks/useDiffLoadedItems";
 import { useDiffOpenedItems } from "@app/hooks/useDiffOpenedItems";
-import { HighlightEngine, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
+import { useAutoLoadDiffFile } from "@app/hooks/useDiffViewDiffFile";
 import { useGitHubCompareScrollContainer } from "@app/hooks/useGitHubCompareScrollContainer";
 import {
   useGitHubCompareSourceInView,
@@ -33,25 +33,11 @@ const setSelectKey = useGitHubCompareSourceSelect.getActions().setKey;
 const _DiffContent = memo(() => {
   const list = useGitHubCompareSourceList((s) => s.list);
 
-  const workRef = useRef<Worker>();
-
   const virtuosoRef = useRef<VirtuosoHandle>();
 
   const ref = useRef<HTMLDivElement>();
 
   const { height } = useDomSize({ ref });
-
-  useLayoutEffect(() => {
-    const engine = useDiffViewConfig.getReadonlyState().engine;
-
-    if (engine === HighlightEngine.shiki) {
-      workRef.current = new Worker(new URL("@app/worker/diffView.shiki.worker", import.meta.url));
-    } else {
-      workRef.current = new Worker(new URL("@app/worker/diffView.default.worker", import.meta.url));
-    }
-
-    return () => workRef.current.terminate();
-  }, []);
 
   const autoSetCurrent = useCallbackRef(() => {
     const allElement = list.map((i) => ({ item: i, node: document.querySelector(`[data-file="${i.filename}"]`) }));
@@ -78,6 +64,8 @@ const _DiffContent = memo(() => {
   const autoSetCurrentInView = useMemo(() => debounce(autoSetCurrent, 60), [autoSetCurrent]);
 
   const ele = useGitHubCompareScrollContainer((s) => s.ele);
+
+  useAutoLoadDiffFile();
 
   const scrollToIndex = useCallbackRef((index: number) => virtuosoRef.current?.scrollToIndex({ index, align: "start", offset: -height }));
 
@@ -141,7 +129,6 @@ const _DiffContent = memo(() => {
                 key={item.filename}
                 item={item}
                 index={index}
-                workRef={workRef}
                 stickyHeight={height}
                 scrollToIndex={scrollToIndex}
                 autoSetCurrentInView={autoSetCurrentInView}

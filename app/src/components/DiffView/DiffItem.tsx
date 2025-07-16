@@ -1,56 +1,51 @@
 /* eslint-disable max-lines */
-import { axiosClient } from "@blog/graphql";
-import { Box, Skeleton, Text, useCallbackRef, useColorModeValue, useOutsideClick, useSafeLayoutEffect, useToast } from "@chakra-ui/react";
-import { DiffFile } from "@git-diff-view/core";
-import { DiffModeEnum, type DiffViewProps } from "@git-diff-view/react";
+import { Box, Skeleton, Text, useColorModeValue, useOutsideClick } from "@chakra-ui/react";
+import { DiffModeEnum } from "@git-diff-view/react";
 import { useInView } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
-import { useDiffLoadedItems } from "@app/hooks/useDiffLoadedItems";
 import { useDiffOpenedItems } from "@app/hooks/useDiffOpenedItems";
 import { DiffViewSize, useDiffViewConfig } from "@app/hooks/useDiffViewConfig";
+import { useDiffViewDiffFile } from "@app/hooks/useDiffViewDiffFile";
 import { useGitHubCompareScrollContainer } from "@app/hooks/useGitHubCompareScrollContainer";
 import { useGitHubCompareSourceSelect, type GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
 import { useDomSize } from "@app/hooks/useSize";
-import { base64ToString } from "@app/utils/text";
 
 import { DiffItemContent } from "./DiffItemContent";
 import { DiffItemHeader } from "./DiffItemHeader";
 
-import type { MessageData } from "@app/worker/diffView.worker";
+import type { DiffFile } from "@git-diff-view/core";
 import type { RefObject } from "react";
 
-const loadContent = async (url: string) => {
-  const res = await axiosClient.get(url);
-  return res?.data;
-};
-
-const fileMap = new Map<string, DiffFile>();
-
-const resMap = new Map<string, { link: string; content: string }>();
-
 const { toggle } = useDiffOpenedItems.getActions();
-
-const { open: load } = useDiffLoadedItems.getActions();
 
 export const DiffItem = ({
   item,
   index,
-  workRef,
   stickyHeight,
   scrollToIndex,
   autoSetCurrentInView,
 }: {
   index: number;
   item: GitHubCompareFileListType;
-  workRef: RefObject<Worker>;
   stickyHeight: number;
   autoSetCurrentInView: () => void;
   scrollToIndex: (index: number) => void;
 }) => {
-  const [diffFile, setDiffFile] = useState<DiffFile>(() => fileMap.get(item.sha));
+  const { diffMode, fullDiffFile, fullLoading, pureDiffFile, pureLoading, content, link, loadDiff } = useDiffViewDiffFile((s) => ({
+    fullLoading: s.state[item.sha].fullLoading,
+    fullDiffFile: s.state[item.sha].fullDiffFile,
+    pureLoading: s.state[item.sha].pureLoading,
+    pureDiffFile: s.state[item.sha].pureDiffFile,
+    content: s.state[item.sha].content,
+    link: s.state[item.sha].link,
+    diffMode: s.state[item.sha].mode,
+    loadDiff: s.loadDiff,
+  }));
 
-  const toast = useToast();
+  const diffFile = (diffMode === "full" ? fullDiffFile : pureDiffFile) as DiffFile;
+
+  const loading = diffMode === "full" ? fullLoading : pureLoading;
 
   const isOpen = useDiffOpenedItems.useShallowSelector((s) => s.keys[item.filename]);
 
@@ -59,16 +54,6 @@ export const DiffItem = ({
   const { key, setKey } = useGitHubCompareSourceSelect();
 
   const autoLoad = useDiffViewConfig.useShallowStableSelector((s) => s.autoLoad);
-
-  const [loading, setLoading] = useState(false);
-
-  const [content, setContent] = useState<string>(() => resMap.get(item.sha)?.content);
-
-  const [link, setLink] = useState(() => resMap.get(item.sha)?.link);
-
-  // const [done, setDone] = useState(false);
-
-  const idRef = useRef<number>();
 
   const ref = useRef<HTMLDivElement>();
 
@@ -96,89 +81,11 @@ export const DiffItem = ({
     return a;
   }, [index, scrollToIndex]);
 
-  const loadFullContentDiff = useCallbackRef(() => {
-    if (item.patch && item.contents_url && !content) {
-      loadContent(item.contents_url).then((res: { content: string; html_url: string; encoding: string }) => {
-        let c = "";
-        if (res.encoding === "base64") {
-          c = base64ToString(res.content);
-          setContent(c);
-        } else {
-          toast({ title: "Error", description: "Not support encoding", status: "error" });
-        }
-        setLink(res.html_url);
-        resMap.set(item.sha, { link: res.html_url, content: c });
-      });
-    }
-  });
-
   useEffect(() => {
     if (autoLoad && isOpen && !content && inView) {
-      loadFullContentDiff();
+      loadDiff(item.sha, "full", theme);
     }
-  }, [isOpen, content, inView, autoLoad, loadFullContentDiff]);
-
-  useSafeLayoutEffect(() => {
-    if (!isOpen) return;
-
-    const id = Math.random();
-
-    idRef.current = id;
-
-    if (!item.patch) {
-      setLoading(false);
-
-      return;
-    }
-
-    if (diffFile && !content) {
-      load(item.filename);
-
-      setLoading(false);
-
-      return;
-    }
-
-    if (diffFile && content && diffFile._newFileContent?.trim() === content?.trim()) {
-      load(item.filename);
-
-      setLoading(false);
-
-      return;
-    }
-
-    const data: DiffViewProps<unknown>["data"] = {
-      newFile: {
-        fileName: item.filename,
-        content: item.status !== "removed" ? content : "",
-      },
-      hunks: [`--- a \n+++ b \n` + (item.patch.endsWith("\n") ? item.patch : item.patch + "\n")],
-    };
-
-    setLoading(true);
-
-    workRef.current.postMessage({ id, data, theme, engine: useDiffViewConfig.getReadonlyState().engine, uuid: item.sha + (content ? "f" : "c") });
-  }, [item, workRef, content, theme, diffFile, isOpen]);
-
-  useEffect(() => {
-    const cb = (event: MessageEvent<MessageData>) => {
-      if (event.data.id === idRef.current) {
-        const d = DiffFile.createInstance(event.data.data, event.data.bundle);
-
-        setDiffFile(d);
-
-        fileMap.set(item.sha, d);
-
-        setLoading(false);
-      }
-    };
-
-    const i = workRef.current;
-
-    i.addEventListener("message", cb);
-
-    return () => i.removeEventListener("message", cb);
-  }, [item.sha, workRef]);
+  }, [isOpen, content, inView, autoLoad, item.sha, theme, loadDiff]);
 
   useOutsideClick({
     ref: boxRef,
@@ -243,7 +150,7 @@ export const DiffItem = ({
             content={content}
             link={link}
             _onToggle={_onToggle}
-            loadFullContentDiff={loadFullContentDiff}
+            loadFullContentDiff={() => loadDiff(item.sha, "full", theme)}
             scrollToCurrent={scrollToCurrent}
           />
         </Box>

@@ -4,12 +4,13 @@ import type { HighlightEngine } from "@app/hooks/useDiffViewConfig";
 import type { DiffViewProps } from "@git-diff-view/react";
 
 export type MessageData = {
-  id: number;
-  uuid?: string; 
+  uuid?: string;
+  id: number | string;
+  type: "full" | "pure";
   theme?: "light" | "dark";
   engine?: HighlightEngine;
   data: DiffViewProps<any>["data"];
-  bundle: ReturnType<DiffFile["_getFullBundle"]>;
+  bundle?: ReturnType<DiffFile["_getFullBundle"]>;
 };
 
 const post = (d: MessageData) => postMessage(d);
@@ -29,7 +30,7 @@ onmessage = async (event: MessageEvent<MessageData>) => {
     data?.hunks || [],
     data?.oldFile?.fileLang || "",
     data?.newFile?.fileLang || "",
-    _data?.uuid
+    _data?.uuid,
   );
 
   file.initTheme(_data.theme);
@@ -46,6 +47,7 @@ onmessage = async (event: MessageEvent<MessageData>) => {
 
   const res: MessageData = {
     id: _data.id,
+    type: _data.type,
     data: _data.data,
     bundle: bundle,
   };

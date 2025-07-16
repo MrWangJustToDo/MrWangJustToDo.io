@@ -1,18 +1,9 @@
 import { DiffFile, highlighter } from "@git-diff-view/core";
-import { highlighterReady } from "@git-diff-view/shiki";
+import { getDiffViewHighlighter } from "@git-diff-view/shiki";
 
 import { HighlightEngine } from "@app/hooks/useDiffViewConfig";
 
-import type { DiffViewProps } from "@git-diff-view/react";
-
-export type MessageData = {
-  id: number;
-  uuid?: string;
-  theme?: "light" | "dark";
-  engine?: HighlightEngine;
-  data: DiffViewProps<any>["data"];
-  bundle: ReturnType<DiffFile["_getFullBundle"]>;
-};
+import type { MessageData } from "./diffView.default.worker";
 
 const post = (d: MessageData) => postMessage(d);
 
@@ -31,7 +22,7 @@ onmessage = async (event: MessageEvent<MessageData>) => {
     data?.hunks || [],
     data?.oldFile?.fileLang || "",
     data?.newFile?.fileLang || "",
-    _data?.uuid
+    _data?.uuid,
   );
 
   file.initTheme(_data.theme);
@@ -40,7 +31,7 @@ onmessage = async (event: MessageEvent<MessageData>) => {
 
   if (_data.engine === HighlightEngine.shiki) {
     try {
-      const shikiHighlighter = await highlighterReady;
+      const shikiHighlighter = await getDiffViewHighlighter();
       if (shikiHighlighter.hasRegisteredCurrentLang(file._oldFileLang) && shikiHighlighter.hasRegisteredCurrentLang(file._newFileLang)) {
         file.initSyntax({ registerHighlighter: shikiHighlighter });
       } else {
@@ -61,6 +52,7 @@ onmessage = async (event: MessageEvent<MessageData>) => {
 
   const res: MessageData = {
     id: _data.id,
+    type: _data.type,
     data: _data.data,
     bundle: bundle,
   };
