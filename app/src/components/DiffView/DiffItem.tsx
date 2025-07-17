@@ -33,17 +33,17 @@ export const DiffItem = ({
   scrollToIndex: (index: number) => void;
 }) => {
   const { diffMode, fullDiffFile, fullLoading, pureDiffFile, pureLoading, content, link, loadDiff } = useDiffViewDiffFile((s) => ({
-    fullLoading: s.state[item.sha].fullLoading,
-    fullDiffFile: s.state[item.sha].fullDiffFile,
-    pureLoading: s.state[item.sha].pureLoading,
-    pureDiffFile: s.state[item.sha].pureDiffFile,
-    content: s.state[item.sha].content,
-    link: s.state[item.sha].link,
-    diffMode: s.state[item.sha].mode,
+    fullLoading: s.state[item.sha]?.fullLoading,
+    fullDiffFile: s.state[item.sha]?.fullDiffFile,
+    pureLoading: s.state[item.sha]?.pureLoading,
+    pureDiffFile: s.state[item.sha]?.pureDiffFile,
+    content: s.state[item.sha]?.content,
+    link: s.state[item.sha]?.link,
+    diffMode: s.state[item.sha]?.mode,
     loadDiff: s.loadDiff,
   }));
 
-  const diffFile = (diffMode === "full" ? fullDiffFile : pureDiffFile) as DiffFile;
+  const diffFile = ((diffMode === "full" ? fullDiffFile : pureDiffFile) || pureDiffFile) as DiffFile;
 
   const loading = diffMode === "full" ? fullLoading : pureLoading;
 
@@ -166,7 +166,7 @@ export const DiffItem = ({
           overflow="hidden"
           // onTransitionEndCapture={() => setDone(true)}
         >
-          <Skeleton width="100%" isLoaded={!loading}>
+          <Skeleton width="100%" isLoaded={!pureLoading}>
             <div ref={ref} data-height={height}>
               {diffFile ? (
                 <DiffItemContent

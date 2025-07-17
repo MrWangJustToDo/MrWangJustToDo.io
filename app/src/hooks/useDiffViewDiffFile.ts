@@ -39,13 +39,13 @@ export const useDiffViewDiffFile = createState(
       setPureDiffFile: (id: string, diffFile: DiffFile) => {
         const item = useGitHubCompareSourceList.getReadonlyState().list.find((i) => i.sha === id);
         if (!item) return;
-        s.state = { ...s.state, [id]: { ...s.state[id], pureLoading: false, pureDiffFile: diffFile } };
+        s.state[id] = { ...s.state[id], pureLoading: false, pureDiffFile: diffFile };
         useDiffLoadedItems.getActions().open(item.filename);
       },
       setFullDiffFile: (id: string, diffFile: DiffFile) => {
         const item = useGitHubCompareSourceList.getReadonlyState().list.find((i) => i.sha === id);
         if (!item) return;
-        s.state = { ...s.state, [id]: { ...s.state[id], fullLoading: false, fullDiffFile: diffFile } };
+        s.state[id] = { ...s.state[id], fullLoading: false, fullDiffFile: diffFile };
         useDiffLoadedItems.getActions().open(item.filename);
       },
       setMode: (id: string, mode: "full" | "pure") => {
