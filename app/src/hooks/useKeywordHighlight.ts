@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useSafeLayoutEffect } from "@chakra-ui/react";
 import { useEffect } from "react";
 
@@ -5,12 +6,12 @@ import { useDiffViewSearch } from "./useDiffViewSearch";
 
 import type { RefObject } from "react";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 let searchResultsHighlight: Highlight | null = null;
 
 export const useInitHighlight = () => {
   useSafeLayoutEffect(() => {
+    // @ts-ignore
     if (!CSS.highlights) {
       console.warn("CSS Custom Highlight API not supported.");
       return;
@@ -19,10 +20,12 @@ export const useInitHighlight = () => {
     searchResultsHighlight = new Highlight();
 
     // Register the Highlight object in the registry.
+    // @ts-ignore
     CSS.highlights.set("search-results", searchResultsHighlight);
 
     return () => {
       // Clear the HighlightRegistry when the component unmounts
+      // @ts-ignore
       CSS.highlights.clear();
       searchResultsHighlight = null;
     };
