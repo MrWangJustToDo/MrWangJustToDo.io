@@ -5,6 +5,8 @@ import { useDiffViewSearch } from "./useDiffViewSearch";
 
 import type { RefObject } from "react";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 let searchResultsHighlight: Highlight | null = null;
 
 export const useInitHighlight = () => {
