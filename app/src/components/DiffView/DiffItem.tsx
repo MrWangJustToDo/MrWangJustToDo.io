@@ -170,6 +170,7 @@ export const DiffItem = ({
             <div ref={ref} data-height={height}>
               {diffFile ? (
                 <DiffItemContent
+                  id={item.sha}
                   diffFile={diffFile}
                   diffViewHighlight={highlight}
                   diffViewTheme={theme}

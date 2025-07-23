@@ -1,15 +1,17 @@
 import { useColorModeValue } from "@chakra-ui/react";
 import { DiffModeEnum, DiffView } from "@git-diff-view/react";
 import { OverlayScrollbars } from "overlayscrollbars";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+
+import { useDiffViewDiffFile } from "@app/hooks/useDiffViewDiffFile";
 
 import type { DiffViewProps } from "@git-diff-view/react";
 import type { RefObject } from "react";
 
-export const DiffItemContent = (props: Omit<DiffViewProps<string[]>, "data"> & { boxRef: RefObject<HTMLDivElement> }) => {
-  const { diffViewMode = DiffModeEnum.Split, diffFile, diffViewWrap, extendData, boxRef } = props;
+export const DiffItemContent = (props: Omit<DiffViewProps<string[]>, "data"> & { boxRef: RefObject<HTMLDivElement>; id: string }) => {
+  const { diffViewMode = DiffModeEnum.Split, diffFile, diffViewWrap, boxRef, id } = props;
 
-  const [hasInit, setHasInit] = useState(false);
+  const setRenderDiffFile = useDiffViewDiffFile.getActions().setRenderDiffFile;
 
   const colorScheme = useColorModeValue("light", "dark");
 
@@ -74,21 +76,25 @@ export const DiffItemContent = (props: Omit<DiffViewProps<string[]>, "data"> & {
             instanceArray.push(i);
           }
         }
-        setHasInit(true);
       };
 
       // 当前 @my-react 的调度还很简陋，所以这里使用 setTimeout
       const id = setTimeout(init, 1000);
 
       return () => {
-        setHasInit(false);
         clearTimeout(id);
         instanceArray.forEach((i) => i.destroy());
       };
-    } else {
-      setHasInit(true);
     }
   }, [diffFile, diffViewWrap, diffViewMode, colorScheme, boxRef]);
 
-  return <DiffView {...props} extendData={hasInit ? extendData : undefined} />;
+  return (
+    <DiffView
+      {...props}
+      ref={({ getDiffFileInstance }) => {
+        const renderDiffFile = getDiffFileInstance();
+        setRenderDiffFile(id, renderDiffFile);
+      }}
+    />
+  );
 };

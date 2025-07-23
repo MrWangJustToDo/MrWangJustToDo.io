@@ -14,12 +14,14 @@ import {
   useGitHubCompareSourceSelect,
   useGitHubCompareTreeSelect,
 } from "@app/hooks/useGitHubCompareSource";
+import { useKeywordHighlight } from "@app/hooks/useKeywordHighlight";
 import { useDomSize } from "@app/hooks/useSize";
 
 import { DiffAsideCompose } from "./DiffAsideCompose";
 import { DiffFileCount } from "./DiffFileCount";
 import { DiffItem } from "./DiffItem";
-import { DiffViewSetting } from "./DIffViewSetting";
+import { DiffViewSearch } from "./DiffViewSearch";
+import { DiffViewSetting } from "./DiffViewSetting";
 
 import type { GitHubCompareFileListType } from "@app/hooks/useGitHubCompareSource";
 import type { VirtuosoHandle } from "react-virtuoso";
@@ -36,6 +38,8 @@ const _DiffContent = memo(() => {
   const virtuosoRef = useRef<VirtuosoHandle>();
 
   const ref = useRef<HTMLDivElement>();
+
+  const listRef = useRef<HTMLDivElement>();
 
   const { height } = useDomSize({ ref });
 
@@ -66,6 +70,8 @@ const _DiffContent = memo(() => {
   const ele = useGitHubCompareScrollContainer((s) => s.ele);
 
   useAutoLoadDiffFile();
+
+  useKeywordHighlight(listRef);
 
   const scrollToIndex = useCallbackRef((index: number) => virtuosoRef.current?.scrollToIndex({ index, align: "start", offset: -height }));
 
@@ -107,15 +113,16 @@ const _DiffContent = memo(() => {
         zIndex="banner"
         backgroundColor="mobileCardBackgroundColor"
       >
-        <HStack spacing="2">
+        <HStack spacing="2" flexGrow={1}>
           <DiffAsideCompose />
           <DiffFileCount />
           <small>(virtual scroll support)</small>
         </HStack>
+        <DiffViewSearch />
         <DiffViewSetting />
       </Flex>
       {/* @ts-ignore */}
-      <Box style={{ ["--sticky-top"]: `${height}px` }}>
+      <Box style={{ ["--sticky-top"]: `${height}px` }} ref={listRef}>
         <Virtuoso
           totalCount={list.length}
           useWindowScroll

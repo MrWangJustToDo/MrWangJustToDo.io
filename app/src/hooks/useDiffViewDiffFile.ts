@@ -31,7 +31,17 @@ export const useDiffViewDiffFile = createState(
   () => ({
     state: {} as Record<
       string,
-      { pureLoading: boolean; pureDiffFile: DiffFile; mode: "full" | "pure"; content: string; link?: string; fullLoading: boolean; fullDiffFile: DiffFile }
+      {
+        pureLoading: boolean;
+        pureDiffFile: DiffFile;
+        mode: "full" | "pure";
+        content: string;
+        link?: string;
+        fullLoading: boolean;
+        fullDiffFile: DiffFile;
+        // final render diffFile
+        renderDiffFile?: DiffFile;
+      }
     >,
   }),
   {
@@ -47,6 +57,11 @@ export const useDiffViewDiffFile = createState(
         if (!item) return;
         s.state[id] = { ...s.state[id], fullLoading: false, fullDiffFile: diffFile };
         useDiffLoadedItems.getActions().open(item.filename);
+      },
+      setRenderDiffFile: (id: string, diffFile?: DiffFile) => {
+        const item = useGitHubCompareSourceList.getReadonlyState().list.find((i) => i.sha === id);
+        if (!item) return;
+        s.state[id].renderDiffFile = diffFile;
       },
       setMode: (id: string, mode: "full" | "pure") => {
         s.state[id] = { ...s.state[id], mode };
@@ -166,6 +181,14 @@ export const useDiffViewDiffFile = createState(
     withStableSelector: true,
   },
 );
+
+export const useDiffViewLoading = () => {
+  const list = useGitHubCompareSourceList((s) => s.list);
+
+  const state = useDiffViewDiffFile((s) => s.state);
+
+  return !list.every((i) => state[i.sha]?.pureDiffFile || state[i.sha]?.fullDiffFile);
+};
 
 export const useAutoLoadDiffFile = () => {
   const theme = useColorModeValue("light", "dark");

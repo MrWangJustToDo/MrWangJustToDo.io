@@ -8,6 +8,7 @@ import ReactSplit from "react-split";
 import { useDiffAsideCompose } from "@app/hooks/useDiffAsideCompose";
 import { useDiffLayoutSize } from "@app/hooks/useDiffLayoutSize";
 import { useGitHubCompareScrollContainer } from "@app/hooks/useGitHubCompareScrollContainer";
+import { useInitHighlight } from "@app/hooks/useKeywordHighlight";
 
 const style = css`
   .split {
@@ -51,6 +52,8 @@ export const DiffLayout = memo(({ aside, content }: { aside: ReactNode; content:
   const { scrollYProgress } = useScroll({ container: eleRef });
 
   const state = useDiffAsideCompose((s) => s.state);
+
+  useInitHighlight();
 
   useEffect(() => {
     if (small) {
