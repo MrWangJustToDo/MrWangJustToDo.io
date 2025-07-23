@@ -3,6 +3,7 @@ module.exports = {
   env: {
     "jest/globals": true,
     node: true,
+    browser: true,
   },
   parser: "@typescript-eslint/parser",
   settings: {
