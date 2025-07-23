@@ -16,7 +16,7 @@ export const useInitHighlight = () => {
       console.warn("CSS Custom Highlight API not supported.");
       return;
     }
-
+    // @ts-ignore
     searchResultsHighlight = new Highlight();
 
     // Register the Highlight object in the registry.
@@ -80,6 +80,7 @@ export const useKeywordHighlight = (ref: RefObject<HTMLDivElement>) => {
           // Create a range object for each instance of
           // str we found in the text node.
           return indices.map((index) => {
+            // @ts-ignore
             const range = new Range();
             range.setStart(el, index);
             range.setEnd(el, index + str.length);
