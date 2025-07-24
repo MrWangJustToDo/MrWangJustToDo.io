@@ -13,6 +13,10 @@ import { useGitHubCompareSourceList } from "./useGitHubCompareSource";
 import type { MessageData } from "@app/worker/diffView.default.worker";
 import type { DiffViewProps } from "@git-diff-view/react";
 
+const emptyDiffFile = DiffFile.createInstance({});
+
+emptyDiffFile.initRaw();
+
 const worker =
   useDiffViewConfig.getReadonlyState().engine === HighlightEngine.shiki
     ? typeof Worker !== "undefined"
@@ -103,7 +107,14 @@ export const useDiffViewDiffFile = createState(
 
         if (!item) return;
 
-        if (!item.patch) return;
+        if (!item.patch) {
+          s.state[id] = { ...s.state[id] };
+          s.state[id].pureDiffFile = emptyDiffFile;
+          // s.state[id].fullDiffFile = emptyDiffFile;
+          s.state[id].pureLoading = false;
+          // s.state[id].fullLoading = false;
+          return;
+        }
 
         s.state[id] = s.state[id] || { fullDiffFile: null, pureDiffFile: null, pureLoading: false, fullLoading: false, mode: "pure", content: "" };
 
@@ -181,6 +192,8 @@ export const useDiffViewDiffFile = createState(
     withStableSelector: true,
   },
 );
+
+console.log("useDiffViewDiffFile initialized", useDiffViewDiffFile);
 
 export const useDiffViewLoading = () => {
   const list = useGitHubCompareSourceList((s) => s.list);

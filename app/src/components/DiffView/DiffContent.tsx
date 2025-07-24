@@ -122,7 +122,7 @@ const _DiffContent = memo(() => {
         <DiffViewSetting />
       </Flex>
       {/* @ts-ignore */}
-      <Box style={{ ["--sticky-top"]: `${height}px` }} ref={listRef}>
+      <Box style={{ ["--sticky-top"]: `${height}px` }} marginBottom="64" ref={listRef}>
         <Virtuoso
           totalCount={list.length}
           useWindowScroll

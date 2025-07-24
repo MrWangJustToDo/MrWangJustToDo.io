@@ -1,4 +1,5 @@
 // import { Bg } from "../Bg";
+import { DevTool } from "../DevTool";
 import { Footer } from "../Footer";
 import { Head } from "../Head";
 import { Header } from "../Header";
@@ -22,6 +23,7 @@ export const Layout = ({ children }: { children: JSX.Element }) => {
           <Footer />
         </div>
       </ModuleManager>
+      <DevTool />
     </>
   );
 };
