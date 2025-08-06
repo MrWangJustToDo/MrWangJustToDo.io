@@ -102,15 +102,15 @@ export const DiffLink = ({ url }: { url: string }) => {
   const targetCommitFromQuery = query.targetCommit;
 
   useSafeLayoutEffect(() => {
-    if (ownerFromQuery && repoFromQuery && sourceCommitFromQuery && targetCommitFromQuery) {
+    if (tabFromQuery === "1" && linkFromQuery) {
+      setTab(1);
+      setLink(linkFromQuery as string);
+      setDirty(false);
+    } else if (ownerFromQuery && repoFromQuery && sourceCommitFromQuery && targetCommitFromQuery) {
       setOwner(ownerFromQuery as string);
       setRepo(repoFromQuery as string);
       setSourceCommit(sourceCommitFromQuery as string);
       setTargetCommit(targetCommitFromQuery as string);
-      setDirty(false);
-    } else if (tabFromQuery === "1" && linkFromQuery) {
-      setTab(1);
-      setLink(linkFromQuery as string);
       setDirty(false);
     } else {
       restore();
