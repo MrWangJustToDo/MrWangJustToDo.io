@@ -19,6 +19,8 @@ type GitHubCompareSourceType = {
   targetCommit?: string;
   dirty?: boolean;
   key: number;
+  tab: number;
+  link: string;
 };
 
 export type GitHubCompareFileListType = {
@@ -37,7 +39,16 @@ export type GitHubCompareFileListType = {
 const { openAll } = useDiffOpenedItems.getActions();
 const { reset } = useDiffLoadedItems.getActions();
 
-const temp: GitHubCompareSourceType = { owner: "MrWangJustToDo", repo: "git-diff-view", sourceCommit: "v0.0.12", targetCommit: "v0.0.13", key: 0, dirty: true };
+const temp: GitHubCompareSourceType = {
+  owner: "MrWangJustToDo",
+  repo: "git-diff-view",
+  sourceCommit: "v0.0.12",
+  targetCommit: "v0.0.13",
+  key: 0,
+  dirty: true,
+  tab: 0,
+  link: "",
+};
 
 export const useGitHubCompareSource = createState(() => ({ ...temp }) as GitHubCompareSourceType, {
   withDeepSelector: false,
@@ -67,13 +78,25 @@ export const useGitHubCompareSource = createState(() => ({ ...temp }) as GitHubC
           temp.repo = state.repo;
           temp.sourceCommit = state.sourceCommit;
           temp.targetCommit = state.targetCommit;
+          temp.tab = state.tab;
+          temp.link = state.link;
         }
+      },
+      setTab: (tab: number) => {
+        state.dirty = true;
+        state.tab = tab;
+      },
+      setLink: (link: string) => {
+        state.dirty = true;
+        state.link = link;
       },
       restore: () => {
         state.owner = temp.owner;
         state.repo = temp.repo;
         state.sourceCommit = temp.sourceCommit;
         state.targetCommit = temp.targetCommit;
+        state.tab = temp.tab;
+        state.link = temp.link;
         state.dirty = false;
       },
       refresh: () => state.key++,
@@ -164,7 +187,7 @@ export const useGitHubCompareSourceList = createState(
 const { setList, setLoading } = useGitHubCompareSourceList.getActions();
 
 export const useGitHubCompareSourceState = () => {
-  const { owner, repo, sourceCommit, targetCommit, dirty, key } = useGitHubCompareSource();
+  const { owner, repo, sourceCommit, targetCommit, dirty, key, tab, link } = useGitHubCompareSource();
 
   const [url, setUrl] = useDebouncedState("", 1000);
 
@@ -172,12 +195,14 @@ export const useGitHubCompareSourceState = () => {
 
   useEffect(() => {
     if (dirty) return;
-    if (owner && repo && sourceCommit && targetCommit) {
+    if (tab === 1 && link) {
+      setUrl(link);
+    } else if (owner && repo && sourceCommit && targetCommit) {
       setUrl(`https://api.github.com/repos/${owner}/${repo}/compare/${sourceCommit}...${targetCommit}`);
     } else {
       setUrl("");
     }
-  }, [owner, repo, setUrl, sourceCommit, targetCommit, dirty]);
+  }, [owner, repo, setUrl, sourceCommit, targetCommit, dirty, tab, link]);
 
   useEffect(() => {
     if (url) {

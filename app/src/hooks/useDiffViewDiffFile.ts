@@ -193,8 +193,6 @@ export const useDiffViewDiffFile = createState(
   },
 );
 
-console.log("useDiffViewDiffFile initialized", useDiffViewDiffFile);
-
 export const useDiffViewLoading = () => {
   const list = useGitHubCompareSourceList((s) => s.list);
 

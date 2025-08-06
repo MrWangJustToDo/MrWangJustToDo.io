@@ -60,7 +60,15 @@ export const useKeywordHighlight = (ref: RefObject<HTMLDivElement>) => {
       const allTextNodes = [];
       let currentNode = treeWalker.nextNode();
       while (currentNode) {
-        allTextNodes.push(currentNode);
+        if (
+          !currentNode?.parentElement?.closest(`[data-diff-item-header]`) &&
+          !currentNode?.parentElement?.closest(`[data-diff-item-empty]`) &&
+          !currentNode?.parentElement?.closest("[data-line-num]") &&
+          !currentNode?.parentElement?.closest("[data-line-old-num]") &&
+          !currentNode?.parentElement?.closest("[data-line-new-num]")
+        ) {
+          allTextNodes.push(currentNode);
+        }
         currentNode = treeWalker.nextNode();
       }
 
@@ -94,7 +102,6 @@ export const useKeywordHighlight = (ref: RefObject<HTMLDivElement>) => {
         searchResultsHighlight?.add?.(range);
       });
     };
-
 
     registerHighlight();
 

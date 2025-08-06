@@ -15,6 +15,11 @@ import {
   ModalHeader,
   ModalOverlay,
   SkeletonText,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Text,
   Tooltip,
   useCallbackRef,
@@ -65,8 +70,28 @@ export const DiffLink = ({ url }: { url: string }) => {
 
   const inIframe = useInIframe();
 
-  const { owner, setOwner, repo, setRepo, sourceCommit, setSourceCommit, targetCommit, setTargetCommit, setDirty, restore, refresh, dirty } =
-    useGitHubCompareSource();
+  const {
+    owner,
+    setOwner,
+    repo,
+    setRepo,
+    sourceCommit,
+    setSourceCommit,
+    targetCommit,
+    setTargetCommit,
+    dirty,
+    setDirty,
+    restore,
+    refresh,
+    tab,
+    setTab,
+    link,
+    setLink,
+  } = useGitHubCompareSource();
+
+  const tabFromQuery = query.tab || 0;
+
+  const linkFromQuery = query.link || "";
 
   const ownerFromQuery = query.owner;
 
@@ -83,10 +108,26 @@ export const DiffLink = ({ url }: { url: string }) => {
       setSourceCommit(sourceCommitFromQuery as string);
       setTargetCommit(targetCommitFromQuery as string);
       setDirty(false);
+    } else if (tabFromQuery === "1" && linkFromQuery) {
+      setTab(1);
+      setLink(linkFromQuery as string);
+      setDirty(false);
     } else {
       restore();
     }
-  }, [ownerFromQuery, repoFromQuery, setDirty, setOwner, setRepo, setSourceCommit, setTargetCommit, sourceCommitFromQuery, targetCommitFromQuery]);
+  }, [
+    ownerFromQuery,
+    repoFromQuery,
+    setDirty,
+    setOwner,
+    setRepo,
+    setSourceCommit,
+    setTargetCommit,
+    sourceCommitFromQuery,
+    targetCommitFromQuery,
+    tabFromQuery,
+    linkFromQuery,
+  ]);
 
   return (
     <Flex alignItems="center">
@@ -115,6 +156,8 @@ export const DiffLink = ({ url }: { url: string }) => {
               newUrl.searchParams.set("repo", repo);
               newUrl.searchParams.set("sourceCommit", sourceCommit);
               newUrl.searchParams.set("targetCommit", targetCommit);
+              newUrl.searchParams.set("tab", String(tab));
+              newUrl.searchParams.set("link", link);
               await navigator.clipboard.writeText(newUrl.toString());
               toast({ title: "Copied", status: "success" });
             }}
@@ -129,28 +172,44 @@ export const DiffLink = ({ url }: { url: string }) => {
             <Text>Edit GitHub Repo Compare URL</Text>
           </ModalHeader>
           <ModalBody>
-            <Flex justifyContent="space-around">
-              <Flex width="45%" flexDirection="column" rowGap="4">
-                <FormControl>
-                  <FormLabel>Owner: </FormLabel>
-                  <WrapperInput value={owner} onValueChange={setOwner} size="sm" />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Repo: </FormLabel>
-                  <WrapperInput value={repo} onValueChange={setRepo} size="sm" />
-                </FormControl>
-              </Flex>
-              <Flex width="45%" flexDirection="column" rowGap="4">
-                <FormControl>
-                  <FormLabel>Source Commit: </FormLabel>
-                  <WrapperInput value={sourceCommit} onValueChange={setSourceCommit} size="sm" />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Target Commit: </FormLabel>
-                  <WrapperInput value={targetCommit} onValueChange={setTargetCommit} size="sm" />
-                </FormControl>
-              </Flex>
-            </Flex>
+            <Tabs index={tab} onChange={setTab}>
+              <TabList>
+                <Tab>Compare params</Tab>
+                <Tab>Full url</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel>
+                  <Flex justifyContent="space-around">
+                    <Flex width="45%" flexDirection="column" rowGap="4">
+                      <FormControl>
+                        <FormLabel>Owner: </FormLabel>
+                        <WrapperInput value={owner} onValueChange={setOwner} size="sm" />
+                      </FormControl>
+                      <FormControl>
+                        <FormLabel>Repo: </FormLabel>
+                        <WrapperInput value={repo} onValueChange={setRepo} size="sm" />
+                      </FormControl>
+                    </Flex>
+                    <Flex width="45%" flexDirection="column" rowGap="4">
+                      <FormControl>
+                        <FormLabel>Source Commit: </FormLabel>
+                        <WrapperInput value={sourceCommit} onValueChange={setSourceCommit} size="sm" />
+                      </FormControl>
+                      <FormControl>
+                        <FormLabel>Target Commit: </FormLabel>
+                        <WrapperInput value={targetCommit} onValueChange={setTargetCommit} size="sm" />
+                      </FormControl>
+                    </Flex>
+                  </Flex>
+                </TabPanel>
+                <TabPanel>
+                  <FormControl>
+                    <FormLabel>Full url: </FormLabel>
+                    <WrapperInput value={link} onValueChange={setLink} size="sm" />
+                  </FormControl>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
           </ModalBody>
           <ModalFooter>
             <Button

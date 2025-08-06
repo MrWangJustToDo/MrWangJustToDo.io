@@ -130,6 +130,7 @@ export const DiffItem = ({
           position="sticky"
           top={"var(--sticky-top)"}
           zIndex="sticky"
+          data-diff-item-header
           _before={{
             position: "absolute",
             width: "100%",
@@ -180,7 +181,7 @@ export const DiffItem = ({
                   diffViewFontSize={diffSize}
                 />
               ) : (
-                <Text textAlign="center" padding="2">
+                <Text textAlign="center" data-diff-item-empty padding="2">
                   Empty
                 </Text>
               )}
