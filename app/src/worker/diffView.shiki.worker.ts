@@ -1,4 +1,4 @@
-import { DiffFile, highlighter } from "@git-diff-view/core";
+import { DiffFile, highlighter, setEnableFastDiffTemplate } from "@git-diff-view/core";
 import { getDiffViewHighlighter } from "@git-diff-view/shiki";
 
 import { HighlightEngine } from "@app/hooks/useDiffViewConfig";
@@ -6,6 +6,8 @@ import { HighlightEngine } from "@app/hooks/useDiffViewConfig";
 import type { MessageData } from "./diffView.default.worker";
 
 const post = (d: MessageData) => postMessage(d);
+
+setEnableFastDiffTemplate(true);
 
 highlighter.setMaxLineToIgnoreSyntax(60000);
 
