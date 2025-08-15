@@ -15,6 +15,7 @@ import {
   Button,
   Text,
   PopoverTrigger,
+  Box,
 } from "@chakra-ui/react";
 import { DiffModeEnum, type DiffFile } from "@git-diff-view/react";
 import {
@@ -230,9 +231,17 @@ export const DiffItemHeader = ({
           </Tooltip>
         )}
       </ButtonGroup>
-      <Text as="span" color="lightTextColor">
+      <Text as="span" color="lightTextColor" width="90%" display="inline-block">
         {item.status === "renamed" ? `${item.previous_filename} -> ${item.filename}` : item.filename}
       </Text>
+      <Box display="inline-flex" columnGap="2" border="1px" borderColor="cardBorderColor" borderRadius="md" paddingX="2" marginLeft="auto">
+        <Text fontSize="12px" as="span" color="green.400">
+          +{diffFile?.additionLength}
+        </Text>
+        <Text fontSize="12px" as="span" color="red.400">
+          -{diffFile?.deletionLength}
+        </Text>
+      </Box>
     </Flex>
   );
 };

@@ -41,7 +41,7 @@ export const DiffAside = () => {
       <Box ref={groupRef} display="flow-root">
         <DiffAsideFilter marginY="2" />
       </Box>
-      <Card boxShadow="none" padding="2" className="group" overflowX="auto">
+      <Card boxShadow="none" backgroundColor="initial" padding="2" className="group" overflowX="auto">
         <Box ref={ref} sx={{ [`& [data-id="${id}"]`]: { backgroundColor: "blackAlpha.200" } }}>
           <DiffAsideTree ref={treeRef} width="full" height={groupHeight && windowHeight ? windowHeight - groupHeight - 50 : undefined} />
         </Box>
