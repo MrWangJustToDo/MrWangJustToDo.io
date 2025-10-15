@@ -48,14 +48,33 @@ export const DiffItemContent = (props: Omit<DiffViewProps<string[]>, "data"> & {
                 },
               },
             );
+
             instanceArray.push(i1, i2);
-            const leftScrollEle = i1.elements().scrollEventElement as HTMLDivElement;
-            const rightScrollEle = i2.elements().scrollEventElement as HTMLDivElement;
+
+            const { scrollEventElement: oldViewElement, scrollbarHorizontal: oldScrollbarHorizontal } = i1.elements();
+
+            const { scrollEventElement: newViewElement, scrollbarHorizontal: newScrollbarHorizontal } = i2.elements();
+
+            const typedOldViewElement = oldViewElement as HTMLElement;
+
+            const typedNewViewElement = newViewElement as HTMLElement;
+
             i1.on("scroll", () => {
-              rightScrollEle.scrollLeft = leftScrollEle.scrollLeft;
+              typedNewViewElement.scrollLeft = typedOldViewElement.scrollLeft;
             });
+
             i2.on("scroll", () => {
-              leftScrollEle.scrollLeft = rightScrollEle.scrollLeft;
+              typedOldViewElement.scrollLeft = typedNewViewElement.scrollLeft;
+            });
+
+            oldScrollbarHorizontal.handle.addEventListener("mousedown", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            });
+
+            newScrollbarHorizontal.handle.addEventListener("mousedown", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
             });
           }
         } else {
@@ -74,6 +93,13 @@ export const DiffItemContent = (props: Omit<DiffViewProps<string[]>, "data"> & {
               },
             );
             instanceArray.push(i);
+
+            const { scrollbarHorizontal } = i.elements();
+
+            scrollbarHorizontal.handle.addEventListener("mousedown", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            });
           }
         }
       };
