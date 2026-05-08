@@ -38,9 +38,9 @@ export const ProjectItems = {
     owner: "mrwangjusttodo",
     name: "myreact-devtools",
   },
-  Translate: {
+  MyAgent: {
     owner: "mrwangjusttodo",
-    name: "translate",
+    name: "MyAgent",
   }
 } as const;
 
@@ -164,8 +164,6 @@ export const ReadMe = ({ type, onClose }: { type: keyof typeof ProjectItems; onC
                   if (node.children?.length === 1 && typeof node.children[0] === "object" && (node.children[0] as any).tagName === "code") {
                     return (
                       <div className="w-full overflow-auto">
-                        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                        {/* @ts-expect-error */}
                         <pre>{isValidElement(children) ? cloneElement(children, { className: children.props.className || "lang-unknown" }) : children}</pre>
                       </div>
                     );

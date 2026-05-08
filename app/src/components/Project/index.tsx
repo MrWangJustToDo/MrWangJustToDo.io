@@ -62,7 +62,7 @@ export const Project = () => {
                   <Item type="GitDiffView" onOpenReadme={() => setType("GitDiffView")} onOpenPreview={() => set_Type("GitDiffView")} />
                   <Item type="RStore" onOpenReadme={() => setType("RStore")} onOpenPreview={() => set_Type("RStore")} />
                   <Item type="SSR" onOpenReadme={() => setType("SSR")} onOpenPreview={() => set_Type("SSR")} />
-                  <Item type="Translate" onOpenReadme={() => setType("Translate")} onOpenPreview={() => set_Type("Translate")} />
+                  <Item type="MyAgent" onOpenReadme={() => setType("MyAgent")} onOpenPreview={() => set_Type("MyAgent")} />
                 </Box>
               ) : (
                 <Box maxWidth="360px" marginX="auto">
